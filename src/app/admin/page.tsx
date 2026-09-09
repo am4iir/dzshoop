@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Product, Order } from "@/lib/db";
 import { formatPrice } from "@/lib/utils";
 import { 
@@ -21,6 +22,8 @@ import {
 } from "lucide-react";
 
 export default function AdminDashboardPage() {
+  const router = useRouter();
+
   // Authentication State
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [passcode, setPasscode] = useState("");
@@ -45,20 +48,21 @@ export default function AdminDashboardPage() {
   const [submittingProduct, setSubmittingProduct] = useState(false);
 
   useEffect(() => {
-    // Check local session
-    const saved = localStorage.getItem("store_admin_auth");
+    // Check sessionStorage only (ends immediately on tab close or manual logout)
+    const saved = sessionStorage.getItem("store_admin_auth");
     if (saved === "verified") {
       setIsAuthenticated(true);
       loadData();
+    } else {
+      setIsAuthenticated(false);
     }
   }, []);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // Default secret passcode: 2026 (changeable)
     if (passcode === "2026" || passcode === "admin2026") {
       setIsAuthenticated(true);
-      localStorage.setItem("store_admin_auth", "verified");
+      sessionStorage.setItem("store_admin_auth", "verified");
       setAuthError(false);
       loadData();
     } else {
@@ -67,9 +71,13 @@ export default function AdminDashboardPage() {
   };
 
   const handleLogout = () => {
+    // Completely clear admin session
+    sessionStorage.removeItem("store_admin_auth");
     localStorage.removeItem("store_admin_auth");
     setIsAuthenticated(false);
     setPasscode("");
+    // Redirect immediately to client homepage
+    router.push("/");
   };
 
   const loadData = () => {
@@ -143,7 +151,7 @@ export default function AdminDashboardPage() {
     }
   };
 
-  // If NOT authenticated, display clean secure Lock Screen
+  // Lock Screen
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-zinc-950 text-white flex items-center justify-center p-4">
@@ -228,16 +236,17 @@ export default function AdminDashboardPage() {
               href="/"
               className="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-600 hover:text-black bg-zinc-100 hover:bg-zinc-200 px-3.5 py-2 rounded-xl transition"
             >
-              <span>زيارة المتجر</span>
+              <span>زيارة المتجر كزبون</span>
               <ArrowRight className="w-3.5 h-3.5 rotate-180" />
             </Link>
 
+            {/* Complete Logout button */}
             <button
               onClick={handleLogout}
-              className="inline-flex items-center gap-1 text-xs font-bold text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 px-3 py-2 rounded-xl transition cursor-pointer"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-red-600 hover:text-white bg-red-50 hover:bg-red-600 border border-red-200 hover:border-red-600 px-3.5 py-2 rounded-xl transition cursor-pointer"
             >
               <LogOut className="w-3.5 h-3.5" />
-              <span>خروج</span>
+              <span>تسجيل الخروج</span>
             </button>
           </div>
         </div>
