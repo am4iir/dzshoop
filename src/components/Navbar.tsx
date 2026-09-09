@@ -1,7 +1,7 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
-import { Search, ShoppingBag, ShieldCheck, Instagram } from "lucide-react";
+import { Search, Instagram } from "lucide-react";
 
 interface NavbarProps {
   searchQuery?: string;
@@ -23,7 +23,7 @@ export function Navbar({ searchQuery = "", onSearchChange }: NavbarProps) {
           </div>
         </Link>
 
-        {/* Search Bar matching screenshot */}
+        {/* Search Bar */}
         <div className="flex-1 max-w-md hidden sm:block">
           <div className="relative">
             <input
@@ -37,15 +37,17 @@ export function Navbar({ searchQuery = "", onSearchChange }: NavbarProps) {
           </div>
         </div>
 
-        {/* Quick Actions & Admin Link */}
-        <div className="flex items-center gap-2 sm:gap-3">
-          <Link
-            href="/admin"
-            className="text-xs font-semibold text-zinc-700 hover:text-black bg-zinc-100 hover:bg-zinc-200 px-3 py-1.5 rounded-full transition flex items-center gap-1.5"
+        {/* Instagram Social link for clients */}
+        <div className="flex items-center gap-3">
+          <a
+            href="https://instagram.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 text-xs text-zinc-600 hover:text-black bg-zinc-50 border border-zinc-200/80 px-3.5 py-1.5 rounded-full transition"
           >
-            <ShieldCheck className="w-3.5 h-3.5 text-zinc-600" />
-            <span>لوحة التحكم (Admin)</span>
-          </Link>
+            <Instagram className="w-3.5 h-3.5 text-pink-500" />
+            <span className="hidden sm:inline">إنستغرام المتجر</span>
+          </a>
         </div>
       </div>
     </header>

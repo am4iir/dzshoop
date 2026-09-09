@@ -16,14 +16,21 @@ import {
   MapPin, 
   Layers, 
   ArrowRight,
-  Sparkles
+  Lock,
+  LogOut
 } from "lucide-react";
 
 export default function AdminDashboardPage() {
+  // Authentication State
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [passcode, setPasscode] = useState("");
+  const [authError, setAuthError] = useState(false);
+
+  // Dashboard state
   const [activeTab, setActiveTab] = useState<"orders" | "products" | "new-product">("orders");
   const [orders, setOrders] = useState<Order[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   // New product form
   const [name, setName] = useState("");
@@ -37,6 +44,34 @@ export default function AdminDashboardPage() {
   const [imageUrl, setImageUrl] = useState("");
   const [submittingProduct, setSubmittingProduct] = useState(false);
 
+  useEffect(() => {
+    // Check local session
+    const saved = localStorage.getItem("store_admin_auth");
+    if (saved === "verified") {
+      setIsAuthenticated(true);
+      loadData();
+    }
+  }, []);
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Default secret passcode: 2026 (changeable)
+    if (passcode === "2026" || passcode === "admin2026") {
+      setIsAuthenticated(true);
+      localStorage.setItem("store_admin_auth", "verified");
+      setAuthError(false);
+      loadData();
+    } else {
+      setAuthError(true);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("store_admin_auth");
+    setIsAuthenticated(false);
+    setPasscode("");
+  };
+
   const loadData = () => {
     setLoading(true);
     Promise.all([
@@ -48,10 +83,6 @@ export default function AdminDashboardPage() {
       setLoading(false);
     }).catch(() => setLoading(false));
   };
-
-  useEffect(() => {
-    loadData();
-  }, []);
 
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
     try {
@@ -112,6 +143,63 @@ export default function AdminDashboardPage() {
     }
   };
 
+  // If NOT authenticated, display clean secure Lock Screen
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-zinc-950 text-white flex items-center justify-center p-4">
+        <div className="max-w-sm w-full bg-zinc-900 border border-zinc-800 rounded-3xl p-8 text-center shadow-2xl">
+          <div className="w-14 h-14 rounded-2xl bg-zinc-800 border border-zinc-700/80 flex items-center justify-center mx-auto mb-5 text-amber-400 shadow-inner">
+            <Lock className="w-6 h-6" />
+          </div>
+
+          <h2 className="text-xl font-bold tracking-tight text-white mb-1">
+            لوحة تحكم المتجر المحمية
+          </h2>
+          <p className="text-xs text-zinc-400 mb-6">
+            أدخل رمز المرور السري (Passcode) للوصول إلى الطلبيات وإدارة المنتجات
+          </p>
+
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <input
+                type="password"
+                required
+                autoFocus
+                placeholder="رمز المرور (Passcode)"
+                value={passcode}
+                onChange={(e) => {
+                  setPasscode(e.target.value);
+                  setAuthError(false);
+                }}
+                className={`w-full bg-zinc-950 border ${
+                  authError ? "border-red-500" : "border-zinc-800 focus:border-white"
+                } rounded-xl py-3 px-4 text-center text-sm font-mono tracking-widest text-white outline-none transition`}
+              />
+              {authError && (
+                <span className="text-[11px] text-red-400 block mt-1.5 font-medium">
+                  رمز المرور غير صحيح!
+                </span>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              className="w-full bg-white hover:bg-zinc-200 text-black font-extrabold py-3 px-4 rounded-xl text-xs transition shadow-md cursor-pointer"
+            >
+              تسجيل الدخول للأدمن
+            </button>
+          </form>
+
+          <div className="mt-6 pt-4 border-t border-zinc-800/80">
+            <Link href="/" className="text-xs text-zinc-500 hover:text-zinc-300">
+              ← العودة لمتجر الزبائن
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const pendingCount = orders.filter((o) => o.status === "pending").length;
   const confirmedCount = orders.filter((o) => o.status === "confirmed").length;
   const totalRevenue = orders
@@ -135,13 +223,23 @@ export default function AdminDashboardPage() {
             </div>
           </div>
 
-          <Link
-            href="/"
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-600 hover:text-black bg-zinc-100 hover:bg-zinc-200 px-3.5 py-2 rounded-xl transition"
-          >
-            <span>زيارة المتجر كزبون</span>
-            <ArrowRight className="w-3.5 h-3.5 rotate-180" />
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-600 hover:text-black bg-zinc-100 hover:bg-zinc-200 px-3.5 py-2 rounded-xl transition"
+            >
+              <span>زيارة المتجر</span>
+              <ArrowRight className="w-3.5 h-3.5 rotate-180" />
+            </Link>
+
+            <button
+              onClick={handleLogout}
+              className="inline-flex items-center gap-1 text-xs font-bold text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 px-3 py-2 rounded-xl transition cursor-pointer"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>خروج</span>
+            </button>
+          </div>
         </div>
       </header>
 
@@ -258,7 +356,6 @@ export default function AdminDashboardPage() {
 
                   {/* Order Details Grid */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                    {/* Customer */}
                     <div className="space-y-1">
                       <span className="text-zinc-400 text-[11px] block">معلومات الزبون:</span>
                       <p className="font-bold text-zinc-900 text-sm">{order.fullName}</p>
@@ -271,7 +368,6 @@ export default function AdminDashboardPage() {
                       </a>
                     </div>
 
-                    {/* Address & Delivery */}
                     <div className="space-y-1">
                       <span className="text-zinc-400 text-[11px] block">العنوان والتوصيل:</span>
                       <p className="font-semibold text-zinc-800 flex items-center gap-1">
@@ -283,7 +379,6 @@ export default function AdminDashboardPage() {
                       </p>
                     </div>
 
-                    {/* Item & Price */}
                     <div className="space-y-1 md:text-left">
                       <span className="text-zinc-400 text-[11px] block">المنتج والمبلغ:</span>
                       <p className="font-bold text-zinc-900">
@@ -299,7 +394,6 @@ export default function AdminDashboardPage() {
                     </div>
                   </div>
 
-                  {/* Actions to change status */}
                   <div className="pt-3 border-t border-zinc-100 flex flex-wrap items-center justify-between gap-2">
                     <span className="text-[11px] text-zinc-400">تغيير حالة الطلب:</span>
                     <div className="flex gap-2">
