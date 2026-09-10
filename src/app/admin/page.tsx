@@ -60,7 +60,7 @@ export default function AdminDashboardPage() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (passcode === "2026" || passcode === "admin2026") {
+    if (passcode === "abxabx202625") {
       setIsAuthenticated(true);
       sessionStorage.setItem("store_admin_auth", "verified");
       setAuthError(false);
