@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Search, ShoppingBag, Truck } from "lucide-react";
+import { Search, ShoppingBag } from "lucide-react";
 import { useCart } from "./CartContext";
 
 interface NavbarProps {
@@ -44,18 +44,8 @@ export function Navbar({ searchQuery = "", onSearchChange }: NavbarProps) {
           </div>
         </div>
 
-        {/* Actions */}
+        {/* Actions - Shopping Cart */}
         <div className="flex items-center gap-2 sm:gap-3">
-          {/* Track Order Link */}
-          <Link
-            href="/track"
-            className="flex items-center gap-1.5 text-xs font-bold text-zinc-300 hover:text-white bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 px-3 py-1.5 rounded-full transition"
-          >
-            <Truck className="w-3.5 h-3.5 text-emerald-400" />
-            <span>تتبع الطلب</span>
-          </Link>
-
-          {/* Cart Icon Button */}
           <button
             type="button"
             onClick={openCart}
