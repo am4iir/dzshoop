@@ -58,7 +58,7 @@ export default function HomePage() {
   }, [products, search, selectedCategory]);
 
   return (
-    <div className="min-h-screen bg-[#fafafa] text-zinc-900 pb-20" dir="rtl">
+    <div className="min-h-screen bg-[#fafafa] dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 pb-20 transition-colors duration-200" dir="rtl">
       <Navbar searchQuery={search} onSearchChange={setSearch} />
 
       <main className="max-w-6xl mx-auto px-4 py-6 space-y-10">
@@ -106,8 +106,8 @@ export default function HomePage() {
               onClick={() => setSelectedCategory(cat.id)}
               className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
                 selectedCategory === cat.id
-                  ? "bg-zinc-900 text-white shadow-md scale-105"
-                  : "bg-white border border-zinc-200 text-zinc-600 hover:border-zinc-400"
+                  ? "bg-zinc-900 dark:bg-amber-400 text-white dark:text-zinc-950 shadow-md scale-105"
+                  : "bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-300 hover:border-zinc-400 dark:hover:border-zinc-600"
               }`}
             >
               {cat.label}
@@ -117,7 +117,7 @@ export default function HomePage() {
 
         {/* Product Grid Header */}
         <div className="flex items-center justify-between">
-          <h2 className="text-lg sm:text-xl font-black text-zinc-900">تشكيلة axb الحصرية</h2>
+          <h2 className="text-lg sm:text-xl font-black text-zinc-900 dark:text-white">تشكيلة axb الحصرية</h2>
           <span className="text-xs font-semibold text-zinc-400">({filtered.length} منتج)</span>
         </div>
 
@@ -125,11 +125,11 @@ export default function HomePage() {
         {loading ? (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="animate-pulse bg-zinc-200/70 rounded-2xl h-80" />
+              <div key={i} className="animate-pulse bg-zinc-200/70 dark:bg-zinc-800/70 rounded-2xl h-80" />
             ))}
           </div>
         ) : filtered.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-3xl border border-zinc-200 text-zinc-500 text-xs">
+          <div className="text-center py-20 bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 text-xs">
             لا توجد منتجات مطابقة لبحثك حالياً.
           </div>
         ) : (
@@ -137,9 +137,9 @@ export default function HomePage() {
             {filtered.map((prod) => (
               <div
                 key={prod.id}
-                className="group flex flex-col bg-white rounded-2xl border border-zinc-200/80 overflow-hidden hover:shadow-lg hover:border-zinc-300 transition-all duration-300"
+                className="group flex flex-col bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200/80 dark:border-zinc-800 overflow-hidden hover:shadow-lg hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-300"
               >
-                <div className="relative aspect-[4/5] bg-zinc-100 overflow-hidden">
+                <div className="relative aspect-[4/5] bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
                   <img
                     src={prod.images[0] || "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=900&auto=format&fit=crop"}
                     alt={prod.name}
@@ -156,12 +156,12 @@ export default function HomePage() {
                 </div>
 
                 <div className="p-3.5 sm:p-4 flex flex-col flex-1 text-center">
-                  <h3 className="text-xs sm:text-sm font-semibold text-zinc-800 line-clamp-2 leading-snug group-hover:text-black transition">
+                  <h3 className="text-xs sm:text-sm font-semibold text-zinc-800 dark:text-zinc-200 line-clamp-2 leading-snug group-hover:text-black dark:group-hover:text-white transition">
                     {prod.name}
                   </h3>
 
                   <div className="mt-2.5 flex items-center justify-center gap-2">
-                    <span className="text-sm sm:text-base font-extrabold text-zinc-900">
+                    <span className="text-sm sm:text-base font-extrabold text-zinc-900 dark:text-white">
                       {formatPrice(prod.price)}
                     </span>
                     {prod.originalPrice > prod.price && (
@@ -174,7 +174,7 @@ export default function HomePage() {
                   <div className="mt-4 pt-2">
                     <Link
                       href={`/products/${prod.id}`}
-                      className="w-full inline-flex items-center justify-center py-2 sm:py-2.5 px-4 rounded-xl border border-zinc-900 text-zinc-900 font-bold text-xs sm:text-sm hover:bg-zinc-900 hover:text-white transition-colors duration-200"
+                      className="w-full inline-flex items-center justify-center py-2 sm:py-2.5 px-4 rounded-xl border border-zinc-900 dark:border-zinc-700 text-zinc-900 dark:text-zinc-200 font-bold text-xs sm:text-sm hover:bg-zinc-900 dark:hover:bg-amber-400 hover:text-white dark:hover:text-zinc-950 transition-colors duration-200"
                     >
                       أطلب الآن
                     </Link>

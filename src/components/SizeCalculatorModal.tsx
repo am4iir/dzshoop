@@ -55,29 +55,29 @@ export function SizeCalculatorModal({
       {/* Backdrop */}
       <div className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity" onClick={onClose} />
 
-      <div className="relative bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl z-10 border border-zinc-200">
+      <div className="relative bg-white dark:bg-zinc-900 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl z-10 border border-zinc-200 dark:border-zinc-800 transition-colors duration-200">
         {/* Close Button */}
         <button
           type="button"
           onClick={onClose}
-          className="absolute left-4 top-4 text-zinc-400 hover:text-zinc-900 p-2 rounded-full hover:bg-zinc-100 transition"
+          className="absolute left-4 top-4 text-zinc-400 hover:text-zinc-900 dark:hover:text-white p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer"
         >
           <X className="w-5 h-5" />
         </button>
 
         {/* Header */}
         <div className="text-center mb-6">
-          <div className="w-12 h-12 rounded-2xl bg-zinc-900 text-white flex items-center justify-center mx-auto mb-3 shadow-md">
+          <div className="w-12 h-12 rounded-2xl bg-zinc-900 dark:bg-zinc-800 text-white dark:text-amber-400 flex items-center justify-center mx-auto mb-3 shadow-md border border-transparent dark:border-zinc-700">
             <Ruler className="w-6 h-6" />
           </div>
-          <h3 className="text-lg font-black text-zinc-900">حاسبة المقاس المناسب 📏</h3>
-          <p className="text-xs text-zinc-500 mt-1">أدخل طولك ووزنك لمعرفة مقاسك المثالي بدقة</p>
+          <h3 className="text-lg font-black text-zinc-900 dark:text-white">حاسبة المقاس المناسب 📏</h3>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">أدخل طولك ووزنك لمعرفة مقاسك المثالي بدقة</p>
         </div>
 
         {/* Form */}
         <form onSubmit={calculateSize} className="space-y-4">
           <div>
-            <label className="block text-xs font-bold text-zinc-700 mb-1.5">
+            <label className="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">
               الطول (بالسنتيمتر cm)
             </label>
             <input
@@ -88,12 +88,12 @@ export function SizeCalculatorModal({
               value={height}
               onChange={(e) => setHeight(e.target.value)}
               placeholder="مثلاً: 175"
-              className="w-full bg-zinc-50 border border-zinc-200 rounded-xl py-3 px-4 text-xs font-bold text-zinc-900 outline-none focus:border-zinc-900 transition text-center"
+              className="w-full bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 rounded-xl py-3 px-4 text-xs font-bold text-zinc-900 dark:text-white outline-none focus:border-zinc-900 dark:focus:border-amber-400 transition text-center"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-zinc-700 mb-1.5">
+            <label className="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">
               الوزن (بالكيلوغرام kg)
             </label>
             <input
@@ -104,34 +104,34 @@ export function SizeCalculatorModal({
               value={weight}
               onChange={(e) => setWeight(e.target.value)}
               placeholder="مثلاً: 70"
-              className="w-full bg-zinc-50 border border-zinc-200 rounded-xl py-3 px-4 text-xs font-bold text-zinc-900 outline-none focus:border-zinc-900 transition text-center"
+              className="w-full bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 rounded-xl py-3 px-4 text-xs font-bold text-zinc-900 dark:text-white outline-none focus:border-zinc-900 dark:focus:border-amber-400 transition text-center"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full bg-zinc-900 hover:bg-black text-white font-extrabold py-3 px-4 rounded-xl text-xs transition shadow-md flex items-center justify-center gap-2"
+            className="w-full bg-zinc-900 dark:bg-amber-400 hover:bg-black dark:hover:bg-amber-300 text-white dark:text-zinc-950 font-extrabold py-3 px-4 rounded-xl text-xs transition shadow-md flex items-center justify-center gap-2 cursor-pointer"
           >
-            <Sparkles className="w-4 h-4 text-amber-400" />
+            <Sparkles className="w-4 h-4 text-amber-400 dark:text-zinc-950" />
             <span>احسب المقاس</span>
           </button>
         </form>
 
         {/* Recommended Result */}
         {recommendedSize && (
-          <div className="mt-6 p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-center space-y-3">
-            <div className="flex items-center justify-center gap-1.5 text-xs font-extrabold text-emerald-800">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+          <div className="mt-6 p-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 rounded-2xl text-center space-y-3">
+            <div className="flex items-center justify-center gap-1.5 text-xs font-extrabold text-emerald-800 dark:text-emerald-300">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
               <span>المقاس المقترح لك:</span>
             </div>
-            <div className="text-3xl font-black text-emerald-600 font-mono tracking-wider">
+            <div className="text-3xl font-black text-emerald-600 dark:text-emerald-400 font-mono tracking-wider">
               {recommendedSize}
             </div>
 
             <button
               type="button"
               onClick={handleApply}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition shadow-sm"
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition shadow-sm cursor-pointer"
             >
               تحديد المقاس ({recommendedSize}) تلقائياً
             </button>

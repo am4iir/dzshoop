@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { Search, ShoppingBag } from "lucide-react";
+import { Search, ShoppingBag, Sun, Moon } from "lucide-react";
 import { useCart } from "./CartContext";
+import { useTheme } from "./ThemeContext";
 
 interface NavbarProps {
   searchQuery?: string;
@@ -11,6 +12,7 @@ interface NavbarProps {
 
 export function Navbar({ searchQuery = "", onSearchChange }: NavbarProps) {
   const { totalItems, openCart } = useCart();
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <header className="sticky top-0 z-40 bg-zinc-950/95 backdrop-blur border-b border-zinc-800/80 shadow-md text-white" dir="rtl">
@@ -44,8 +46,29 @@ export function Navbar({ searchQuery = "", onSearchChange }: NavbarProps) {
           </div>
         </div>
 
-        {/* Actions - Shopping Cart */}
+        {/* Actions - Theme Toggle & Shopping Cart */}
         <div className="flex items-center gap-2 sm:gap-3">
+          {/* Black / White Theme Toggle */}
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="p-2 sm:px-3 sm:py-1.5 rounded-full text-zinc-300 hover:text-white bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 transition flex items-center justify-center gap-1.5 cursor-pointer"
+            title={theme === "dark" ? "التحويل للوضع المضيء (White)" : "التحويل للوضع الليلي (Black)"}
+            aria-label="تبديل المظهر"
+          >
+            {theme === "dark" ? (
+              <>
+                <Sun className="w-4 h-4 text-amber-400" />
+                <span className="text-[11px] font-bold hidden sm:inline text-zinc-300">White</span>
+              </>
+            ) : (
+              <>
+                <Moon className="w-4 h-4 text-zinc-300" />
+                <span className="text-[11px] font-bold hidden sm:inline text-zinc-300">Black</span>
+              </>
+            )}
+          </button>
+
           <button
             type="button"
             onClick={openCart}
