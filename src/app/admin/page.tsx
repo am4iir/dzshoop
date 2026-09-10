@@ -49,7 +49,7 @@ export default function AdminDashboardPage() {
   const [submittingProduct, setSubmittingProduct] = useState(false);
 
   useEffect(() => {
-    const saved = sessionStorage.getItem("store_admin_auth");
+    const saved = sessionStorage.getItem("axb_admin_auth_2026");
     if (saved === "verified") {
       setIsAuthenticated(true);
       loadData();
@@ -60,9 +60,9 @@ export default function AdminDashboardPage() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (passcode === "abxabx202625") {
+    if (passcode.trim() === "abxabx202625") {
       setIsAuthenticated(true);
-      sessionStorage.setItem("store_admin_auth", "verified");
+      sessionStorage.setItem("axb_admin_auth_2026", "verified");
       setAuthError(false);
       loadData();
     } else {
@@ -71,6 +71,8 @@ export default function AdminDashboardPage() {
   };
 
   const handleLogout = () => {
+    sessionStorage.removeItem("axb_admin_auth_2026");
+    localStorage.removeItem("axb_admin_auth_2026");
     sessionStorage.removeItem("store_admin_auth");
     localStorage.removeItem("store_admin_auth");
     setIsAuthenticated(false);
