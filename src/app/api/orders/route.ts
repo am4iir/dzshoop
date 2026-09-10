@@ -4,7 +4,6 @@ import { sql, initDbTables, Order } from "@/lib/db";
 // Helper function to auto-clean orders completed/shipped for more than 48 hours
 async function autoCleanupCompletedOrders() {
   try {
-    // Delete orders that are marked as 'shipped' or 'cancelled' and older than 48 hours
     await sql`
       DELETE FROM orders 
       WHERE (status = 'shipped' OR status = 'cancelled') 
@@ -15,10 +14,52 @@ async function autoCleanupCompletedOrders() {
   }
 }
 
+// Helper to send instant notification to Telegram phone group if configured
+async function sendTelegramNotification(orderData: {
+  id: string;
+  fullName: string;
+  phone: string;
+  wilayaName: string;
+  commune: string;
+  productTitle: string;
+  deliveryType: string;
+  deliveryPrice: number;
+  totalPrice: number;
+}) {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+
+  if (!token || !chatId) return;
+
+  try {
+    const text = `🛍️ *طلبية جديدة في المتجر!*
+━━━━━━━━━━━━━━━
+🆔 *رقم الطلب:* \`${orderData.id}\`
+👤 *العميل:* ${orderData.fullName}
+📞 *الهاتف:* \`${orderData.phone}\`
+📍 *العنوان:* ${orderData.wilayaName} - ${orderData.commune} (${orderData.deliveryType === "home" ? "توصيل للمنزل" : "استلام من المكتب"})
+📦 *المنتجات:* ${orderData.productTitle}
+💰 *المبلغ الإجمالي:* ${orderData.totalPrice} دج (شامل التوصيل ${orderData.deliveryPrice} دج)
+━━━━━━━━━━━━━━━
+⚡ *اتصل بالزبون فوراً لتأكيد الشحن!*`;
+
+    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text,
+        parse_mode: "Markdown",
+      }),
+    });
+  } catch (err) {
+    console.error("Telegram notification error:", err);
+  }
+}
+
 export async function GET() {
   try {
     await initDbTables();
-    // Run automatic 48h purge of completed orders on each fetch
     await autoCleanupCompletedOrders();
 
     const rows = await sql`
@@ -72,6 +113,19 @@ export async function POST(req: Request) {
       VALUES (${id}, ${productTitle}, ${productId}, ${selectedSize}, ${selectedColor}, ${quantity}, ${fullName}, ${phone}, ${wilayaName}, ${commune}, ${deliveryType}, ${deliveryPrice}, ${totalPrice}, 'pending')
     `;
 
+    // Trigger instant Telegram notification to phone if configured
+    sendTelegramNotification({
+      id,
+      fullName,
+      phone,
+      wilayaName,
+      commune,
+      productTitle,
+      deliveryType,
+      deliveryPrice,
+      totalPrice,
+    });
+
     return NextResponse.json({ success: true, order: { id, fullName, totalPrice } });
   } catch (error) {
     console.error("Create order error:", error);
@@ -95,7 +149,6 @@ export async function PATCH(req: Request) {
   }
 }
 
-// Direct immediate delete if needed by admin
 export async function DELETE(req: Request) {
   try {
     await initDbTables();

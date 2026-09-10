@@ -6,7 +6,7 @@ import { Navbar } from "@/components/Navbar";
 import { useCart } from "@/components/CartContext";
 import { WILAYAS } from "@/data/products";
 import { formatPrice } from "@/lib/utils";
-import { CheckCircle2, ShoppingBag, ArrowLeft, MapPin, Phone, User, Trash2 } from "lucide-react";
+import { CheckCircle2, ShoppingBag, ArrowLeft, MapPin, Phone, User, Tag, Check } from "lucide-react";
 import confetti from "canvas-confetti";
 
 export default function CheckoutPage() {
@@ -18,13 +18,37 @@ export default function CheckoutPage() {
   const [commune, setCommune] = useState("الجزائر الوسطى");
   const [deliveryType, setDeliveryType] = useState<"home" | "desk">("home");
 
+  // Promo Code State
+  const [promoInput, setPromoInput] = useState("");
+  const [appliedPromo, setAppliedPromo] = useState<{ code: string; discount: number } | null>(null);
+  const [promoError, setPromoError] = useState("");
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderConfirmed, setOrderConfirmed] = useState(false);
   const [orderId, setOrderId] = useState("");
 
   const currentWilaya = WILAYAS.find((w) => w.code === wilayaCode) || WILAYAS[0];
   const deliveryCost = deliveryType === "home" ? currentWilaya.homeDelivery : currentWilaya.deskDelivery;
-  const grandTotal = totalPrice + deliveryCost;
+
+  const discountAmount = appliedPromo ? appliedPromo.discount : 0;
+  const grandTotal = Math.max(0, totalPrice - discountAmount + deliveryCost);
+
+  const handleApplyPromo = (e: React.FormEvent) => {
+    e.preventDefault();
+    setPromoError("");
+    const cleanCode = promoInput.trim().toUpperCase();
+
+    if (!cleanCode) return;
+
+    if (cleanCode === "AB10" || cleanCode === "DZ10" || cleanCode === "JWI10") {
+      const disc = Math.round(totalPrice * 0.1);
+      setAppliedPromo({ code: cleanCode, discount: disc });
+    } else if (cleanCode === "PROMO500") {
+      setAppliedPromo({ code: cleanCode, discount: 500 });
+    } else {
+      setPromoError("كود التخفيض غير صالح أو منتهي الصلاحية");
+    }
+  };
 
   const handleSubmitOrder = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,14 +66,13 @@ export default function CheckoutPage() {
     setIsSubmitting(true);
 
     try {
-      // Build summary title of all items
       const summaryTitle = items.map((i) => `${i.productName} (${i.selectedSize || "M"}) ×${i.quantity}`).join(" + ");
 
       const res = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          productTitle: summaryTitle,
+          productTitle: summaryTitle + (appliedPromo ? ` [خصم ${appliedPromo.code}]` : ""),
           productId: items[0]?.productId || "",
           selectedSize: items[0]?.selectedSize || "",
           selectedColor: items[0]?.selectedColor || "",
@@ -288,11 +311,52 @@ export default function CheckoutPage() {
                 ))}
               </div>
 
+              {/* Promo Code Input */}
+              <div className="pt-2 border-t border-zinc-100">
+                <form onSubmit={handleApplyPromo} className="flex gap-2">
+                  <div className="relative flex-1">
+                    <input
+                      type="text"
+                      placeholder="كود التخفيض (مثلاً AB10)"
+                      value={promoInput}
+                      onChange={(e) => setPromoInput(e.target.value)}
+                      className="w-full bg-zinc-50 border border-zinc-200 rounded-xl py-2 px-3 pr-8 text-xs outline-none focus:border-zinc-900 uppercase font-mono"
+                    />
+                    <Tag className="w-3.5 h-3.5 text-zinc-400 absolute right-2.5 top-2.5 pointer-events-none" />
+                  </div>
+                  <button
+                    type="submit"
+                    className="bg-zinc-900 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-black transition"
+                  >
+                    تطبيق
+                  </button>
+                </form>
+
+                {appliedPromo && (
+                  <div className="mt-2 text-xs text-emerald-600 font-bold flex items-center gap-1 bg-emerald-50 p-2 rounded-lg border border-emerald-200">
+                    <Check className="w-3.5 h-3.5" />
+                    <span>تم تطبيق الخصم ({appliedPromo.code}): -{formatPrice(appliedPromo.discount)}</span>
+                  </div>
+                )}
+
+                {promoError && (
+                  <p className="mt-1 text-[11px] text-red-500 font-medium">{promoError}</p>
+                )}
+              </div>
+
               <div className="space-y-2 pt-2 text-xs">
                 <div className="flex justify-between text-zinc-600">
                   <span>مجموع المنتجات</span>
                   <span className="font-bold text-zinc-900">{formatPrice(totalPrice)}</span>
                 </div>
+
+                {appliedPromo && (
+                  <div className="flex justify-between text-emerald-600 font-bold">
+                    <span>قيمة الخصم</span>
+                    <span>-{formatPrice(appliedPromo.discount)}</span>
+                  </div>
+                )}
+
                 <div className="flex justify-between text-zinc-600">
                   <span>مصاريف التوصيل</span>
                   <span className="font-bold text-zinc-900">{formatPrice(deliveryCost)}</span>
