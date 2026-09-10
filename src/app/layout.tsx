@@ -12,10 +12,10 @@ const tajawal = Tajawal({
 });
 
 export const metadata: Metadata = {
-  title: "SOVEREIGN.WEAR | Luxury Streetwear Algeria",
-  description: "SOVEREIGN.WEAR Official Store - High-End Luxury Streetwear in Algeria. Exclusive premium cotton collection with cash on delivery nationwide.",
+  title: "AXB.WEAR | Official Streetwear Store",
+  description: "AXB.WEAR Official Store - Amir × Barae Streetwear Brand in Algeria. Exclusive premium cotton collection with cash on delivery nationwide.",
   openGraph: {
-    title: "SOVEREIGN.WEAR | High-End Luxury Streetwear",
+    title: "AXB.WEAR | Amir × Barae Streetwear",
     description: "New collection, premium heavyweight fabrics and fast shipping to 69 wilayas.",
   }
 };

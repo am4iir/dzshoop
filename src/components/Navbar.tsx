@@ -18,14 +18,14 @@ export function Navbar({ searchQuery = "", onSearchChange }: NavbarProps) {
         {/* Brand Logo */}
         <Link href="/" className="flex items-center gap-2.5 group shrink-0">
           <span className="w-9 h-9 rounded-xl bg-white text-zinc-950 font-black flex items-center justify-center text-xs tracking-tighter shadow-md group-hover:bg-zinc-200 transition">
-            SV
+            AXB
           </span>
           <div className="leading-tight">
             <span className="font-black tracking-widest text-base text-white font-mono block">
-              SOVEREIGN<span className="text-amber-400">.WEAR</span>
+              AXB<span className="text-amber-400">.WEAR</span>
             </span>
             <span className="text-[9px] text-zinc-400 font-bold tracking-widest block -mt-0.5 uppercase">
-              LUXURY STREETWEAR
+              OFFICIAL STREETWEAR
             </span>
           </div>
         </Link>
@@ -35,7 +35,7 @@ export function Navbar({ searchQuery = "", onSearchChange }: NavbarProps) {
           <div className="relative">
             <input
               type="text"
-              placeholder="ابحث عن منتج في SOVEREIGN..."
+              placeholder="ابحث عن منتج في AXB.WEAR..."
               value={searchQuery}
               onChange={(e) => onSearchChange?.(e.target.value)}
               className="w-full bg-zinc-900 border border-zinc-800 focus:border-amber-400 focus:bg-zinc-900 rounded-full py-2 pr-10 pl-4 text-xs text-white placeholder:text-zinc-500 outline-none transition"
@@ -48,13 +48,13 @@ export function Navbar({ searchQuery = "", onSearchChange }: NavbarProps) {
         <div className="flex items-center gap-2 sm:gap-3">
           {/* Instagram Account */}
           <a
-            href="https://instagram.com/sovereign.wear"
+            href="https://instagram.com/axb.wear"
             target="_blank"
             rel="noopener noreferrer"
             className="hidden sm:flex items-center gap-1.5 text-xs text-zinc-300 hover:text-white bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 px-3 py-1.5 rounded-full transition"
           >
             <Instagram className="w-3.5 h-3.5 text-pink-500" />
-            <span className="font-mono text-[11px]">@sovereign.wear</span>
+            <span className="font-mono text-[11px]">@axb.wear</span>
           </a>
 
           {/* Track Order Link */}
