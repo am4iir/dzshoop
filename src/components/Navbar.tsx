@@ -15,7 +15,7 @@ export function Navbar({ searchQuery = "", onSearchChange }: NavbarProps) {
         {/* Brand */}
         <Link href="/" className="flex items-center gap-2 text-zinc-900 group">
           <span className="w-8 h-8 rounded-lg bg-zinc-900 text-white font-black flex items-center justify-center text-xs tracking-tighter shadow-sm group-hover:bg-zinc-800 transition">
-            NB
+            AB
           </span>
           <div className="leading-tight">
             <span className="font-extrabold tracking-wider text-base text-zinc-900">AB.SHOP</span>
@@ -28,7 +28,7 @@ export function Navbar({ searchQuery = "", onSearchChange }: NavbarProps) {
           <div className="relative">
             <input
               type="text"
-              placeholder="Ø§Ø¨Ø­Ø« Ø¹Ù† Ù…Ù†ØªØ¬..."
+              placeholder="ابحث عن منتج..."
               value={searchQuery}
               onChange={(e) => onSearchChange?.(e.target.value)}
               className="w-full bg-zinc-50 border border-zinc-200/80 focus:border-zinc-900 focus:bg-white rounded-full py-2 pr-10 pl-4 text-xs text-zinc-800 placeholder:text-zinc-400 outline-none transition"
@@ -37,17 +37,15 @@ export function Navbar({ searchQuery = "", onSearchChange }: NavbarProps) {
           </div>
         </div>
 
-        {/* Instagram Social link for clients */}
+        {/* Instagram account placeholder until the store account is created */}
         <div className="flex items-center gap-3">
-          <a
-            href="https://instagram.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1.5 text-xs text-zinc-600 hover:text-black bg-zinc-50 border border-zinc-200/80 px-3.5 py-1.5 rounded-full transition"
+          <span
+            aria-label="حساب المتجر على إنستغرام قريباً"
+            className="flex items-center gap-1.5 text-xs text-zinc-400 bg-zinc-50 border border-zinc-200/80 px-3.5 py-1.5 rounded-full cursor-not-allowed"
           >
             <Instagram className="w-3.5 h-3.5 text-pink-500" />
-            <span className="hidden sm:inline">Ø¥Ù†Ø³ØªØºØ±Ø§Ù… Ø§Ù„Ù…ØªØ¬Ø±</span>
-          </a>
+            <span className="hidden sm:inline">إنستغرام قريباً</span>
+          </span>
         </div>
       </div>
     </header>
