@@ -18,7 +18,8 @@ import {
   Layers, 
   ArrowRight,
   Lock,
-  LogOut
+  LogOut,
+  Trash2
 } from "lucide-react";
 
 export default function AdminDashboardPage() {
@@ -48,7 +49,6 @@ export default function AdminDashboardPage() {
   const [submittingProduct, setSubmittingProduct] = useState(false);
 
   useEffect(() => {
-    // Check sessionStorage only (ends immediately on tab close or manual logout)
     const saved = sessionStorage.getItem("store_admin_auth");
     if (saved === "verified") {
       setIsAuthenticated(true);
@@ -71,12 +71,10 @@ export default function AdminDashboardPage() {
   };
 
   const handleLogout = () => {
-    // Completely clear admin session
     sessionStorage.removeItem("store_admin_auth");
     localStorage.removeItem("store_admin_auth");
     setIsAuthenticated(false);
     setPasscode("");
-    // Redirect immediately to client homepage
     router.push("/");
   };
 
@@ -102,6 +100,16 @@ export default function AdminDashboardPage() {
       loadData();
     } catch (e) {
       alert("تعذر تحديث الحالة");
+    }
+  };
+
+  const deleteOrderImmediately = async (orderId: string) => {
+    if (!confirm("هل أنت متأكد من حذف هذه الطلبية نهائياً من الداتابيز؟")) return;
+    try {
+      await fetch(`/api/orders?orderId=${orderId}`, { method: "DELETE" });
+      loadData();
+    } catch (e) {
+      alert("تعذر حذف الطلبية");
     }
   };
 
@@ -240,7 +248,6 @@ export default function AdminDashboardPage() {
               <ArrowRight className="w-3.5 h-3.5 rotate-180" />
             </Link>
 
-            {/* Complete Logout button */}
             <button
               onClick={handleLogout}
               className="inline-flex items-center gap-1.5 text-xs font-bold text-red-600 hover:text-white bg-red-50 hover:bg-red-600 border border-red-200 hover:border-red-600 px-3.5 py-2 rounded-xl transition cursor-pointer"
@@ -253,6 +260,16 @@ export default function AdminDashboardPage() {
       </header>
 
       <main className="max-w-6xl mx-auto px-4 py-8">
+        {/* Notice for 48h auto purge */}
+        <div className="mb-6 bg-blue-50 border border-blue-200/80 rounded-2xl p-4 text-xs text-blue-800 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Clock className="w-4 h-4 text-blue-600 flex-shrink-0" />
+            <span>
+              <strong>نظام التنظيف التلقائي مفعّل:</strong> الطلبيات المشحونة أو الملغاة تُحذف تلقائياً وبشكل نهائي من قاعدة البيانات بعد مرور 48 ساعة.
+            </span>
+          </div>
+        </div>
+
         {/* Analytics Highlights */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
           <div className="bg-white p-4 sm:p-5 rounded-2xl border border-zinc-200/90 shadow-sm">
@@ -320,7 +337,7 @@ export default function AdminDashboardPage() {
           <div className="space-y-4">
             {orders.length === 0 ? (
               <div className="bg-white rounded-2xl border border-zinc-200 p-12 text-center text-zinc-400 text-xs">
-                لا توجد طلبيات حتى الآن. عند قيام الزبون بالطلب من المتجر ستظهر هنا مباشرة!
+                لا توجد طلبيات حالياً في قاعدة البيانات.
               </div>
             ) : (
               orders.map((order) => (
@@ -352,7 +369,7 @@ export default function AdminDashboardPage() {
                       )}
                       {order.status === "shipped" && (
                         <span className="inline-flex items-center gap-1 text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-0.5 rounded-full">
-                          <Truck className="w-3 h-3" /> تم الإرسال
+                          <Truck className="w-3 h-3" /> تم الإرسال (تُحذف بعد 48h)
                         </span>
                       )}
                       {order.status === "cancelled" && (
@@ -403,28 +420,39 @@ export default function AdminDashboardPage() {
                     </div>
                   </div>
 
+                  {/* Actions to change status + Delete */}
                   <div className="pt-3 border-t border-zinc-100 flex flex-wrap items-center justify-between gap-2">
-                    <span className="text-[11px] text-zinc-400">تغيير حالة الطلب:</span>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 items-center">
+                      <span className="text-[11px] text-zinc-400">تغيير الحالة:</span>
                       <button
                         onClick={() => updateOrderStatus(order.id, "confirmed")}
-                        className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 transition"
+                        className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 transition"
                       >
                         تأكيد الطلب
                       </button>
                       <button
                         onClick={() => updateOrderStatus(order.id, "shipped")}
-                        className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 transition"
+                        className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 transition"
                       >
                         تم الشحن
                       </button>
                       <button
                         onClick={() => updateOrderStatus(order.id, "cancelled")}
-                        className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-50 text-red-700 hover:bg-red-100 border border-red-200 transition"
+                        className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-zinc-100 text-zinc-700 hover:bg-zinc-200 transition"
                       >
                         إلغاء
                       </button>
                     </div>
+
+                    {/* Immediate Delete Button */}
+                    <button
+                      onClick={() => deleteOrderImmediately(order.id)}
+                      className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-red-600 hover:bg-red-50 transition border border-transparent hover:border-red-200"
+                      title="حذف نهائي الآن من الداتابيز"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>حذف فوري</span>
+                    </button>
                   </div>
                 </div>
               ))

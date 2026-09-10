@@ -1,9 +1,26 @@
 import { NextResponse } from "next/server";
 import { sql, initDbTables, Order } from "@/lib/db";
 
+// Helper function to auto-clean orders completed/shipped for more than 48 hours
+async function autoCleanupCompletedOrders() {
+  try {
+    // Delete orders that are marked as 'shipped' or 'cancelled' and older than 48 hours
+    await sql`
+      DELETE FROM orders 
+      WHERE (status = 'shipped' OR status = 'cancelled') 
+      AND created_at < NOW() - INTERVAL '48 hours'
+    `;
+  } catch (err) {
+    console.error("Auto cleanup error:", err);
+  }
+}
+
 export async function GET() {
   try {
     await initDbTables();
+    // Run automatic 48h purge of completed orders on each fetch
+    await autoCleanupCompletedOrders();
+
     const rows = await sql`
       SELECT 
         id, 
@@ -75,5 +92,26 @@ export async function PATCH(req: Request) {
   } catch (error) {
     console.error("Update order status error:", error);
     return NextResponse.json({ success: false, error: "Failed to update order" }, { status: 500 });
+  }
+}
+
+// Direct immediate delete if needed by admin
+export async function DELETE(req: Request) {
+  try {
+    await initDbTables();
+    const { searchParams } = new URL(req.url);
+    const orderId = searchParams.get("orderId");
+    if (!orderId) {
+      return NextResponse.json({ success: false, error: "Missing orderId" }, { status: 400 });
+    }
+
+    await sql`
+      DELETE FROM orders 
+      WHERE id = ${orderId}
+    `;
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Delete order error:", error);
+    return NextResponse.json({ success: false, error: "Failed to delete order" }, { status: 500 });
   }
 }
