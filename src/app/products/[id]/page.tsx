@@ -22,7 +22,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [wilayaCode, setWilayaCode] = useState("16");
-  const [commune, setCommune] = useState("");
+  const [commune, setCommune] = useState("الجزائر الوسطى");
   const [deliveryType, setDeliveryType] = useState<"home" | "desk">("home");
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -244,8 +244,17 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                     <div className="relative">
                       <select
                         value={wilayaCode}
-                        onChange={(e) => setWilayaCode(e.target.value)}
-                        className="w-full bg-zinc-50 border border-zinc-200 focus:border-zinc-900 focus:bg-white rounded-xl py-3 px-3 text-xs text-zinc-900 outline-none transition"
+                        onChange={(e) => {
+                          const newCode = e.target.value;
+                          setWilayaCode(newCode);
+                          const w = WILAYAS.find((item) => item.code === newCode);
+                          if (w && w.communes.length > 0) {
+                            setCommune(w.communes[0]);
+                          } else {
+                            setCommune("");
+                          }
+                        }}
+                        className="w-full bg-zinc-50 border border-zinc-200 focus:border-zinc-900 focus:bg-white rounded-xl py-3 px-3 text-xs text-zinc-900 outline-none transition cursor-pointer"
                       >
                         {WILAYAS.map((w) => (
                           <option key={w.code} value={w.code}>
@@ -256,13 +265,17 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                     </div>
 
                     <div className="relative">
-                      <input
-                        type="text"
-                        placeholder="اختر البلدية"
+                      <select
                         value={commune}
                         onChange={(e) => setCommune(e.target.value)}
-                        className="w-full bg-zinc-50 border border-zinc-200 focus:border-zinc-900 focus:bg-white rounded-xl py-3 px-3 text-xs text-zinc-900 placeholder:text-zinc-400 outline-none transition"
-                      />
+                        className="w-full bg-zinc-50 border border-zinc-200 focus:border-zinc-900 focus:bg-white rounded-xl py-3 px-3 text-xs text-zinc-900 outline-none transition cursor-pointer"
+                      >
+                        {currentWilaya.communes.map((c) => (
+                          <option key={c} value={c}>
+                            {c}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                   </div>
 

@@ -140,7 +140,7 @@
       "deliveryType": "home",
       "deliveryPrice": 600,
       "totalPrice": 3200,
-      "status": "pending",
+      "status": "confirmed",
       "createdAt": "2026-09-09T22:03:46.144Z"
     }
   ]

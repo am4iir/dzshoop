@@ -67,17 +67,5 @@ export const PRODUCTS: Product[] = [
   }
 ];
 
-export const WILAYAS = [
-  { code: "16", name: "16 - الجزائر العاصمة", homeDelivery: 400, deskDelivery: 250 },
-  { code: "09", name: "09 - البليدة", homeDelivery: 500, deskDelivery: 300 },
-  { code: "31", name: "31 - وهران", homeDelivery: 600, deskDelivery: 350 },
-  { code: "25", name: "25 - قسنطينة", homeDelivery: 600, deskDelivery: 350 },
-  { code: "19", name: "19 - سطيف", homeDelivery: 600, deskDelivery: 350 },
-  { code: "15", name: "15 - تيزي وزو", homeDelivery: 600, deskDelivery: 350 },
-  { code: "06", name: "06 - بجاية", homeDelivery: 600, deskDelivery: 350 },
-  { code: "35", name: "35 - بومرداس", homeDelivery: 500, deskDelivery: 300 },
-  { code: "42", name: "42 - تيبازة", homeDelivery: 500, deskDelivery: 300 },
-  { code: "13", name: "13 - تلمسان", homeDelivery: 700, deskDelivery: 400 },
-  { code: "23", name: "23 - عنابة", homeDelivery: 700, deskDelivery: 400 },
-  { code: "05", name: "05 - باتنة", homeDelivery: 650, deskDelivery: 350 }
-];
+export * from "./wilayas";
+

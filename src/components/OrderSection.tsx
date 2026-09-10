@@ -20,7 +20,7 @@ export function OrderSection({ product }: OrderFormProps) {
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [wilayaCode, setWilayaCode] = useState("16");
-  const [commune, setCommune] = useState("");
+  const [commune, setCommune] = useState("الجزائر الوسطى");
   const [deliveryType, setDeliveryType] = useState<"home" | "desk">("home");
   const [notes, setNotes] = useState("");
   
@@ -310,8 +310,17 @@ export function OrderSection({ product }: OrderFormProps) {
                       </label>
                       <select
                         value={wilayaCode}
-                        onChange={(e) => setWilayaCode(e.target.value)}
-                        className="w-full bg-zinc-950/80 border border-zinc-800 focus:border-amber-400 rounded-xl px-3 py-3 text-sm text-white outline-none transition"
+                        onChange={(e) => {
+                          const newCode = e.target.value;
+                          setWilayaCode(newCode);
+                          const w = WILAYAS.find((item) => item.code === newCode);
+                          if (w && w.communes.length > 0) {
+                            setCommune(w.communes[0]);
+                          } else {
+                            setCommune("");
+                          }
+                        }}
+                        className="w-full bg-zinc-950/80 border border-zinc-800 focus:border-amber-400 rounded-xl px-3 py-3 text-sm text-white outline-none transition cursor-pointer"
                       >
                         {WILAYAS.map((w) => (
                           <option key={w.code} value={w.code} className="bg-zinc-900 text-white">
@@ -323,15 +332,19 @@ export function OrderSection({ product }: OrderFormProps) {
 
                     <div>
                       <label className="block text-xs font-medium text-zinc-300 mb-1.5">
-                        البلدية / العنوان *
+                        البلدية *
                       </label>
-                      <input
-                        type="text"
+                      <select
                         value={commune}
                         onChange={(e) => setCommune(e.target.value)}
-                        placeholder="اسم البلدية أو الحي"
-                        className="w-full bg-zinc-950/80 border border-zinc-800 focus:border-amber-400 rounded-xl px-4 py-3 text-sm text-white placeholder:text-zinc-600 outline-none transition"
-                      />
+                        className="w-full bg-zinc-950/80 border border-zinc-800 focus:border-amber-400 rounded-xl px-3 py-3 text-sm text-white outline-none transition cursor-pointer"
+                      >
+                        {currentWilaya.communes.map((c) => (
+                          <option key={c} value={c} className="bg-zinc-900 text-white">
+                            {c}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                   </div>
 
