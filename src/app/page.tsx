@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { Product } from "@/lib/db";
 import { formatPrice } from "@/lib/utils";
-import { Sparkles, Truck, ShieldCheck, Mail } from "lucide-react";
+import { Sparkles, Truck, ShieldCheck } from "lucide-react";
 
 const CATEGORIES = [
   { id: "all", label: "جميع المنتجات" },
@@ -183,18 +183,9 @@ export default function HomePage() {
         )}
       </main>
 
-      <footer className="mt-20 border-t border-zinc-800 bg-zinc-950 py-10 text-center text-xs text-zinc-400 space-y-3">
+      <footer className="mt-20 border-t border-zinc-800 bg-zinc-950 py-10 text-center text-xs text-zinc-400 space-y-2">
         <div className="font-mono font-black text-sm text-white tracking-widest lowercase">
           axb<span className="text-amber-400">.wear</span>
-        </div>
-        <div className="flex items-center justify-center gap-1.5">
-          <a
-            href="mailto:zzianibaraetv@gmail.com"
-            className="inline-flex items-center gap-1.5 text-zinc-400 hover:text-amber-400 transition font-mono text-xs"
-          >
-            <Mail className="w-3.5 h-3.5 text-amber-400" />
-            <span>zzianibaraetv@gmail.com</span>
-          </a>
         </div>
         <p>© 2026 axb.wear • barae × amir. All Rights Reserved.</p>
       </footer>
