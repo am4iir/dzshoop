@@ -18,7 +18,7 @@ export function Navbar({ searchQuery = "", onSearchChange }: NavbarProps) {
             NB
           </span>
           <div className="leading-tight">
-            <span className="font-extrabold tracking-wider text-base text-zinc-900">JWI.SHOP</span>
+            <span className="font-extrabold tracking-wider text-base text-zinc-900">AB.SHOP</span>
             <span className="text-[10px] text-zinc-400 block -mt-0.5">OFFICIAL STORE</span>
           </div>
         </Link>
@@ -28,7 +28,7 @@ export function Navbar({ searchQuery = "", onSearchChange }: NavbarProps) {
           <div className="relative">
             <input
               type="text"
-              placeholder="ابحث عن منتج..."
+              placeholder="Ø§Ø¨Ø­Ø« Ø¹Ù† Ù…Ù†ØªØ¬..."
               value={searchQuery}
               onChange={(e) => onSearchChange?.(e.target.value)}
               className="w-full bg-zinc-50 border border-zinc-200/80 focus:border-zinc-900 focus:bg-white rounded-full py-2 pr-10 pl-4 text-xs text-zinc-800 placeholder:text-zinc-400 outline-none transition"
@@ -46,7 +46,7 @@ export function Navbar({ searchQuery = "", onSearchChange }: NavbarProps) {
             className="flex items-center gap-1.5 text-xs text-zinc-600 hover:text-black bg-zinc-50 border border-zinc-200/80 px-3.5 py-1.5 rounded-full transition"
           >
             <Instagram className="w-3.5 h-3.5 text-pink-500" />
-            <span className="hidden sm:inline">إنستغرام المتجر</span>
+            <span className="hidden sm:inline">Ø¥Ù†Ø³ØªØºØ±Ø§Ù… Ø§Ù„Ù…ØªØ¬Ø±</span>
           </a>
         </div>
       </div>
