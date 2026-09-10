@@ -71,10 +71,7 @@ export default function HomePage() {
             </span>
 
             <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight font-mono lowercase">
-              axb<span className="text-amber-400">.wear</span> <br />
-              <span className="text-zinc-400 text-xl sm:text-2xl font-bold tracking-widest font-sans uppercase">
-                BARAE × AMIR STREETWEAR
-              </span>
+              axb<span className="text-amber-400">.wear</span>
             </h1>
 
             <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed font-medium">
