@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { Product } from "@/lib/db";
 import { formatPrice } from "@/lib/utils";
-import { Sparkles, Truck, ShieldCheck, ShoppingBag, ArrowLeft, Instagram } from "lucide-react";
+import { Sparkles, Truck, ShieldCheck, ShoppingBag, ArrowLeft } from "lucide-react";
 
 const CATEGORIES = [
   { id: "all", label: "جميع المنتجات" },
@@ -171,20 +171,9 @@ export default function HomePage() {
         )}
       </main>
 
-      <footer className="mt-20 border-t border-zinc-800 bg-zinc-950 py-10 text-center text-xs text-zinc-400 space-y-3">
+      <footer className="mt-20 border-t border-zinc-800 bg-zinc-950 py-10 text-center text-xs text-zinc-400 space-y-2">
         <div className="font-mono font-black text-sm text-white tracking-widest lowercase">
           axb<span className="text-amber-400">.wear</span>
-        </div>
-        <div className="flex items-center justify-center gap-2 text-zinc-400 text-xs">
-          <Instagram className="w-4 h-4 text-pink-500" />
-          <a
-            href="https://instagram.com/axb.wear"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-white transition font-mono lowercase"
-          >
-            @axb.wear
-          </a>
         </div>
         <p>© 2026 axb.wear • amir × barae. All Rights Reserved.</p>
       </footer>

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Search, Instagram, ShoppingBag, Truck } from "lucide-react";
+import { Search, ShoppingBag, Truck } from "lucide-react";
 import { useCart } from "./CartContext";
 
 interface NavbarProps {
@@ -46,24 +46,13 @@ export function Navbar({ searchQuery = "", onSearchChange }: NavbarProps) {
 
         {/* Actions */}
         <div className="flex items-center gap-2 sm:gap-3">
-          {/* Instagram Account */}
-          <a
-            href="https://instagram.com/axb.wear"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden sm:flex items-center gap-1.5 text-xs text-zinc-300 hover:text-white bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 px-3 py-1.5 rounded-full transition"
-          >
-            <Instagram className="w-3.5 h-3.5 text-pink-500" />
-            <span className="font-mono text-[11px] lowercase">@axb.wear</span>
-          </a>
-
           {/* Track Order Link */}
           <Link
             href="/track"
             className="flex items-center gap-1.5 text-xs font-bold text-zinc-300 hover:text-white bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 px-3 py-1.5 rounded-full transition"
           >
             <Truck className="w-3.5 h-3.5 text-emerald-400" />
-            <span className="hidden sm:inline">تتبع الطلب</span>
+            <span>تتبع الطلب</span>
           </Link>
 
           {/* Cart Icon Button */}
