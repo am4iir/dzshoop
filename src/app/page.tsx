@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { Product } from "@/lib/db";
 import { formatPrice } from "@/lib/utils";
-import { Sparkles, Truck, ShieldCheck, ShoppingBag, ArrowLeft } from "lucide-react";
+import { Sparkles, Truck, ShieldCheck } from "lucide-react";
 
 const CATEGORIES = [
   { id: "all", label: "جميع المنتجات" },
@@ -21,28 +21,41 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let isMounted = true;
     fetch("/api/products")
-      .then((r) => r.json())
+      .then((r) => (r.ok ? r.json() : []))
       .then((data) => {
-        setProducts(data);
-        setLoading(false);
+        if (isMounted) {
+          setProducts(Array.isArray(data) ? data : []);
+          setLoading(false);
+        }
       })
-      .catch(() => setLoading(false));
+      .catch(() => {
+        if (isMounted) setLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
-  const filtered = products.filter((p) => {
-    const matchesSearch =
-      p.name.toLowerCase().includes(search.toLowerCase()) ||
-      p.subtitle.toLowerCase().includes(search.toLowerCase());
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return products.filter((p) => {
+      const nameMatch = p.name?.toLowerCase().includes(q) || false;
+      const subMatch = p.subtitle?.toLowerCase().includes(q) || false;
+      const matchesSearch = !q || nameMatch || subMatch;
 
-    if (selectedCategory === "all") return matchesSearch;
-    return (
-      matchesSearch &&
-      (p.name.toLowerCase().includes(selectedCategory) ||
-        p.subtitle.toLowerCase().includes(selectedCategory) ||
-        p.id.includes(selectedCategory))
-    );
-  });
+      if (selectedCategory === "all") return matchesSearch;
+
+      const catMatch =
+        p.name?.toLowerCase().includes(selectedCategory) ||
+        p.subtitle?.toLowerCase().includes(selectedCategory) ||
+        p.id?.includes(selectedCategory);
+
+      return matchesSearch && catMatch;
+    });
+  }, [products, search, selectedCategory]);
 
   return (
     <div className="min-h-screen bg-[#fafafa] text-zinc-900 pb-20" dir="rtl">
@@ -130,6 +143,8 @@ export default function HomePage() {
                   <img
                     src={prod.images[0] || "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=900&auto=format&fit=crop"}
                     alt={prod.name}
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
                   />
 

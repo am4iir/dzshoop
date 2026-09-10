@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { memo } from "react";
 
 interface AnnouncementBarProps {
   messages?: string[];
@@ -15,7 +15,7 @@ const DEFAULT_MESSAGES = [
   "✅ ضمان الجودة والإرجاع",
 ];
 
-export function AnnouncementBar({
+export const AnnouncementBar = memo(function AnnouncementBar({
   messages = DEFAULT_MESSAGES,
   className = "",
   speedSeconds = 25,
@@ -30,15 +30,16 @@ export function AnnouncementBar({
       <style>{`
         @keyframes announcement-scroll {
           0% {
-            transform: translateX(0);
+            transform: translate3d(0, 0, 0);
           }
           100% {
-            transform: translateX(50%);
+            transform: translate3d(50%, 0, 0);
           }
         }
         .announcement-track {
           display: flex;
           width: max-content;
+          will-change: transform;
           animation: announcement-scroll ${speedSeconds}s linear infinite;
         }
         .announcement-track:hover {
@@ -71,4 +72,4 @@ export function AnnouncementBar({
       </div>
     </div>
   );
-}
+});

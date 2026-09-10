@@ -480,6 +480,8 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                   <img
                     src={product.images[activeImage] || product.images[0]}
                     alt={product.name}
+                    loading="eager"
+                    decoding="async"
                     className="w-full h-full object-cover object-center"
                   />
 
