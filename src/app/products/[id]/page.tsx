@@ -20,6 +20,7 @@ import {
   ArrowRight,
   Sparkles,
   Ruler,
+  Mail,
 } from "lucide-react";
 import confetti from "canvas-confetti";
 
@@ -529,6 +530,22 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
           </>
         )}
       </main>
+
+      <footer className="mt-20 border-t border-zinc-800 bg-zinc-950 py-10 text-center text-xs text-zinc-400 space-y-3">
+        <div className="font-mono font-black text-sm text-white tracking-widest lowercase">
+          axb<span className="text-amber-400">.wear</span>
+        </div>
+        <div className="flex items-center justify-center gap-1.5">
+          <a
+            href="mailto:zzianibaraetv@gmail.com"
+            className="inline-flex items-center gap-1.5 text-zinc-400 hover:text-amber-400 transition font-mono text-xs"
+          >
+            <Mail className="w-3.5 h-3.5 text-amber-400" />
+            <span>zzianibaraetv@gmail.com</span>
+          </a>
+        </div>
+        <p>© 2026 axb.wear • barae × amir. All Rights Reserved.</p>
+      </footer>
     </div>
   );
 }

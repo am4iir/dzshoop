@@ -6,7 +6,7 @@ import { Navbar } from "@/components/Navbar";
 import { useCart } from "@/components/CartContext";
 import { WILAYAS } from "@/data/products";
 import { formatPrice } from "@/lib/utils";
-import { CheckCircle2, ShoppingBag, ArrowLeft, MapPin, Phone, User, Tag, Check } from "lucide-react";
+import { CheckCircle2, ShoppingBag, ArrowLeft, MapPin, Phone, User, Tag, Check, Mail } from "lucide-react";
 import confetti from "canvas-confetti";
 
 export default function CheckoutPage() {
@@ -364,6 +364,16 @@ export default function CheckoutPage() {
                 <div className="flex justify-between text-base font-black text-emerald-600 dark:text-emerald-400 pt-3 border-t border-zinc-200 dark:border-zinc-800">
                   <span>المبلغ الإجمالي</span>
                   <span>{formatPrice(grandTotal)}</span>
+                </div>
+
+                <div className="pt-3 text-center border-t border-zinc-100 dark:border-zinc-800/80">
+                  <a
+                    href="mailto:zzianibaraetv@gmail.com"
+                    className="inline-flex items-center gap-1.5 text-[11px] text-zinc-400 hover:text-amber-500 transition font-mono"
+                  >
+                    <Mail className="w-3 h-3 text-amber-500" />
+                    <span>لأي استفسار: zzianibaraetv@gmail.com</span>
+                  </a>
                 </div>
               </div>
             </div>
