@@ -62,23 +62,23 @@ export default function HomePage() {
       <Navbar searchQuery={search} onSearchChange={setSearch} />
 
       <main className="max-w-6xl mx-auto px-4 py-6 space-y-10">
-        {/* Minimalist Lowercase axb.wear Hero Banner */}
+        {/* Minimalist Lowercase barae x amir Hero Banner */}
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-zinc-950 via-zinc-900 to-black text-white p-8 sm:p-14 shadow-2xl border border-zinc-800">
           <div className="relative z-10 max-w-xl space-y-5">
             <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold bg-amber-400/10 text-amber-400 border border-amber-400/20 shadow-sm lowercase font-mono">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>axb.wear • drop 2026</span>
+              <span>barae x amir • drop 2026</span>
             </span>
 
             <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight font-mono lowercase">
-              axb<span className="text-amber-400">.wear</span> <br />
+              barae<span className="text-amber-400"> x </span>amir <br />
               <span className="text-zinc-400 text-xl sm:text-2xl font-bold tracking-widest font-sans uppercase">
-                AMIR × BARAE STREETWEAR
+                BARAE × AMIR STREETWEAR
               </span>
             </h1>
 
             <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed font-medium">
-              أفضل الخامات القطنية 100% بتصاميم عصرية ومريحة من تصميم amir × barae. نوفر التوصيل السريع لـ 69 ولاية مع الدفع عند الاستلام وإمكانية المعاينة قبل الدفع.
+              أفضل الخامات القطنية 100% بتصاميم عصرية ومريحة من تصميم barae × amir. نوفر التوصيل السريع لـ 69 ولاية مع الدفع عند الاستلام وإمكانية المعاينة قبل الدفع.
             </p>
 
             <div className="flex flex-wrap items-center gap-5 pt-2 text-xs font-bold">
@@ -117,7 +117,7 @@ export default function HomePage() {
 
         {/* Product Grid Header */}
         <div className="flex items-center justify-between">
-          <h2 className="text-lg sm:text-xl font-black text-zinc-900 dark:text-white">تشكيلة axb الحصرية</h2>
+          <h2 className="text-lg sm:text-xl font-black text-zinc-900 dark:text-white">تشكيلة barae x amir الحصرية</h2>
           <span className="text-xs font-semibold text-zinc-400">({filtered.length} منتج)</span>
         </div>
 
@@ -188,9 +188,9 @@ export default function HomePage() {
 
       <footer className="mt-20 border-t border-zinc-800 bg-zinc-950 py-10 text-center text-xs text-zinc-400 space-y-2">
         <div className="font-mono font-black text-sm text-white tracking-widest lowercase">
-          axb<span className="text-amber-400">.wear</span>
+          barae<span className="text-amber-400"> x </span>amir
         </div>
-        <p>© 2026 axb.wear • amir × barae. All Rights Reserved.</p>
+        <p>© 2026 barae x amir. All Rights Reserved.</p>
       </footer>
     </div>
   );

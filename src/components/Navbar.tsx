@@ -20,11 +20,11 @@ export function Navbar({ searchQuery = "", onSearchChange }: NavbarProps) {
         {/* Minimalist Lowercase Brand Logo */}
         <Link href="/" className="flex items-center gap-2.5 group shrink-0">
           <span className="w-9 h-9 rounded-xl bg-white text-zinc-950 font-black flex items-center justify-center text-xs tracking-tighter shadow-md group-hover:bg-amber-400 transition duration-300">
-            axb
+            bxa
           </span>
           <div className="leading-tight">
             <span className="font-black tracking-wider text-base text-white font-mono lowercase block">
-              axb<span className="text-amber-400">.wear</span>
+              barae<span className="text-amber-400"> x </span>amir
             </span>
             <span className="text-[9px] text-zinc-400 font-bold tracking-widest block -mt-0.5 lowercase">
               official streetwear
@@ -37,7 +37,7 @@ export function Navbar({ searchQuery = "", onSearchChange }: NavbarProps) {
           <div className="relative">
             <input
               type="text"
-              placeholder="ابحث عن منتج في axb.wear..."
+              placeholder="ابحث عن منتج في barae x amir..."
               value={searchQuery}
               onChange={(e) => onSearchChange?.(e.target.value)}
               className="w-full bg-zinc-900 border border-zinc-800 focus:border-amber-400 focus:bg-zinc-900 rounded-full py-2 pr-10 pl-4 text-xs text-white placeholder:text-zinc-500 outline-none transition"
