@@ -12,11 +12,11 @@ const tajawal = Tajawal({
 });
 
 export const metadata: Metadata = {
-  title: "AB.SHOP | Official Store",
-  description: "Modern clothing store with exclusive designs and premium quality. Order now with cash on delivery.",
+  title: "SOVEREIGN.WEAR | Luxury Streetwear Algeria",
+  description: "SOVEREIGN.WEAR Official Store - High-End Luxury Streetwear in Algeria. Exclusive premium cotton collection with cash on delivery nationwide.",
   openGraph: {
-    title: "AB.SHOP | Official Store",
-    description: "New collection, high quality fabrics and fast shipping nationwide.",
+    title: "SOVEREIGN.WEAR | High-End Luxury Streetwear",
+    description: "New collection, premium heavyweight fabrics and fast shipping to 69 wilayas.",
   }
 };
 
