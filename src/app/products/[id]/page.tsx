@@ -9,6 +9,7 @@ import { WILAYAS } from "@/data/products";
 import { formatPrice } from "@/lib/utils";
 import { useCart } from "@/components/CartContext";
 import { TrustBadges } from "@/components/TrustBadges";
+import { SizeCalculatorModal } from "@/components/SizeCalculatorModal";
 import {
   CheckCircle2,
   ChevronRight,
@@ -18,6 +19,7 @@ import {
   ShoppingBag,
   ArrowRight,
   Sparkles,
+  Ruler,
 } from "lucide-react";
 import confetti from "canvas-confetti";
 
@@ -33,6 +35,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
   const [quantity, setQuantity] = useState(1);
+  const [isSizeModalOpen, setIsSizeModalOpen] = useState(false);
 
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
@@ -243,7 +246,17 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                 {/* Sizes Selection */}
                 {product.sizes && product.sizes.length > 0 && (
                   <div>
-                    <label className="block text-xs font-bold text-zinc-600 mb-2">المقاس المتوفر</label>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="block text-xs font-bold text-zinc-600">المقاس المتوفر</label>
+                      <button
+                        type="button"
+                        onClick={() => setIsSizeModalOpen(true)}
+                        className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-600 hover:text-amber-700 bg-amber-50 hover:bg-amber-100/80 px-2.5 py-1 rounded-lg border border-amber-200/80 transition"
+                      >
+                        <Ruler className="w-3.5 h-3.5" />
+                        <span>احسب مقاسك المناسب 📏</span>
+                      </button>
+                    </div>
                     <div className="flex flex-wrap gap-2">
                       {product.sizes.map((size) => (
                         <button
@@ -260,6 +273,12 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                         </button>
                       ))}
                     </div>
+
+                    <SizeCalculatorModal
+                      isOpen={isSizeModalOpen}
+                      onClose={() => setIsSizeModalOpen(false)}
+                      onSelectSize={(size) => setSelectedSize(size)}
+                    />
                   </div>
                 )}
 
