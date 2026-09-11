@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Search, ShoppingBag, Sun, Moon } from "lucide-react";
+import { Search, ShoppingBag, Sun, Moon, Truck } from "lucide-react";
 import { useCart } from "./CartContext";
 import { useTheme } from "./ThemeContext";
 
@@ -46,8 +46,18 @@ export function Navbar({ searchQuery = "", onSearchChange }: NavbarProps) {
           </div>
         </div>
 
-        {/* Actions - Theme Toggle & Shopping Cart */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        {/* Actions - Tracking, Theme Toggle & Shopping Cart */}
+        <div className="flex items-center gap-1.5 sm:gap-2.5">
+          {/* Order Tracking Link */}
+          <Link
+            href="/track"
+            className="p-2 sm:px-3 sm:py-1.5 rounded-full text-zinc-300 hover:text-white bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 transition flex items-center justify-center gap-1.5"
+            title="تتبع طلبيتك"
+          >
+            <Truck className="w-4 h-4 text-emerald-400" />
+            <span className="text-[11px] font-bold hidden sm:inline text-zinc-300">تتبع طلبيتك</span>
+          </Link>
+
           {/* Black / White Theme Toggle */}
           <button
             type="button"

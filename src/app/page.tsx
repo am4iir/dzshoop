@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { Product } from "@/lib/db";
 import { formatPrice } from "@/lib/utils";
-import { Sparkles, Truck, ShieldCheck } from "lucide-react";
+import { Sparkles, Truck, ShieldCheck, RotateCcw, Package } from "lucide-react";
 
 const CATEGORIES = [
   { id: "all", label: "جميع المنتجات" },
@@ -202,11 +202,94 @@ export default function HomePage() {
         )}
       </main>
 
-      <footer className="mt-20 border-t border-zinc-800 bg-zinc-950 py-10 text-center text-xs text-zinc-400 space-y-2">
-        <div className="font-mono font-black text-sm text-white tracking-widest lowercase">
-          axb<span className="text-amber-400">.wear</span>
+      {/* Trust Badges Strip */}
+      <div className="max-w-6xl mx-auto px-4 pt-10">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-4 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-amber-400/10 text-amber-500 flex items-center justify-center shrink-0">
+              <Truck className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="font-bold text-xs text-zinc-900 dark:text-white">توصيل لـ 69 ولاية</h4>
+              <p className="text-[10px] text-zinc-400">سريع وبأسعار مناسبة</p>
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-4 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-400/10 text-emerald-500 flex items-center justify-center shrink-0">
+              <ShieldCheck className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="font-bold text-xs text-zinc-900 dark:text-white">معاينة قبل الدفع</h4>
+              <p className="text-[10px] text-zinc-400">افحص طلبك ثم ادفع</p>
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-4 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-blue-400/10 text-blue-500 flex items-center justify-center shrink-0">
+              <RotateCcw className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="font-bold text-xs text-zinc-900 dark:text-white">إمكانية الاستبدال</h4>
+              <p className="text-[10px] text-zinc-400">تبديل المقاس بكل سهولة</p>
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-4 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-purple-400/10 text-purple-500 flex items-center justify-center shrink-0">
+              <Package className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="font-bold text-xs text-zinc-900 dark:text-white">الدفع عند الاستلام</h4>
+              <p className="text-[10px] text-zinc-400">يد بيد مع الموصّل</p>
+            </div>
+          </div>
         </div>
-        <p>© 2026 axb.wear • barae × amir. All Rights Reserved.</p>
+      </div>
+
+      <footer className="mt-16 border-t border-zinc-800 bg-zinc-950 py-12 text-zinc-400 text-xs">
+        <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-right">
+          {/* Col 1: Brand Info */}
+          <div className="space-y-3">
+            <div className="font-mono font-black text-lg text-white tracking-widest lowercase">
+              axb<span className="text-amber-400">.wear</span>
+            </div>
+            <p className="text-zinc-400 text-[11px] leading-relaxed max-w-sm">
+              العلامة الرسمية لـ barae × amir في الجزائر. قطن طبيعي عالي الجودة وتصاميم ستريت وير عصرية لكل الشباب.
+            </p>
+          </div>
+
+          {/* Col 2: Quick Links */}
+          <div className="space-y-2">
+            <h5 className="font-bold text-white text-xs">روابط سريعة</h5>
+            <ul className="space-y-1.5 text-[11px]">
+              <li>
+                <Link href="/" className="hover:text-white transition">الرئيسية والكوليكشن</Link>
+              </li>
+              <li>
+                <Link href="/track" className="hover:text-amber-400 transition font-semibold text-zinc-300">تتبع طلبيتك 📦</Link>
+              </li>
+              <li>
+                <Link href="/checkout" className="hover:text-white transition">سلة المشتريات والتأكيد</Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Col 3: Customer Support & Instagram */}
+          <div className="space-y-2">
+            <h5 className="font-bold text-white text-xs">خدمة الزبائن</h5>
+            <p className="text-[11px] text-zinc-400">متواجدون للإجابة على استفساراتكم وتأكيد طلبياتكم طيلة أيام الأسبوع.</p>
+            <div className="pt-1">
+              <span className="inline-block bg-zinc-900 border border-zinc-800 text-amber-400 px-3 py-1 rounded-full text-[11px] font-mono font-bold">
+                Instagram: @axb.wear
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="max-w-6xl mx-auto px-4 mt-8 pt-6 border-t border-zinc-900 text-center text-[11px] text-zinc-500">
+          <p>© 2026 axb.wear • barae × amir. جميع الحقوق محفوظة.</p>
+        </div>
       </footer>
     </div>
   );
