@@ -34,7 +34,10 @@ export interface Order {
   createdAt: string;
 }
 
-const dbUrl = process.env.DATABASE_URL || "postgresql://neondb_owner:npg_yaAHuZhE2cs6@ep-small-leaf-awynx2zm-pooler.c-12.us-east-1.aws.neon.tech/neondb?channel_binding=require&sslmode=require";
+const dbUrl = process.env.DATABASE_URL;
+if (!dbUrl) {
+  throw new Error("DATABASE_URL environment variable is not set");
+}
 
 export const sql = neon(dbUrl);
 

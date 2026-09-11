@@ -1,11 +1,17 @@
 import { NextResponse } from "next/server";
 import { sql, initDbTables, restoreDefaultProducts } from "@/lib/db";
+import { isAdminAuthorized, unauthorizedResponse } from "@/lib/auth";
 
 export async function GET(req: Request) {
   try {
     await initDbTables();
     const { searchParams } = new URL(req.url);
     const includeAll = searchParams.get("all") === "true";
+
+    // Admin-only: fetching all products (including deleted) requires auth
+    if (includeAll && !isAdminAuthorized(req)) {
+      return unauthorizedResponse();
+    }
 
     let rows;
     if (includeAll) {
@@ -56,6 +62,7 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
+  if (!isAdminAuthorized(req)) return unauthorizedResponse();
   try {
     await initDbTables();
     const body = await req.json();
@@ -92,6 +99,7 @@ export async function POST(req: Request) {
 }
 
 export async function PATCH(req: Request) {
+  if (!isAdminAuthorized(req)) return unauthorizedResponse();
   try {
     await initDbTables();
     const body = await req.json();
@@ -141,6 +149,7 @@ export async function PATCH(req: Request) {
 }
 
 export async function DELETE(req: Request) {
+  if (!isAdminAuthorized(req)) return unauthorizedResponse();
   try {
     await initDbTables();
     const { searchParams } = new URL(req.url);

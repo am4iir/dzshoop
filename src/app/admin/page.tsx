@@ -65,9 +65,16 @@ export default function AdminDashboardPage() {
   const [imageUrl, setImageUrl] = useState("");
   const [submittingProduct, setSubmittingProduct] = useState(false);
 
+  // Helper: get stored admin token and return auth headers for API calls
+  const getAdminHeaders = (): HeadersInit => ({
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${sessionStorage.getItem("axb_admin_token") || ""}`,
+  });
+
   useEffect(() => {
     const saved = sessionStorage.getItem("axb_admin_auth_2026");
-    if (saved === "verified") {
+    const token = sessionStorage.getItem("axb_admin_token");
+    if (saved === "verified" && token) {
       setIsAuthenticated(true);
       loadData();
     } else {
@@ -77,18 +84,17 @@ export default function AdminDashboardPage() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (passcode.trim() === "abxabx202625") {
-      setIsAuthenticated(true);
-      sessionStorage.setItem("axb_admin_auth_2026", "verified");
-      setAuthError(false);
-      loadData();
-    } else {
-      setAuthError(true);
-    }
+    // Store the actual token so it can be sent as Bearer in API calls
+    sessionStorage.setItem("axb_admin_auth_2026", "verified");
+    sessionStorage.setItem("axb_admin_token", passcode.trim());
+    setIsAuthenticated(true);
+    setAuthError(false);
+    loadData();
   };
 
   const handleLogout = () => {
     sessionStorage.removeItem("axb_admin_auth_2026");
+    sessionStorage.removeItem("axb_admin_token");
     localStorage.removeItem("axb_admin_auth_2026");
     sessionStorage.removeItem("store_admin_auth");
     localStorage.removeItem("store_admin_auth");
@@ -99,15 +105,21 @@ export default function AdminDashboardPage() {
 
   const loadData = () => {
     setLoading(true);
+    const token = sessionStorage.getItem("axb_admin_token") || "";
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
+    };
     Promise.all([
-      fetch("/api/orders").then((r) => r.json()),
-      fetch("/api/products?all=true").then((r) => r.json())
+      fetch("/api/orders", { headers }).then((r) => r.json()),
+      fetch("/api/products?all=true", { headers }).then((r) => r.json())
     ]).then(([ordersData, productsData]) => {
       setOrders(Array.isArray(ordersData) ? ordersData : []);
       setProducts(Array.isArray(productsData) ? productsData : []);
       setLoading(false);
     }).catch(() => setLoading(false));
   };
+
 
   const handleToggleDelete = async (productId: string, currentDeleted: boolean) => {
     const action = currentDeleted ? "restore" : "delete";
@@ -121,7 +133,7 @@ export default function AdminDashboardPage() {
     try {
       const res = await fetch("/api/products", {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: getAdminHeaders(),
         body: JSON.stringify({ id: productId, action })
       });
       const data = await res.json();
@@ -145,7 +157,8 @@ export default function AdminDashboardPage() {
     setActionLoadingId(productId);
     try {
       const res = await fetch(`/api/products?id=${productId}&permanent=true`, {
-        method: "DELETE"
+        method: "DELETE",
+        headers: getAdminHeaders(),
       });
       const data = await res.json();
       if (data.success) {
@@ -166,7 +179,7 @@ export default function AdminDashboardPage() {
     try {
       const res = await fetch("/api/products", {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: getAdminHeaders(),
         body: JSON.stringify({ id: productId, action: "toggle-stock", inStock: nextInStock })
       });
       const data = await res.json();
@@ -221,7 +234,7 @@ export default function AdminDashboardPage() {
     try {
       const res = await fetch("/api/products", {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: getAdminHeaders(),
         body: JSON.stringify({
           id: editingPromoProduct.id,
           action: "promotion",
@@ -261,7 +274,7 @@ export default function AdminDashboardPage() {
     try {
       const res = await fetch("/api/products", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: getAdminHeaders(),
         body: JSON.stringify({ action: "restore-defaults" })
       });
       const data = await res.json();
@@ -282,7 +295,7 @@ export default function AdminDashboardPage() {
     try {
       await fetch("/api/orders", {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: getAdminHeaders(),
         body: JSON.stringify({ orderId, status: newStatus })
       });
       loadData();
@@ -294,7 +307,10 @@ export default function AdminDashboardPage() {
   const deleteOrderImmediately = async (orderId: string) => {
     if (!confirm("هل أنت متأكد من حذف هذه الطلبية نهائياً من الداتابيز؟")) return;
     try {
-      await fetch(`/api/orders?orderId=${orderId}`, { method: "DELETE" });
+      await fetch(`/api/orders?orderId=${orderId}`, {
+        method: "DELETE",
+        headers: getAdminHeaders(),
+      });
       loadData();
     } catch (e) {
       alert("تعذر حذف الطلبية");
@@ -312,7 +328,7 @@ export default function AdminDashboardPage() {
     try {
       const res = await fetch("/api/products", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: getAdminHeaders(),
         body: JSON.stringify({
           name,
           subtitle,
@@ -803,9 +819,13 @@ export default function AdminDashboardPage() {
                             {prod.badge}
                           </span>
                         )}
-                        {isOutOfStock && (
-                          <span className="absolute bottom-2 left-2 bg-zinc-950/90 text-amber-400 font-black text-[10px] px-2.5 py-1 rounded-lg border border-amber-400/40 backdrop-blur-xs shadow-md tracking-wider uppercase">
-                            SOLD OUT
+                        {isOutOfStock ? (
+                          <span className="absolute bottom-2 left-2 bg-zinc-950/90 text-amber-400 font-black text-[10px] px-2.5 py-1 rounded-lg border border-amber-400/40 backdrop-blur-xs shadow-md tracking-wider uppercase flex items-center gap-1">
+                            ⚠️ SOLD OUT
+                          </span>
+                        ) : !isDeleted && (
+                          <span className="absolute bottom-2 left-2 bg-zinc-950/90 text-emerald-400 font-black text-[10px] px-2.5 py-1 rounded-lg border border-emerald-400/40 backdrop-blur-xs shadow-md tracking-wider uppercase flex items-center gap-1">
+                            ✅ IN STOCK
                           </span>
                         )}
                       </div>

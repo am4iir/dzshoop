@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server";
-import { sql, initDbTables, Order } from "@/lib/db";
+﻿import { NextResponse } from "next/server";
+import { sql, initDbTables } from "@/lib/db";
+import { isAdminAuthorized, unauthorizedResponse } from "@/lib/auth";
 
-// Helper function to auto-clean orders completed/shipped for more than 48 hours
 async function autoCleanupCompletedOrders() {
   try {
     await sql`
@@ -14,7 +14,6 @@ async function autoCleanupCompletedOrders() {
   }
 }
 
-// Helper to send instant notification to Telegram phone group if configured
 async function sendTelegramNotification(orderData: {
   id: string;
   fullName: string;
@@ -28,40 +27,24 @@ async function sendTelegramNotification(orderData: {
 }) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
-
   if (!token || !chatId) return;
-
   try {
-    const text = `🛍️ *طلبية جديدة في المتجر!*
-━━━━━━━━━━━━━━━
-🆔 *رقم الطلب:* \`${orderData.id}\`
-👤 *العميل:* ${orderData.fullName}
-📞 *الهاتف:* \`${orderData.phone}\`
-📍 *العنوان:* ${orderData.wilayaName} - ${orderData.commune} (${orderData.deliveryType === "home" ? "توصيل للمنزل" : "استلام من المكتب"})
-📦 *المنتجات:* ${orderData.productTitle}
-💰 *المبلغ الإجمالي:* ${orderData.totalPrice} دج (شامل التوصيل ${orderData.deliveryPrice} دج)
-━━━━━━━━━━━━━━━
-⚡ *اتصل بالزبون فوراً لتأكيد الشحن!*`;
-
+    const text = `🛍️ *طلبية جديدة في المتجر!*\n━━━━━━━━━━━━━━━\n🆔 *رقم الطلب:* \`${orderData.id}\`\n👤 *العميل:* ${orderData.fullName}\n📞 *الهاتف:* \`${orderData.phone}\`\n📍 *العنوان:* ${orderData.wilayaName} - ${orderData.commune} (${orderData.deliveryType === "home" ? "توصيل للمنزل" : "استلام من المكتب"})\n📦 *المنتجات:* ${orderData.productTitle}\n💰 *المبلغ الإجمالي:* ${orderData.totalPrice} دج (شامل التوصيل ${orderData.deliveryPrice} دج)\n━━━━━━━━━━━━━━━\n⚡ *اتصل بالزبون فوراً لتأكيد الشحن!*`;
     await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text,
-        parse_mode: "Markdown",
-      }),
+      body: JSON.stringify({ chat_id: chatId, text, parse_mode: "Markdown" }),
     });
   } catch (err) {
     console.error("Telegram notification error:", err);
   }
 }
 
-export async function GET() {
+export async function GET(req: Request) {
+  if (!isAdminAuthorized(req)) return unauthorizedResponse();
   try {
     await initDbTables();
     await autoCleanupCompletedOrders();
-
     const rows = await sql`
       SELECT 
         id, 
@@ -94,37 +77,67 @@ export async function POST(req: Request) {
     await initDbTables();
     const body = await req.json();
 
-    const id = "DZ-" + Math.floor(100000 + Math.random() * 900000);
-    const productTitle = body.productTitle || "منتج";
     const productId = body.productId || "";
+    const productTitle = body.productTitle || "منتج";
     const selectedSize = body.selectedSize || "M";
     const selectedColor = body.selectedColor || "";
-    const quantity = Number(body.quantity) || 1;
-    const fullName = body.fullName || "";
-    const phone = body.phone || "";
-    const wilayaName = body.wilayaName || "";
-    const commune = body.commune || "";
-    const deliveryType = body.deliveryType || "home";
-    const deliveryPrice = Number(body.deliveryPrice) || 0;
+    const quantity = Math.max(1, Number(body.quantity) || 1);
+    const fullName = (body.fullName || "").trim();
+    const phone = (body.phone || "").trim();
+    const wilayaName = (body.wilayaName || "").trim();
+    const commune = (body.commune || "").trim();
+    const deliveryType = body.deliveryType === "desk" ? "desk" : "home";
+    const deliveryPrice = Math.max(0, Number(body.deliveryPrice) || 0);
+
+    if (!fullName || !phone || !wilayaName) {
+      return NextResponse.json(
+        { success: false, error: "بيانات ناقصة - الاسم والهاتف والولاية مطلوبة" },
+        { status: 400 }
+      );
+    }
+    if (!/^0[5-7]\d{8}$/.test(phone)) {
+      return NextResponse.json(
+        { success: false, error: "رقم الهاتف غير صحيح" },
+        { status: 400 }
+      );
+    }
+
+    if (productId) {
+      const productRows = await sql`
+        SELECT price::float as price, in_stock, is_deleted 
+        FROM products 
+        WHERE id = ${productId}
+      `;
+      if (!productRows || productRows.length === 0) {
+        return NextResponse.json({ success: false, error: "المنتج غير موجود" }, { status: 400 });
+      }
+      const product = productRows[0];
+      if (product.is_deleted) {
+        return NextResponse.json({ success: false, error: "هذا المنتج غير متوفر" }, { status: 400 });
+      }
+      if (product.in_stock === false) {
+        return NextResponse.json({ success: false, error: "نفدت كمية هذا المنتج حالياً" }, { status: 400 });
+      }
+      const expectedTotal = Math.round((product.price * quantity + deliveryPrice) * 100) / 100;
+      const clientTotal = Number(body.totalPrice) || 0;
+      if (Math.abs(clientTotal - expectedTotal) > 10) {
+        console.warn(`Price mismatch: client=${clientTotal} expected=${expectedTotal}`);
+        return NextResponse.json(
+          { success: false, error: "خطأ في حساب السعر - يرجى إعادة المحاولة" },
+          { status: 400 }
+        );
+      }
+    }
+
     const totalPrice = Number(body.totalPrice) || 0;
+    const id = "DZ-" + Math.floor(100000 + Math.random() * 900000);
 
     await sql`
       INSERT INTO orders (id, product_title, product_id, selected_size, selected_color, quantity, full_name, phone, wilaya_name, commune, delivery_type, delivery_price, total_price, status)
       VALUES (${id}, ${productTitle}, ${productId}, ${selectedSize}, ${selectedColor}, ${quantity}, ${fullName}, ${phone}, ${wilayaName}, ${commune}, ${deliveryType}, ${deliveryPrice}, ${totalPrice}, 'pending')
     `;
 
-    // Trigger instant Telegram notification to phone if configured
-    sendTelegramNotification({
-      id,
-      fullName,
-      phone,
-      wilayaName,
-      commune,
-      productTitle,
-      deliveryType,
-      deliveryPrice,
-      totalPrice,
-    });
+    sendTelegramNotification({ id, fullName, phone, wilayaName, commune, productTitle, deliveryType, deliveryPrice, totalPrice });
 
     return NextResponse.json({ success: true, order: { id, fullName, totalPrice } });
   } catch (error) {
@@ -134,14 +147,15 @@ export async function POST(req: Request) {
 }
 
 export async function PATCH(req: Request) {
+  if (!isAdminAuthorized(req)) return unauthorizedResponse();
   try {
     await initDbTables();
     const { orderId, status } = await req.json();
-    await sql`
-      UPDATE orders
-      SET status = ${status}
-      WHERE id = ${orderId}
-    `;
+    const validStatuses = ["pending", "confirmed", "shipped", "cancelled"];
+    if (!orderId || !validStatuses.includes(status)) {
+      return NextResponse.json({ success: false, error: "Invalid orderId or status" }, { status: 400 });
+    }
+    await sql`UPDATE orders SET status = ${status} WHERE id = ${orderId}`;
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Update order status error:", error);
@@ -150,6 +164,7 @@ export async function PATCH(req: Request) {
 }
 
 export async function DELETE(req: Request) {
+  if (!isAdminAuthorized(req)) return unauthorizedResponse();
   try {
     await initDbTables();
     const { searchParams } = new URL(req.url);
@@ -157,11 +172,7 @@ export async function DELETE(req: Request) {
     if (!orderId) {
       return NextResponse.json({ success: false, error: "Missing orderId" }, { status: 400 });
     }
-
-    await sql`
-      DELETE FROM orders 
-      WHERE id = ${orderId}
-    `;
+    await sql`DELETE FROM orders WHERE id = ${orderId}`;
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Delete order error:", error);
