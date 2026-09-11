@@ -142,14 +142,24 @@ export default function HomePage() {
                     alt={prod.name}
                     loading="lazy"
                     decoding="async"
-                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                    className={`w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ${
+                      prod.inStock === false ? "opacity-75 grayscale-30" : ""
+                    }`}
                   />
 
-                  {prod.badge && (
-                    <span className="absolute top-2.5 right-2.5 bg-red-500 text-white font-black text-[11px] px-2.5 py-0.5 rounded-full shadow-sm">
-                      {prod.badge}
-                    </span>
-                  )}
+                  {/* Badges */}
+                  <div className="absolute top-2.5 right-2.5 flex flex-col items-end gap-1.5 z-10">
+                    {prod.inStock === false && (
+                      <span className="bg-zinc-950/90 text-amber-400 border border-amber-400/40 font-black text-[10px] sm:text-[11px] px-2.5 py-0.5 rounded-full shadow-md backdrop-blur-xs">
+                        ⚠️ نفدت الكمية
+                      </span>
+                    )}
+                    {prod.badge && (
+                      <span className="bg-red-500 text-white font-black text-[11px] px-2.5 py-0.5 rounded-full shadow-sm">
+                        {prod.badge}
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 <div className="p-3.5 sm:p-4 flex flex-col flex-1 text-center">
@@ -161,7 +171,7 @@ export default function HomePage() {
                     <span className="text-sm sm:text-base font-extrabold text-zinc-900 dark:text-white">
                       {formatPrice(prod.price)}
                     </span>
-                    {prod.originalPrice > prod.price && (
+                    {prod.originalPrice && prod.originalPrice > prod.price && (
                       <span className="text-xs text-zinc-400 line-through">
                         {formatPrice(prod.originalPrice)}
                       </span>
@@ -169,12 +179,21 @@ export default function HomePage() {
                   </div>
 
                   <div className="mt-4 pt-2">
-                    <Link
-                      href={`/products/${prod.id}`}
-                      className="w-full inline-flex items-center justify-center py-2 sm:py-2.5 px-4 rounded-xl border border-zinc-900 dark:border-zinc-700 text-zinc-900 dark:text-zinc-200 font-bold text-xs sm:text-sm hover:bg-zinc-900 dark:hover:bg-amber-400 hover:text-white dark:hover:text-zinc-950 transition-colors duration-200"
-                    >
-                      أطلب الآن
-                    </Link>
+                    {prod.inStock === false ? (
+                      <Link
+                        href={`/products/${prod.id}`}
+                        className="w-full inline-flex items-center justify-center py-2 sm:py-2.5 px-4 rounded-xl bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 font-bold text-xs sm:text-sm hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors duration-200"
+                      >
+                        نفدت الكمية ⚠️
+                      </Link>
+                    ) : (
+                      <Link
+                        href={`/products/${prod.id}`}
+                        className="w-full inline-flex items-center justify-center py-2 sm:py-2.5 px-4 rounded-xl border border-zinc-900 dark:border-zinc-700 text-zinc-900 dark:text-zinc-200 font-bold text-xs sm:text-sm hover:bg-zinc-900 dark:hover:bg-amber-400 hover:text-white dark:hover:text-zinc-950 transition-colors duration-200"
+                      >
+                        أطلب الآن
+                      </Link>
+                    )}
                   </div>
                 </div>
               </div>

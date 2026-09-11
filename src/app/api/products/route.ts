@@ -21,7 +21,7 @@ export async function GET(req: Request) {
           sizes, 
           colors, 
           images, 
-          in_stock as "inStock", 
+          COALESCE(in_stock, true) as "inStock", 
           COALESCE(is_deleted, false) as "isDeleted",
           created_at as "createdAt"
         FROM products
@@ -40,7 +40,7 @@ export async function GET(req: Request) {
           sizes, 
           colors, 
           images, 
-          in_stock as "inStock", 
+          COALESCE(in_stock, true) as "inStock", 
           COALESCE(is_deleted, false) as "isDeleted",
           created_at as "createdAt"
         FROM products
@@ -107,6 +107,30 @@ export async function PATCH(req: Request) {
     } else if (action === "restore") {
       await sql`UPDATE products SET is_deleted = FALSE WHERE id = ${id}`;
       return NextResponse.json({ success: true, message: "Product restored to store" });
+    } else if (action === "toggle-stock") {
+      const inStock = Boolean(body.inStock);
+      await sql`UPDATE products SET in_stock = ${inStock} WHERE id = ${id}`;
+      return NextResponse.json({ 
+        success: true, 
+        inStock, 
+        message: inStock ? "تم تفعيل توفر المنتج في المخزن" : "تم تعيين المنتج: نفدت الكمية" 
+      });
+    } else if (action === "promotion") {
+      const price = Number(body.price);
+      if (isNaN(price) || price <= 0) {
+        return NextResponse.json({ success: false, error: "سعر غير صالح" }, { status: 400 });
+      }
+      const originalPrice = body.originalPrice !== null && body.originalPrice !== undefined && body.originalPrice !== ""
+        ? Number(body.originalPrice)
+        : null;
+      const badge = typeof body.badge === "string" ? body.badge.trim() : "";
+
+      await sql`
+        UPDATE products 
+        SET price = ${price}, original_price = ${originalPrice}, badge = ${badge} 
+        WHERE id = ${id}
+      `;
+      return NextResponse.json({ success: true, message: "تم تحديث التخفيض بنجاح" });
     }
 
     return NextResponse.json({ success: false, error: "Invalid action" }, { status: 400 });

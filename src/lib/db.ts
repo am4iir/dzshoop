@@ -5,13 +5,13 @@ export interface Product {
   name: string;
   subtitle: string;
   price: number;
-  originalPrice: number;
+  originalPrice?: number;
   description: string;
   badge?: string;
   sizes: string[];
   colors: string[];
   images: string[];
-  inStock: boolean;
+  inStock?: boolean;
   isDeleted?: boolean;
   createdAt: string;
 }
@@ -57,11 +57,12 @@ export async function initDbTables() {
     );
   `;
 
-  // Safely ensure is_deleted column exists for existing tables
+  // Safely ensure is_deleted and in_stock columns exist for existing tables
   try {
     await sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS is_deleted BOOLEAN DEFAULT FALSE;`;
+    await sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS in_stock BOOLEAN DEFAULT TRUE;`;
   } catch (err) {
-    // column already exists
+    // columns already exist
   }
 
   await sql`

@@ -98,6 +98,10 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   const grandTotal = itemsTotal + deliveryCost;
 
   const handleAddToCart = () => {
+    if (product.inStock === false) {
+      alert("عذراً، هذا المنتج غير متوفر في المخزن حالياً (نفدت الكمية)");
+      return;
+    }
     addItem({
       productId: product.id,
       productName: product.name,
@@ -111,6 +115,10 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   };
 
   const handleBuyNow = () => {
+    if (product.inStock === false) {
+      alert("عذراً، هذا المنتج غير متوفر في المخزن حالياً (نفدت الكمية)");
+      return;
+    }
     addItem({
       productId: product.id,
       productName: product.name,
@@ -125,6 +133,10 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
   const handleOrderSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (product.inStock === false) {
+      alert("عذراً، هذا المنتج غير متوفر في المخزن حالياً (نفدت الكمية)");
+      return;
+    }
     if (!fullName || !phone) {
       alert("يرجى إدخال الاسم ورقم الهاتف لإكمال الطلب");
       return;
@@ -219,22 +231,40 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                   </h1>
                   <p className="text-xs sm:text-sm text-zinc-400 mt-1">{product.subtitle}</p>
 
-                  <div className="flex items-baseline gap-3 mt-3">
+                  <div className="flex items-baseline gap-3 mt-3 flex-wrap">
                     <span className="text-2xl sm:text-3xl font-black text-red-600 dark:text-red-500">
                       {formatPrice(product.price)}
                     </span>
-                    {product.originalPrice > product.price && (
+                    {product.originalPrice && product.originalPrice > product.price && (
                       <span className="text-sm text-zinc-400 line-through">
                         {formatPrice(product.originalPrice)}
                       </span>
                     )}
                     {product.badge && (
-                      <span className="bg-red-500 text-white font-bold text-xs px-2 py-0.5 rounded-full">
+                      <span className="bg-red-500 text-white font-bold text-xs px-2.5 py-0.5 rounded-full shadow-xs">
                         {product.badge}
+                      </span>
+                    )}
+                    {product.inStock === false && (
+                      <span className="bg-zinc-950/90 dark:bg-zinc-800 text-amber-400 border border-amber-400/40 font-black text-xs px-3 py-1 rounded-full shadow-sm">
+                        ⚠️ نفدت الكمية (Rupture)
                       </span>
                     )}
                   </div>
                 </div>
+
+                {/* Out of stock warning banner */}
+                {product.inStock === false && (
+                  <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/80 rounded-2xl p-4 text-amber-900 dark:text-amber-300 text-xs flex items-center gap-3">
+                    <span className="text-2xl">⚠️</span>
+                    <div>
+                      <p className="font-extrabold text-sm">عذراً، هذا المنتج غير متوفر في المخزن حالياً (نفدت الكمية)</p>
+                      <p className="text-[11px] text-amber-700/90 dark:text-amber-400/90 mt-0.5">
+                        تم تعليق استقبال الطلبات لهذا الموديل مؤقتاً حتى وصول الشحنة الجديدة إن شاء الله.
+                      </p>
+                    </div>
+                  </div>
+                )}
 
                 {/* Description */}
                 {product.description && (
@@ -311,18 +341,20 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                     <button
                       type="button"
                       onClick={handleAddToCart}
-                      className="flex-1 bg-white dark:bg-zinc-900 border-2 border-zinc-900 dark:border-zinc-700 text-zinc-900 dark:text-white hover:bg-zinc-900 dark:hover:bg-zinc-800 hover:text-white font-extrabold py-3.5 px-4 rounded-xl text-xs sm:text-sm transition flex items-center justify-center gap-2 shadow-sm cursor-pointer"
+                      disabled={product.inStock === false}
+                      className="flex-1 bg-white dark:bg-zinc-900 border-2 border-zinc-900 dark:border-zinc-700 text-zinc-900 dark:text-white hover:bg-zinc-900 dark:hover:bg-zinc-800 hover:text-white font-extrabold py-3.5 px-4 rounded-xl text-xs sm:text-sm transition flex items-center justify-center gap-2 shadow-sm disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                     >
                       <ShoppingBag className="w-4 h-4" />
-                      <span>أضف إلى السلة</span>
+                      <span>{product.inStock === false ? "غير متوفر للسلة" : "أضف إلى السلة"}</span>
                     </button>
 
                     <button
                       type="button"
                       onClick={handleBuyNow}
-                      className="flex-1 bg-zinc-950 dark:bg-amber-400 hover:bg-black dark:hover:bg-amber-300 text-white dark:text-zinc-950 font-extrabold py-3.5 px-4 rounded-xl text-xs sm:text-sm transition flex items-center justify-center gap-2 shadow-md cursor-pointer"
+                      disabled={product.inStock === false}
+                      className="flex-1 bg-zinc-950 dark:bg-amber-400 hover:bg-black dark:hover:bg-amber-300 text-white dark:text-zinc-950 font-extrabold py-3.5 px-4 rounded-xl text-xs sm:text-sm transition flex items-center justify-center gap-2 shadow-md disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                     >
-                      <span>الشراء الآن ⚡</span>
+                      <span>{product.inStock === false ? "نفدت الكمية ⚠️" : "الشراء الآن ⚡"}</span>
                     </button>
                   </div>
                 </div>
@@ -446,10 +478,14 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                     <div className="flex items-center gap-3 pt-3">
                       <button
                         type="submit"
-                        disabled={isSubmitting}
-                        className="flex-1 bg-zinc-950 dark:bg-amber-400 hover:bg-black dark:hover:bg-amber-300 text-white dark:text-zinc-950 font-black py-3.5 px-6 rounded-xl text-xs sm:text-sm tracking-wide transition shadow-sm disabled:opacity-50 cursor-pointer"
+                        disabled={isSubmitting || product.inStock === false}
+                        className="flex-1 bg-zinc-950 dark:bg-amber-400 hover:bg-black dark:hover:bg-amber-300 text-white dark:text-zinc-950 font-black py-3.5 px-6 rounded-xl text-xs sm:text-sm tracking-wide transition shadow-sm disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                       >
-                        {isSubmitting ? "جاري الإرسال..." : "تأكيد الطلب الفوري"}
+                        {product.inStock === false
+                          ? "⚠️ عذراً، نفدت كمية هذا المنتج حالياً"
+                          : isSubmitting
+                          ? "جاري الإرسال..."
+                          : "تأكيد الطلب الفوري"}
                       </button>
 
                       <div className="flex items-center border border-zinc-200 dark:border-zinc-700 rounded-xl bg-zinc-50 dark:bg-zinc-800 px-2 h-11">

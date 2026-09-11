@@ -21,7 +21,13 @@ import {
   LogOut,
   Trash2,
   RotateCcw,
-  RefreshCw
+  RefreshCw,
+  Box,
+  AlertTriangle,
+  Tag,
+  Percent,
+  X,
+  Flame
 } from "lucide-react";
 
 export default function AdminDashboardPage() {
@@ -37,8 +43,15 @@ export default function AdminDashboardPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
-  const [productFilter, setProductFilter] = useState<"all" | "active" | "deleted">("all");
+  const [productFilter, setProductFilter] = useState<"all" | "active" | "outofstock" | "deleted">("all");
   const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
+
+  // Promotion modal state
+  const [editingPromoProduct, setEditingPromoProduct] = useState<Product | null>(null);
+  const [promoPrice, setPromoPrice] = useState<string>("");
+  const [promoOriginalPrice, setPromoOriginalPrice] = useState<string>("");
+  const [promoBadge, setPromoBadge] = useState<string>("");
+  const [savingPromo, setSavingPromo] = useState(false);
 
   // New product form
   const [name, setName] = useState("");
@@ -144,6 +157,101 @@ export default function AdminDashboardPage() {
       alert("حدث خطأ أثناء الحذف النهائي");
     } finally {
       setActionLoadingId(null);
+    }
+  };
+
+  const handleToggleStock = async (productId: string, currentInStock: boolean) => {
+    const nextInStock = !currentInStock;
+    setActionLoadingId(productId);
+    try {
+      const res = await fetch("/api/products", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: productId, action: "toggle-stock", inStock: nextInStock })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setProducts((prev) =>
+          prev.map((p) => (p.id === productId ? { ...p, inStock: nextInStock } : p))
+        );
+      } else {
+        alert("تعذر تحديث حالة توفر المنتج");
+      }
+    } catch (e) {
+      alert("حدث خطأ أثناء تحديث حالة المخزون");
+    } finally {
+      setActionLoadingId(null);
+    }
+  };
+
+  const openPromoModal = (prod: Product) => {
+    setEditingPromoProduct(prod);
+    setPromoPrice(prod.price.toString());
+    setPromoOriginalPrice(prod.originalPrice ? prod.originalPrice.toString() : prod.price.toString());
+    setPromoBadge(prod.badge || "-20%");
+  };
+
+  const applyDiscountPercent = (percent: number) => {
+    if (!editingPromoProduct) return;
+    const base = Number(promoOriginalPrice) || Number(promoPrice) || editingPromoProduct.price;
+    const discounted = Math.round((base * (100 - percent)) / 100);
+    setPromoOriginalPrice(base.toString());
+    setPromoPrice(discounted.toString());
+    setPromoBadge(`-${percent}%`);
+  };
+
+  const removePromotion = () => {
+    if (!editingPromoProduct) return;
+    const regular = Number(promoOriginalPrice) || editingPromoProduct.price;
+    setPromoPrice(regular.toString());
+    setPromoOriginalPrice("");
+    setPromoBadge("");
+  };
+
+  const handleSavePromotion = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingPromoProduct) return;
+    const numPrice = Number(promoPrice);
+    if (!numPrice || numPrice <= 0) {
+      alert("يرجى إدخال سعر بيع صحيح");
+      return;
+    }
+
+    setSavingPromo(true);
+    try {
+      const res = await fetch("/api/products", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: editingPromoProduct.id,
+          action: "promotion",
+          price: numPrice,
+          originalPrice: promoOriginalPrice ? Number(promoOriginalPrice) : null,
+          badge: promoBadge.trim()
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setProducts((prev) =>
+          prev.map((p) =>
+            p.id === editingPromoProduct.id
+              ? {
+                  ...p,
+                  price: numPrice,
+                  originalPrice: promoOriginalPrice ? Number(promoOriginalPrice) : undefined,
+                  badge: promoBadge.trim()
+                }
+              : p
+          )
+        );
+        setEditingPromoProduct(null);
+      } else {
+        alert(data.error || "تعذر حفظ التخفيض");
+      }
+    } catch (e) {
+      alert("حدث خطأ أثناء حفظ التخفيض");
+    } finally {
+      setSavingPromo(false);
     }
   };
 
@@ -301,11 +409,13 @@ export default function AdminDashboardPage() {
   const totalRevenue = orders
     .filter((o) => o.status !== "cancelled")
     .reduce((acc, curr) => acc + curr.totalPrice, 0);
-  const activeProductsCount = products.filter((p) => !p.isDeleted).length;
+  const activeProductsCount = products.filter((p) => !p.isDeleted && p.inStock !== false).length;
+  const outOfStockCount = products.filter((p) => !p.isDeleted && p.inStock === false).length;
   const deletedProductsCount = products.filter((p) => p.isDeleted).length;
 
   const displayedProducts = products.filter((p) => {
-    if (productFilter === "active") return !p.isDeleted;
+    if (productFilter === "active") return !p.isDeleted && p.inStock !== false;
+    if (productFilter === "outofstock") return !p.isDeleted && p.inStock === false;
     if (productFilter === "deleted") return Boolean(p.isDeleted);
     return true;
   });
@@ -578,7 +688,18 @@ export default function AdminDashboardPage() {
                   }`}
                 >
                   <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                  المعروضة للزبائن ({activeProductsCount})
+                  المتوفرة ({activeProductsCount})
+                </button>
+                <button
+                  onClick={() => setProductFilter("outofstock")}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                    productFilter === "outofstock"
+                      ? "bg-amber-600 text-white shadow-sm"
+                      : "bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-300"
+                  }`}
+                >
+                  <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+                  نفدت الكمية ({outOfStockCount})
                 </button>
                 <button
                   onClick={() => setProductFilter("deleted")}
@@ -621,93 +742,178 @@ export default function AdminDashboardPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {displayedProducts.map((prod) => {
                   const isDeleted = Boolean(prod.isDeleted);
+                  const isOutOfStock = prod.inStock === false;
                   const isBusy = actionLoadingId === prod.id;
+                  const hasPromo = Boolean(prod.badge || (prod.originalPrice && prod.originalPrice > prod.price));
 
                   return (
                     <div
                       key={prod.id}
                       className={`bg-white rounded-2xl border transition-all duration-200 overflow-hidden flex flex-col p-4 shadow-sm relative ${
-                        isDeleted ? "border-red-200 bg-red-50/10 ring-1 ring-red-100" : "border-zinc-200"
+                        isDeleted 
+                          ? "border-red-200 bg-red-50/10 ring-1 ring-red-100" 
+                          : isOutOfStock
+                          ? "border-amber-200 bg-amber-50/20"
+                          : "border-zinc-200"
                       }`}
                     >
-                      {/* Status header badge */}
-                      <div className="flex items-center justify-between gap-2 mb-2.5">
-                        {isDeleted ? (
-                          <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold bg-red-100 text-red-700 px-2.5 py-0.5 rounded-lg border border-red-200">
-                            <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse"></span>
-                            محذوف من المتجر
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold bg-emerald-100 text-emerald-700 px-2.5 py-0.5 rounded-lg border border-emerald-200">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
-                            معروض للزبائن
-                          </span>
-                        )}
+                      {/* Status header badges */}
+                      <div className="flex items-center justify-between gap-1.5 mb-2.5 flex-wrap">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          {isDeleted ? (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-extrabold bg-red-100 text-red-700 px-2 py-0.5 rounded-lg border border-red-200">
+                              <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse"></span>
+                              محذوف من المتجر
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-extrabold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-lg border border-emerald-200">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                              معروض للزبائن
+                            </span>
+                          )}
+
+                          {isOutOfStock ? (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-extrabold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-lg border border-amber-300">
+                              <span className="w-1.5 h-1.5 rounded-full bg-amber-600 animate-pulse"></span>
+                              نفدت الكمية
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-zinc-100 text-zinc-600 px-2 py-0.5 rounded-lg border border-zinc-200">
+                              متوفر
+                            </span>
+                          )}
+                        </div>
 
                         <span className="text-[10px] font-mono text-zinc-400">
                           {prod.id}
                         </span>
                       </div>
 
+                      {/* Product Image */}
                       <div className="aspect-square bg-zinc-100 rounded-xl overflow-hidden mb-3 relative group">
                         <img
                           src={prod.images?.[0] || "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=900&auto=format&fit=crop"}
                           alt={prod.name}
-                          className={`w-full h-full object-cover transition duration-200 ${isDeleted ? "grayscale opacity-70" : ""}`}
+                          className={`w-full h-full object-cover transition duration-200 ${
+                            isDeleted ? "grayscale opacity-70" : isOutOfStock ? "opacity-80" : ""
+                          }`}
                         />
+                        {prod.badge && (
+                          <span className="absolute top-2 right-2 bg-red-500 text-white font-black text-[10px] px-2.5 py-0.5 rounded-full shadow-sm">
+                            {prod.badge}
+                          </span>
+                        )}
+                        {isOutOfStock && (
+                          <span className="absolute bottom-2 left-2 bg-zinc-950/90 text-amber-400 font-extrabold text-[10px] px-2.5 py-1 rounded-lg border border-amber-400/40 backdrop-blur-xs shadow-md">
+                            ⚠️ نفدت الكمية
+                          </span>
+                        )}
                       </div>
 
                       <h4 className="font-bold text-sm text-zinc-900 line-clamp-1">{prod.name}</h4>
                       <p className="text-xs text-zinc-400 mb-2 line-clamp-1">{prod.subtitle || "بدون وصف فرعي"}</p>
 
+                      {/* Price row */}
                       <div className="pt-2 border-t border-zinc-100 flex items-center justify-between mb-3">
-                        <span className="text-sm font-black text-zinc-900">{formatPrice(prod.price)}</span>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-sm font-black text-zinc-900">{formatPrice(prod.price)}</span>
+                          {prod.originalPrice && prod.originalPrice > prod.price && (
+                            <span className="text-[11px] text-zinc-400 line-through">
+                              {formatPrice(prod.originalPrice)}
+                            </span>
+                          )}
+                        </div>
                         {!isDeleted ? (
                           <Link
                             href={`/products/${prod.id}`}
                             target="_blank"
                             className="text-xs text-zinc-600 hover:text-black font-semibold underline"
                           >
-                            معاينة في المتجر ↗
+                            معاينة ↗
                           </Link>
                         ) : (
-                          <span className="text-[11px] text-red-500 font-bold">مخفي من الزبائن</span>
+                          <span className="text-[11px] text-red-500 font-bold">مخفي</span>
                         )}
                       </div>
 
-                      {/* Action buttons: Delete & Restore & Permanent Delete right next to each product */}
-                      <div className="mt-auto pt-3 border-t border-zinc-100 flex items-center gap-2">
-                        {!isDeleted ? (
+                      {/* Action buttons: Stock, Promo, Delete, Restore */}
+                      <div className="mt-auto pt-3 border-t border-zinc-100 space-y-2">
+                        {/* Row 1: Stock Status Toggle & Promotion Edit */}
+                        <div className="flex items-center gap-2">
+                          {/* Stock Toggle */}
                           <button
-                            onClick={() => handleToggleDelete(prod.id, false)}
+                            onClick={() => handleToggleStock(prod.id, prod.inStock !== false)}
                             disabled={isBusy}
-                            className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-bold text-red-600 hover:text-white bg-red-50 hover:bg-red-600 border border-red-200 hover:border-red-600 transition active:scale-95 cursor-pointer disabled:opacity-50"
-                            title="حذف وإخفاء المنتج من المتجر"
+                            className={`flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-bold transition active:scale-95 cursor-pointer disabled:opacity-50 ${
+                              isOutOfStock
+                                ? "bg-amber-100 hover:bg-emerald-50 text-amber-900 hover:text-emerald-800 border border-amber-300 hover:border-emerald-300 shadow-xs"
+                                : "bg-zinc-100 hover:bg-amber-50 text-zinc-700 hover:text-amber-800 border border-zinc-200 hover:border-amber-300"
+                            }`}
+                            title={isOutOfStock ? "السلعة نافدة - اضغط لتحويلها إلى متوفرة" : "السلعة متوفرة - اضغط لجعلها نفدت الكمية"}
                           >
-                            <Trash2 className="w-3.5 h-3.5" />
-                            <span>حذف (Delete)</span>
+                            {isOutOfStock ? (
+                              <>
+                                <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
+                                <span>⚠️ نفدت الكمية</span>
+                              </>
+                            ) : (
+                              <>
+                                <Box className="w-3.5 h-3.5 text-emerald-600" />
+                                <span>📦 متوفر</span>
+                              </>
+                            )}
                           </button>
-                        ) : (
-                          <button
-                            onClick={() => handleToggleDelete(prod.id, true)}
-                            disabled={isBusy}
-                            className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-bold text-emerald-700 hover:text-white bg-emerald-50 hover:bg-emerald-600 border border-emerald-300 hover:border-emerald-600 transition active:scale-95 cursor-pointer disabled:opacity-50"
-                            title="استرجاع المنتج ليعود للعرض في المتجر"
-                          >
-                            <RotateCcw className="w-3.5 h-3.5" />
-                            <span>استرجاع (Restore)</span>
-                          </button>
-                        )}
 
-                        <button
-                          onClick={() => handlePermanentDelete(prod.id, prod.name)}
-                          disabled={isBusy}
-                          className="inline-flex items-center justify-center gap-1 py-2.5 px-2.5 rounded-xl text-xs font-bold text-zinc-400 hover:text-red-600 hover:bg-red-50 border border-zinc-200 hover:border-red-200 transition cursor-pointer disabled:opacity-50"
-                          title="حذف نهائي لا يمكن استرجاعه من الداتابيز"
-                        >
-                          <Trash2 className="w-3.5 h-3.5 text-zinc-400 hover:text-red-500" />
-                          <span className="text-[10px] hidden sm:inline">نهائي</span>
-                        </button>
+                          {/* Promo Button */}
+                          <button
+                            onClick={() => openPromoModal(prod)}
+                            disabled={isBusy}
+                            className={`flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-bold transition active:scale-95 cursor-pointer disabled:opacity-50 ${
+                              hasPromo
+                                ? "bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 shadow-xs"
+                                : "bg-zinc-100 text-zinc-700 border border-zinc-200 hover:bg-zinc-200"
+                            }`}
+                            title="تعديل نسبة التخفيض، السعر المشطوب والشارة"
+                          >
+                            <Tag className="w-3.5 h-3.5 text-red-500" />
+                            <span>{prod.badge ? `تخفيض (${prod.badge})` : "🏷️ Solde / تخفيض"}</span>
+                          </button>
+                        </div>
+
+                        {/* Row 2: Delete / Restore & Permanent Delete */}
+                        <div className="flex items-center gap-2">
+                          {!isDeleted ? (
+                            <button
+                              onClick={() => handleToggleDelete(prod.id, false)}
+                              disabled={isBusy}
+                              className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold text-red-600 hover:text-white bg-red-50 hover:bg-red-600 border border-red-200 hover:border-red-600 transition active:scale-95 cursor-pointer disabled:opacity-50"
+                              title="حذف وإخفاء المنتج من المتجر"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                              <span>حذف (Delete)</span>
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => handleToggleDelete(prod.id, true)}
+                              disabled={isBusy}
+                              className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold text-emerald-700 hover:text-white bg-emerald-50 hover:bg-emerald-600 border border-emerald-300 hover:border-emerald-600 transition active:scale-95 cursor-pointer disabled:opacity-50"
+                              title="استرجاع المنتج ليعود للعرض في المتجر"
+                            >
+                              <RotateCcw className="w-3.5 h-3.5" />
+                              <span>استرجاع (Restore)</span>
+                            </button>
+                          )}
+
+                          <button
+                            onClick={() => handlePermanentDelete(prod.id, prod.name)}
+                            disabled={isBusy}
+                            className="inline-flex items-center justify-center gap-1 py-2 px-2.5 rounded-xl text-xs font-bold text-zinc-400 hover:text-red-600 hover:bg-red-50 border border-zinc-200 hover:border-red-200 transition cursor-pointer disabled:opacity-50"
+                            title="حذف نهائي لا يمكن استرجاعه من الداتابيز"
+                          >
+                            <Trash2 className="w-3.5 h-3.5 text-zinc-400 hover:text-red-500" />
+                            <span className="text-[10px]">نهائي</span>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   );
@@ -828,6 +1034,164 @@ export default function AdminDashboardPage() {
                 {submittingProduct ? "جاري الإضافة..." : "حفظ المنتج وعرضه في المتجر"}
               </button>
             </form>
+          </div>
+        )}
+
+        {/* PROMOTION / SOLDE MODAL */}
+        {editingPromoProduct && (
+          <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
+            <div className="bg-white rounded-3xl border border-zinc-200 w-full max-w-md overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+              {/* Modal Header */}
+              <div className="p-5 border-b border-zinc-100 flex items-center justify-between bg-zinc-50/50">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-red-100 text-red-600 flex items-center justify-center font-bold">
+                    <Tag className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-black text-sm text-zinc-900">إدارة التخفيض والعروض (Solde)</h3>
+                    <p className="text-[11px] text-zinc-500 line-clamp-1">{editingPromoProduct.name}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setEditingPromoProduct(null)}
+                  className="w-8 h-8 rounded-full bg-zinc-100 hover:bg-zinc-200 flex items-center justify-center text-zinc-500 transition cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Modal Form */}
+              <form onSubmit={handleSavePromotion} className="p-5 space-y-4 text-xs">
+                {/* Quick percentage pills */}
+                <div>
+                  <label className="block text-zinc-700 font-bold mb-1.5">
+                    تطبيق نسبة تخفيض سريعة:
+                  </label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {[10, 20, 30, 40, 50].map((pct) => (
+                      <button
+                        key={pct}
+                        type="button"
+                        onClick={() => applyDiscountPercent(pct)}
+                        className="px-2.5 py-1 rounded-lg text-xs font-bold bg-zinc-100 hover:bg-red-50 hover:text-red-700 border border-zinc-200 hover:border-red-300 transition cursor-pointer"
+                      >
+                        -{pct}%
+                      </button>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => setPromoBadge("🔥 Solde")}
+                      className="px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 transition cursor-pointer"
+                    >
+                      🔥 Solde
+                    </button>
+                    <button
+                      type="button"
+                      onClick={removePromotion}
+                      className="px-2.5 py-1 rounded-lg text-xs font-bold bg-zinc-50 hover:bg-zinc-200 text-zinc-600 border border-zinc-200 transition cursor-pointer ml-auto"
+                      title="إلغاء التخفيض والعودة للسعر العادي"
+                    >
+                      ❌ إلغاء التخفيض
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-zinc-700 font-bold mb-1">
+                      سعر البيع المخفض (دج) *
+                    </label>
+                    <input
+                      type="number"
+                      required
+                      min="1"
+                      value={promoPrice}
+                      onChange={(e) => setPromoPrice(e.target.value)}
+                      placeholder="مثال: 2500"
+                      className="w-full bg-zinc-50 border border-zinc-200 focus:border-red-500 focus:bg-white rounded-xl px-3 py-2.5 text-xs text-zinc-900 font-bold outline-none transition"
+                    />
+                    <span className="text-[10px] text-zinc-400 mt-1 block">السعر الذي سيدفعه الزبون</span>
+                  </div>
+
+                  <div>
+                    <label className="block text-zinc-700 font-bold mb-1">
+                      السعر القديم المشطوب (دج)
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      value={promoOriginalPrice}
+                      onChange={(e) => setPromoOriginalPrice(e.target.value)}
+                      placeholder="مثال: 3200"
+                      className="w-full bg-zinc-50 border border-zinc-200 focus:border-zinc-900 focus:bg-white rounded-xl px-3 py-2.5 text-xs text-zinc-900 outline-none transition"
+                    />
+                    <span className="text-[10px] text-zinc-400 mt-1 block">يظهر مشطوباً فوق السعر</span>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-zinc-700 font-bold mb-1">
+                    شارة التخفيض (Badge)
+                  </label>
+                  <input
+                    type="text"
+                    value={promoBadge}
+                    onChange={(e) => setPromoBadge(e.target.value)}
+                    placeholder="مثال: -20% أو 🔥 Solde أو عرض خاص"
+                    className="w-full bg-zinc-50 border border-zinc-200 focus:border-zinc-900 focus:bg-white rounded-xl px-3 py-2.5 text-xs text-zinc-900 outline-none transition"
+                  />
+                  <span className="text-[10px] text-zinc-400 mt-1 block">تظهر كشارة حمراء مميزة على صورة المنتج</span>
+                </div>
+
+                {/* Live Preview Card */}
+                <div className="bg-zinc-50 rounded-2xl p-3 border border-zinc-200 flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <img
+                      src={editingPromoProduct.images?.[0] || "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=900&auto=format&fit=crop"}
+                      alt=""
+                      className="w-10 h-10 object-cover rounded-lg border border-zinc-200"
+                    />
+                    <div>
+                      <span className="text-[11px] text-zinc-500 block">المعاينة كما يراها الزبون:</span>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="font-black text-red-600 text-sm">
+                          {formatPrice(Number(promoPrice) || 0)}
+                        </span>
+                        {promoOriginalPrice && Number(promoOriginalPrice) > (Number(promoPrice) || 0) && (
+                          <span className="text-zinc-400 line-through text-[11px]">
+                            {formatPrice(Number(promoOriginalPrice))}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {promoBadge && (
+                    <span className="bg-red-500 text-white font-black text-[10px] px-2.5 py-0.5 rounded-full shadow-xs">
+                      {promoBadge}
+                    </span>
+                  )}
+                </div>
+
+                {/* Modal actions */}
+                <div className="pt-2 flex items-center gap-2">
+                  <button
+                    type="submit"
+                    disabled={savingPromo}
+                    className="flex-1 bg-zinc-950 hover:bg-black text-white font-extrabold py-3 px-4 rounded-xl text-xs transition cursor-pointer disabled:opacity-50"
+                  >
+                    {savingPromo ? "جاري الحفظ..." : "حفظ التخفيض والعرض"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEditingPromoProduct(null)}
+                    className="px-4 py-3 rounded-xl border border-zinc-200 text-zinc-600 hover:bg-zinc-100 text-xs font-bold transition cursor-pointer"
+                  >
+                    إلغاء
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         )}
       </main>
