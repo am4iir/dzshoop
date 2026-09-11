@@ -43,6 +43,34 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   const [commune, setCommune] = useState("الجزائر الوسطى");
   const [deliveryType, setDeliveryType] = useState<"home" | "desk">("home");
 
+  // Hydrate customer fields from localStorage across refreshes & across pages
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("axb_checkout_data");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.fullName) setFullName(parsed.fullName);
+        if (parsed.phone) setPhone(parsed.phone);
+        if (parsed.wilayaCode) setWilayaCode(parsed.wilayaCode);
+        if (parsed.commune) setCommune(parsed.commune);
+        if (parsed.deliveryType) setDeliveryType(parsed.deliveryType);
+      }
+    } catch (e) {}
+  }, []);
+
+  // Persist customer fields to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem("axb_checkout_data", JSON.stringify({
+        fullName,
+        phone,
+        wilayaCode,
+        commune,
+        deliveryType
+      }));
+    } catch (e) {}
+  }, [fullName, phone, wilayaCode, commune, deliveryType]);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderConfirmed, setOrderConfirmed] = useState(false);
   const [orderId, setOrderId] = useState("");
@@ -168,6 +196,9 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
       if (data.success) {
         setOrderId(data.order.id);
         setOrderConfirmed(true);
+        try {
+          localStorage.removeItem("axb_checkout_data");
+        } catch (e) {}
         try {
           confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
         } catch (e) {}
