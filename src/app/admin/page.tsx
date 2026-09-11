@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Product, Order } from "@/lib/db";
+import { Product, Order, Expense } from "@/lib/db";
 import { formatPrice } from "@/lib/utils";
 import { 
   Package, 
@@ -28,7 +28,14 @@ import {
   Percent,
   X,
   Flame,
-  MessageCircle
+  MessageCircle,
+  Wallet,
+  TrendingUp,
+  TrendingDown,
+  DollarSign,
+  ArrowDownRight,
+  ArrowUpRight,
+  Receipt
 } from "lucide-react";
 
 export default function AdminDashboardPage() {
@@ -40,12 +47,22 @@ export default function AdminDashboardPage() {
   const [authError, setAuthError] = useState(false);
 
   // Dashboard state
-  const [activeTab, setActiveTab] = useState<"orders" | "products" | "new-product">("orders");
+  const [activeTab, setActiveTab] = useState<"orders" | "products" | "new-product" | "finance">("orders");
   const [orders, setOrders] = useState<Order[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [expenses, setExpenses] = useState<Expense[]>([]);
   const [loading, setLoading] = useState(false);
   const [productFilter, setProductFilter] = useState<"all" | "active" | "outofstock" | "deleted">("all");
   const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
+
+  // Financial tracking form state
+  const [expTitle, setExpTitle] = useState("");
+  const [expAmount, setExpAmount] = useState("");
+  const [expCategory, setExpCategory] = useState<"inventory" | "ads" | "packaging" | "shipping" | "other">("inventory");
+  const [expType, setExpType] = useState<"expense" | "income">("expense");
+  const [expNotes, setExpNotes] = useState("");
+  const [submittingExpense, setSubmittingExpense] = useState(false);
+  const [expenseFilter, setExpenseFilter] = useState<string>("all");
 
   // Promotion modal state
   const [editingPromoProduct, setEditingPromoProduct] = useState<Product | null>(null);
@@ -113,10 +130,12 @@ export default function AdminDashboardPage() {
     };
     Promise.all([
       fetch("/api/orders", { headers }).then((r) => r.json()),
-      fetch("/api/products?all=true", { headers }).then((r) => r.json())
-    ]).then(([ordersData, productsData]) => {
+      fetch("/api/products?all=true", { headers }).then((r) => r.json()),
+      fetch("/api/expenses", { headers }).then((r) => r.json())
+    ]).then(([ordersData, productsData, expensesData]) => {
       setOrders(Array.isArray(ordersData) ? ordersData : []);
       setProducts(Array.isArray(productsData) ? productsData : []);
+      setExpenses(Array.isArray(expensesData) ? expensesData : []);
       setLoading(false);
     }).catch(() => setLoading(false));
   };
@@ -364,6 +383,60 @@ export default function AdminDashboardPage() {
     }
   };
 
+  const handleCreateExpense = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!expTitle.trim() || !expAmount) {
+      alert("يرجى إدخال عنوان المعاملة والمبلغ");
+      return;
+    }
+
+    setSubmittingExpense(true);
+    try {
+      const res = await fetch("/api/expenses", {
+        method: "POST",
+        headers: getAdminHeaders(),
+        body: JSON.stringify({
+          title: expTitle.trim(),
+          amount: Number(expAmount),
+          category: expCategory,
+          type: expType,
+          notes: expNotes.trim(),
+        }),
+      });
+      const data = await res.json();
+      setSubmittingExpense(false);
+      if (data.success) {
+        setExpTitle("");
+        setExpAmount("");
+        setExpNotes("");
+        loadData();
+      } else {
+        alert(data.error || "تعذر تسجيل المعاملة");
+      }
+    } catch (err) {
+      setSubmittingExpense(false);
+      alert("حدث خطأ أثناء الاتصال بالسيرفر");
+    }
+  };
+
+  const handleDeleteExpense = async (id: string, title: string) => {
+    if (!confirm(`هل أنت متأكد من حذف هذه المعاملة: "${title}"؟`)) return;
+    try {
+      const res = await fetch(`/api/expenses?id=${id}`, {
+        method: "DELETE",
+        headers: getAdminHeaders(),
+      });
+      const data = await res.json();
+      if (data.success) {
+        loadData();
+      } else {
+        alert("تعذر حذف المعاملة");
+      }
+    } catch (err) {
+      alert("حدث خطأ في النظام");
+    }
+  };
+
   // Lock Screen
   if (!isAuthenticated) {
     return (
@@ -429,6 +502,38 @@ export default function AdminDashboardPage() {
   const activeProductsCount = products.filter((p) => !p.isDeleted && p.inStock !== false).length;
   const outOfStockCount = products.filter((p) => !p.isDeleted && p.inStock === false).length;
   const deletedProductsCount = products.filter((p) => p.isDeleted).length;
+
+  // Financial calculations
+  const storeDeliveredRevenue = orders
+    .filter((o) => o.status === "shipped")
+    .reduce((acc, curr) => acc + curr.totalPrice, 0);
+
+  const storeConfirmedRevenue = orders
+    .filter((o) => o.status === "confirmed")
+    .reduce((acc, curr) => acc + curr.totalPrice, 0);
+
+  const storePendingRevenue = orders
+    .filter((o) => o.status === "pending")
+    .reduce((acc, curr) => acc + curr.totalPrice, 0);
+
+  const manualIncome = expenses
+    .filter((e) => e.type === "income")
+    .reduce((acc, curr) => acc + curr.amount, 0);
+
+  const totalRevenues = storeDeliveredRevenue + storeConfirmedRevenue + manualIncome;
+
+  const totalExpenses = expenses
+    .filter((e) => e.type === "expense")
+    .reduce((acc, curr) => acc + curr.amount, 0);
+
+  const netProfit = totalRevenues - totalExpenses;
+
+  const filteredExpenses = expenses.filter((e) => {
+    if (expenseFilter === "all") return true;
+    if (expenseFilter === "expense") return e.type === "expense";
+    if (expenseFilter === "income") return e.type === "income";
+    return e.category === expenseFilter;
+  });
 
   const displayedProducts = products.filter((p) => {
     if (productFilter === "active") return !p.isDeleted && p.inStock !== false;
@@ -549,6 +654,18 @@ export default function AdminDashboardPage() {
           >
             <Plus className="w-4 h-4" />
             <span>إضافة منتج جديد</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("finance")}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+              activeTab === "finance"
+                ? "bg-zinc-900 text-white shadow-sm"
+                : "text-zinc-600 hover:bg-zinc-200/60"
+            }`}
+          >
+            <Wallet className="w-4 h-4 text-amber-500" />
+            <span>الحسابات والأرباح (Caisse) 💰</span>
           </button>
         </div>
 
@@ -1073,7 +1190,305 @@ export default function AdminDashboardPage() {
           </div>
         )}
 
-        {/* PROMOTION / SOLDE MODAL */}
+        {/* TAB 4: FINANCIAL TRACKING & CASHFLOW (CAISSE & PROFITS) */}
+        {activeTab === "finance" && (
+          <div className="space-y-8">
+            {/* Financial Overview Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* Net Profit Card */}
+              <div className={`p-5 rounded-2xl border shadow-sm ${
+                netProfit >= 0 
+                  ? "bg-gradient-to-br from-emerald-500 to-emerald-600 text-white border-emerald-600" 
+                  : "bg-gradient-to-br from-red-500 to-red-600 text-white border-red-600"
+              }`}>
+                <div className="flex items-center justify-between opacity-90 text-xs font-bold mb-2">
+                  <span>صافي الأرباح (Bénéfice Net)</span>
+                  <TrendingUp className="w-4 h-4" />
+                </div>
+                <div className="text-2xl sm:text-3xl font-black mb-1">
+                  {formatPrice(netProfit)}
+                </div>
+                <div className="text-[11px] opacity-85 font-semibold">
+                  {netProfit >= 0 ? "المشروع في حالة ربح ممتاز 🔥" : "المصاريف أعلى من المبيعات حالياً"}
+                </div>
+              </div>
+
+              {/* Total Revenue Card */}
+              <div className="bg-white p-5 rounded-2xl border border-zinc-200/90 shadow-sm">
+                <div className="flex items-center justify-between text-zinc-400 text-xs font-bold mb-2">
+                  <span>إجمالي المداخيل (Revenus)</span>
+                  <ArrowDownRight className="w-4 h-4 text-emerald-500" />
+                </div>
+                <div className="text-2xl sm:text-3xl font-black text-emerald-600 mb-1">
+                  {formatPrice(totalRevenues)}
+                </div>
+                <div className="text-[11px] text-zinc-500">
+                  مبيعات مؤكدة: {formatPrice(storeDeliveredRevenue + storeConfirmedRevenue)}
+                </div>
+              </div>
+
+              {/* Total Expenses Card */}
+              <div className="bg-white p-5 rounded-2xl border border-zinc-200/90 shadow-sm">
+                <div className="flex items-center justify-between text-zinc-400 text-xs font-bold mb-2">
+                  <span>إجمالي المصاريف (Dépenses)</span>
+                  <ArrowUpRight className="w-4 h-4 text-red-500" />
+                </div>
+                <div className="text-2xl sm:text-3xl font-black text-red-600 mb-1">
+                  {formatPrice(totalExpenses)}
+                </div>
+                <div className="text-[11px] text-zinc-500">
+                  {expenses.filter((e) => e.type === "expense").length} عملية صرف مسجلة
+                </div>
+              </div>
+
+              {/* Pending Orders Revenue Card */}
+              <div className="bg-white p-5 rounded-2xl border border-zinc-200/90 shadow-sm">
+                <div className="flex items-center justify-between text-zinc-400 text-xs font-bold mb-2">
+                  <span>قيد التحصيل (طلبيات جديدة)</span>
+                  <Clock className="w-4 h-4 text-amber-500" />
+                </div>
+                <div className="text-2xl sm:text-3xl font-black text-amber-600 mb-1">
+                  {formatPrice(storePendingRevenue)}
+                </div>
+                <div className="text-[11px] text-zinc-500">
+                  {pendingCount} طلبيات تنتظر التأكيد
+                </div>
+              </div>
+            </div>
+
+            {/* Expenses Breakdown by Category */}
+            <div className="bg-white p-5 rounded-2xl border border-zinc-200/90 shadow-sm space-y-3">
+              <h3 className="font-bold text-sm text-zinc-900 flex items-center gap-2">
+                <Receipt className="w-4 h-4 text-zinc-500" />
+                <span>توزيع المصاريف حسب الصنف:</span>
+              </h3>
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 text-xs">
+                <div className="bg-zinc-50 p-3 rounded-xl border border-zinc-100">
+                  <span className="text-zinc-500 text-[11px] block">📦 شراء السلعة:</span>
+                  <span className="font-bold text-zinc-900 mt-1 block">
+                    {formatPrice(expenses.filter((e) => e.category === "inventory" && e.type === "expense").reduce((acc, c) => acc + c.amount, 0))}
+                  </span>
+                </div>
+                <div className="bg-zinc-50 p-3 rounded-xl border border-zinc-100">
+                  <span className="text-zinc-500 text-[11px] block">📣 الإعلانات (Ads):</span>
+                  <span className="font-bold text-zinc-900 mt-1 block">
+                    {formatPrice(expenses.filter((e) => e.category === "ads" && e.type === "expense").reduce((acc, c) => acc + c.amount, 0))}
+                  </span>
+                </div>
+                <div className="bg-zinc-50 p-3 rounded-xl border border-zinc-100">
+                  <span className="text-zinc-500 text-[11px] block">🏷️ التغليف والأكياس:</span>
+                  <span className="font-bold text-zinc-900 mt-1 block">
+                    {formatPrice(expenses.filter((e) => e.category === "packaging" && e.type === "expense").reduce((acc, c) => acc + c.amount, 0))}
+                  </span>
+                </div>
+                <div className="bg-zinc-50 p-3 rounded-xl border border-zinc-100">
+                  <span className="text-zinc-500 text-[11px] block">🚚 الشحن والنقل:</span>
+                  <span className="font-bold text-zinc-900 mt-1 block">
+                    {formatPrice(expenses.filter((e) => e.category === "shipping" && e.type === "expense").reduce((acc, c) => acc + c.amount, 0))}
+                  </span>
+                </div>
+                <div className="bg-zinc-50 p-3 rounded-xl border border-zinc-100 col-span-2 sm:col-span-1">
+                  <span className="text-zinc-500 text-[11px] block">💼 مصاريف أخرى:</span>
+                  <span className="font-bold text-zinc-900 mt-1 block">
+                    {formatPrice(expenses.filter((e) => e.category === "other" && e.type === "expense").reduce((acc, c) => acc + c.amount, 0))}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Add New Expense/Income Form */}
+            <div className="bg-white p-6 rounded-2xl border border-zinc-200/90 shadow-sm space-y-4">
+              <h3 className="font-black text-base text-zinc-900 flex items-center gap-2">
+                <Plus className="w-4 h-4 text-emerald-600" />
+                <span>تسجيل حركة مالية جديدة (مصروف أو مدخول)</span>
+              </h3>
+
+              <form onSubmit={handleCreateExpense} className="space-y-4 text-xs">
+                {/* Type toggle: Expense vs Income */}
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setExpType("expense")}
+                    className={`flex-1 py-2.5 px-4 rounded-xl font-bold transition flex items-center justify-center gap-2 cursor-pointer ${
+                      expType === "expense"
+                        ? "bg-red-500 text-white shadow-sm"
+                        : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"
+                    }`}
+                  >
+                    <span>🔴 تسجيل مصروف (خرجت دراهم)</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setExpType("income")}
+                    className={`flex-1 py-2.5 px-4 rounded-xl font-bold transition flex items-center justify-center gap-2 cursor-pointer ${
+                      expType === "income"
+                        ? "bg-emerald-600 text-white shadow-sm"
+                        : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"
+                    }`}
+                  >
+                    <span>🟢 تسجيل مدخول إضافي (دخلت دراهم)</span>
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className="sm:col-span-2">
+                    <label className="block text-zinc-700 font-bold mb-1.5">
+                      {expType === "expense" ? "بيان المصروف (عنوان العملية) *" : "مصدر المدخول *"}
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder={expType === "expense" ? "مثال: شراء 50 متر قماش هودي أسود، أو إعلان فيسبوك" : "مثال: مبيعات يدوية مباشرة، أو استثمار إضافي"}
+                      value={expTitle}
+                      onChange={(e) => setExpTitle(e.target.value)}
+                      className="w-full bg-zinc-50 border border-zinc-200 focus:border-zinc-900 focus:bg-white rounded-xl px-4 py-3 text-xs text-zinc-900 outline-none transition"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-zinc-700 font-bold mb-1.5">المبلغ بالدينار (دج) *</label>
+                    <input
+                      type="number"
+                      required
+                      min="1"
+                      placeholder="5000"
+                      value={expAmount}
+                      onChange={(e) => setExpAmount(e.target.value)}
+                      className="w-full bg-zinc-50 border border-zinc-200 focus:border-zinc-900 focus:bg-white rounded-xl px-4 py-3 text-xs text-zinc-900 outline-none transition font-bold"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-zinc-700 font-bold mb-1.5">التصنيف</label>
+                    <select
+                      value={expCategory}
+                      onChange={(e) => setExpCategory(e.target.value as any)}
+                      className="w-full bg-zinc-50 border border-zinc-200 focus:border-zinc-900 focus:bg-white rounded-xl px-3 py-3 text-xs text-zinc-900 outline-none transition cursor-pointer"
+                    >
+                      <option value="inventory">📦 شراء السلعة والتوريد</option>
+                      <option value="ads">📣 الإعلانات والممول (Meta / TikTok)</option>
+                      <option value="packaging">🏷️ التغليف والعلب والأكياس</option>
+                      <option value="shipping">🚚 الشحن والتوصيل والنقل</option>
+                      <option value="other">💼 مصاريف أخرى عامة</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-zinc-700 font-bold mb-1.5">ملاحظات (اختياري)</label>
+                    <input
+                      type="text"
+                      placeholder="تفاصيل إضافية للرجوع إليها..."
+                      value={expNotes}
+                      onChange={(e) => setExpNotes(e.target.value)}
+                      className="w-full bg-zinc-50 border border-zinc-200 focus:border-zinc-900 focus:bg-white rounded-xl px-4 py-3 text-xs text-zinc-900 outline-none transition"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={submittingExpense}
+                  className="bg-zinc-950 hover:bg-black text-white font-bold py-3 px-6 rounded-xl text-xs transition shadow-sm disabled:opacity-50 cursor-pointer"
+                >
+                  {submittingExpense ? "جاري الحفظ..." : "حفظ المعاملة في الداتابيز 💾"}
+                </button>
+              </form>
+            </div>
+
+            {/* Transactions History Log */}
+            <div className="bg-white rounded-2xl border border-zinc-200/90 p-5 shadow-sm space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-100 pb-3">
+                <h3 className="font-black text-sm text-zinc-900 flex items-center gap-2">
+                  <Wallet className="w-4 h-4 text-zinc-600" />
+                  <span>سجل الحركات المالية والمصاريف ({filteredExpenses.length})</span>
+                </h3>
+
+                {/* Filter Pills */}
+                <div className="flex items-center gap-1.5 overflow-x-auto text-[11px]">
+                  {[
+                    { id: "all", label: "الكل" },
+                    { id: "expense", label: "المصاريف 🔴" },
+                    { id: "income", label: "المداخيل 🟢" },
+                    { id: "inventory", label: "السلعة" },
+                    { id: "ads", label: "الإعلانات" },
+                    { id: "packaging", label: "التغليف" },
+                    { id: "shipping", label: "الشحن" },
+                  ].map((filter) => (
+                    <button
+                      key={filter.id}
+                      type="button"
+                      onClick={() => setExpenseFilter(filter.id)}
+                      className={`px-3 py-1 rounded-lg font-bold transition whitespace-nowrap cursor-pointer ${
+                        expenseFilter === filter.id
+                          ? "bg-zinc-900 text-white"
+                          : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"
+                      }`}
+                    >
+                      {filter.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {filteredExpenses.length === 0 ? (
+                <div className="text-center py-12 text-zinc-400 text-xs">
+                  لا توجد حركات مالية مسجلة في هذا التصنيف.
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {filteredExpenses.map((txn) => {
+                    const isExp = txn.type === "expense";
+                    return (
+                      <div
+                        key={txn.id}
+                        className="flex items-center justify-between p-3.5 rounded-xl border border-zinc-100 hover:bg-zinc-50/80 transition text-xs"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold shrink-0 ${
+                            isExp ? "bg-red-50 text-red-600 border border-red-100" : "bg-emerald-50 text-emerald-600 border border-emerald-100"
+                          }`}>
+                            {isExp ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
+                          </div>
+                          <div>
+                            <h4 className="font-bold text-zinc-900">{txn.title}</h4>
+                            <div className="flex items-center gap-2 text-[10px] text-zinc-400 mt-0.5">
+                              <span>{new Date(txn.createdAt).toLocaleDateString("ar-DZ")}</span>
+                              <span>•</span>
+                              <span className="bg-zinc-100 px-1.5 py-0.5 rounded text-zinc-600 font-medium">
+                                {txn.category === "inventory" ? "📦 سلعة" :
+                                 txn.category === "ads" ? "📣 إعلانات" :
+                                 txn.category === "packaging" ? "🏷️ تغليف" :
+                                 txn.category === "shipping" ? "🚚 شحن" : "💼 أخرى"}
+                              </span>
+                              {txn.notes && <span>• {txn.notes}</span>}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                          <span className={`font-black text-sm ${isExp ? "text-red-600" : "text-emerald-600"}`}>
+                            {isExp ? "-" : "+"}{formatPrice(txn.amount)}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteExpense(txn.id, txn.title)}
+                            className="text-zinc-400 hover:text-red-600 p-1 rounded transition cursor-pointer"
+                            title="حذف هذه المعاملة"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
         {editingPromoProduct && (
           <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
             <div className="bg-white rounded-3xl border border-zinc-200 w-full max-w-md overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">

@@ -34,6 +34,16 @@ export interface Order {
   createdAt: string;
 }
 
+export interface Expense {
+  id: string;
+  title: string;
+  amount: number;
+  category: "inventory" | "ads" | "packaging" | "shipping" | "other";
+  type: "expense" | "income";
+  notes?: string;
+  createdAt: string;
+}
+
 const dbUrl = process.env.DATABASE_URL;
 if (!dbUrl) {
   throw new Error("DATABASE_URL environment variable is not set");
@@ -84,6 +94,18 @@ export async function initDbTables() {
       delivery_price NUMERIC DEFAULT 0,
       total_price NUMERIC NOT NULL,
       status TEXT DEFAULT 'pending',
+      created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+    );
+  `;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS expenses (
+      id TEXT PRIMARY KEY,
+      title TEXT NOT NULL,
+      amount NUMERIC NOT NULL,
+      category TEXT DEFAULT 'other',
+      type TEXT DEFAULT 'expense',
+      notes TEXT,
       created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
     );
   `;
