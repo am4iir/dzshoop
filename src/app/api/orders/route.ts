@@ -1,6 +1,7 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { sql, initDbTables } from "@/lib/db";
 import { isAdminAuthorized, unauthorizedResponse } from "@/lib/auth";
+import { sendOrderEmailNotification } from "@/lib/email";
 
 async function autoCleanupCompletedOrders() {
   try {
@@ -137,6 +138,23 @@ export async function POST(req: Request) {
       VALUES (${id}, ${productTitle}, ${productId}, ${selectedSize}, ${selectedColor}, ${quantity}, ${fullName}, ${phone}, ${wilayaName}, ${commune}, ${deliveryType}, ${deliveryPrice}, ${totalPrice}, 'pending')
     `;
 
+    // Trigger instant Email notification to axbwear@gmail.com
+    sendOrderEmailNotification({
+      id,
+      fullName,
+      phone,
+      wilayaName,
+      commune,
+      productTitle,
+      selectedSize,
+      selectedColor,
+      quantity,
+      deliveryType,
+      deliveryPrice,
+      totalPrice,
+    }).catch((err) => console.error("Email notification trigger error:", err));
+
+    // Trigger instant Telegram notification to phone if configured
     sendTelegramNotification({ id, fullName, phone, wilayaName, commune, productTitle, deliveryType, deliveryPrice, totalPrice });
 
     return NextResponse.json({ success: true, order: { id, fullName, totalPrice } });
