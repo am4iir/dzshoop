@@ -213,20 +213,12 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Link
-                href="/track"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-zinc-950 dark:bg-amber-400 hover:bg-black dark:hover:bg-amber-300 text-white dark:text-zinc-950 font-bold px-5 py-2.5 rounded-xl text-xs transition shadow-sm"
-              >
-                <span>تتبع طلبيتك الآن 📦</span>
-              </Link>
-              <Link
-                href="/"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-xs font-bold text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white py-2"
-              >
-                العودة لقائمة المنتجات
-              </Link>
-            </div>
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white"
+            >
+              العودة لقائمة المنتجات
+            </Link>
           </div>
         ) : (
           <>

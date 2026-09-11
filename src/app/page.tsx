@@ -267,9 +267,6 @@ export default function HomePage() {
                 <Link href="/" className="hover:text-white transition">الرئيسية والكوليكشن</Link>
               </li>
               <li>
-                <Link href="/track" className="hover:text-amber-400 transition font-semibold text-zinc-300">تتبع طلبيتك 📦</Link>
-              </li>
-              <li>
                 <Link href="/checkout" className="hover:text-white transition">سلة المشتريات والتأكيد</Link>
               </li>
             </ul>
