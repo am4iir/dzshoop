@@ -150,12 +150,12 @@ export default function HomePage() {
                   {/* Badges */}
                   <div className="absolute top-2.5 right-2.5 flex flex-col items-end gap-1.5 z-10">
                     {prod.inStock === false && (
-                      <span className="bg-zinc-950/90 text-amber-400 border border-amber-400/40 font-black text-[10px] sm:text-[11px] px-2.5 py-0.5 rounded-full shadow-md backdrop-blur-xs">
-                        ⚠️ نفدت الكمية
+                      <span className="bg-zinc-950/90 text-amber-400 border border-amber-400/40 font-black text-[10px] sm:text-[11px] px-2.5 py-0.5 rounded-full shadow-md backdrop-blur-xs tracking-wider uppercase">
+                        SOLD OUT
                       </span>
                     )}
                     {prod.badge && (
-                      <span className="bg-red-500 text-white font-black text-[11px] px-2.5 py-0.5 rounded-full shadow-sm">
+                      <span className="bg-red-500 text-white font-black text-[11px] px-2.5 py-0.5 rounded-full shadow-sm tracking-wide uppercase">
                         {prod.badge}
                       </span>
                     )}
@@ -182,9 +182,9 @@ export default function HomePage() {
                     {prod.inStock === false ? (
                       <Link
                         href={`/products/${prod.id}`}
-                        className="w-full inline-flex items-center justify-center py-2 sm:py-2.5 px-4 rounded-xl bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 font-bold text-xs sm:text-sm hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors duration-200"
+                        className="w-full inline-flex items-center justify-center py-2 sm:py-2.5 px-4 rounded-xl bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 font-extrabold text-xs sm:text-sm hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors duration-200 uppercase tracking-wider"
                       >
-                        نفدت الكمية ⚠️
+                        SOLD OUT
                       </Link>
                     ) : (
                       <Link

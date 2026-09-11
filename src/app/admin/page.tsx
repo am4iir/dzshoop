@@ -677,7 +677,7 @@ export default function AdminDashboardPage() {
                       : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"
                   }`}
                 >
-                  جميع المنتجات ({products.length})
+                  All Products ({products.length})
                 </button>
                 <button
                   onClick={() => setProductFilter("active")}
@@ -688,7 +688,7 @@ export default function AdminDashboardPage() {
                   }`}
                 >
                   <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                  المتوفرة ({activeProductsCount})
+                  In Stock ({activeProductsCount})
                 </button>
                 <button
                   onClick={() => setProductFilter("outofstock")}
@@ -699,7 +699,7 @@ export default function AdminDashboardPage() {
                   }`}
                 >
                   <span className="w-2 h-2 rounded-full bg-amber-500"></span>
-                  نفدت الكمية ({outOfStockCount})
+                  Sold Out ({outOfStockCount})
                 </button>
                 <button
                   onClick={() => setProductFilter("deleted")}
@@ -710,7 +710,7 @@ export default function AdminDashboardPage() {
                   }`}
                 >
                   <span className="w-2 h-2 rounded-full bg-red-500"></span>
-                  المحذوفة ({deletedProductsCount})
+                  Deleted ({deletedProductsCount})
                 </button>
               </div>
 
@@ -736,7 +736,7 @@ export default function AdminDashboardPage() {
             {/* Empty state */}
             {displayedProducts.length === 0 ? (
               <div className="bg-white rounded-2xl border border-zinc-200 p-12 text-center text-zinc-400 text-xs shadow-sm">
-                لا توجد منتجات مطابقة لهذا الفلتر حالياً.
+                No products found in this category.
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -761,25 +761,25 @@ export default function AdminDashboardPage() {
                       <div className="flex items-center justify-between gap-1.5 mb-2.5 flex-wrap">
                         <div className="flex items-center gap-1.5 flex-wrap">
                           {isDeleted ? (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-extrabold bg-red-100 text-red-700 px-2 py-0.5 rounded-lg border border-red-200">
+                            <span className="inline-flex items-center gap-1 text-[10px] font-extrabold bg-red-100 text-red-700 px-2 py-0.5 rounded-lg border border-red-200 font-mono uppercase">
                               <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse"></span>
-                              محذوف من المتجر
+                              Deleted
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-extrabold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-lg border border-emerald-200">
+                            <span className="inline-flex items-center gap-1 text-[10px] font-extrabold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-lg border border-emerald-200 font-mono uppercase">
                               <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
-                              معروض للزبائن
+                              Active
                             </span>
                           )}
 
                           {isOutOfStock ? (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-extrabold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-lg border border-amber-300">
+                            <span className="inline-flex items-center gap-1 text-[10px] font-extrabold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-lg border border-amber-300 font-mono uppercase">
                               <span className="w-1.5 h-1.5 rounded-full bg-amber-600 animate-pulse"></span>
-                              نفدت الكمية
+                              SOLD OUT
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-zinc-100 text-zinc-600 px-2 py-0.5 rounded-lg border border-zinc-200">
-                              متوفر
+                            <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-zinc-100 text-zinc-600 px-2 py-0.5 rounded-lg border border-zinc-200 font-mono uppercase">
+                              IN STOCK
                             </span>
                           )}
                         </div>
@@ -799,19 +799,19 @@ export default function AdminDashboardPage() {
                           }`}
                         />
                         {prod.badge && (
-                          <span className="absolute top-2 right-2 bg-red-500 text-white font-black text-[10px] px-2.5 py-0.5 rounded-full shadow-sm">
+                          <span className="absolute top-2 right-2 bg-red-500 text-white font-black text-[10px] px-2.5 py-0.5 rounded-full shadow-sm tracking-wide uppercase">
                             {prod.badge}
                           </span>
                         )}
                         {isOutOfStock && (
-                          <span className="absolute bottom-2 left-2 bg-zinc-950/90 text-amber-400 font-extrabold text-[10px] px-2.5 py-1 rounded-lg border border-amber-400/40 backdrop-blur-xs shadow-md">
-                            ⚠️ نفدت الكمية
+                          <span className="absolute bottom-2 left-2 bg-zinc-950/90 text-amber-400 font-black text-[10px] px-2.5 py-1 rounded-lg border border-amber-400/40 backdrop-blur-xs shadow-md tracking-wider uppercase">
+                            SOLD OUT
                           </span>
                         )}
                       </div>
 
                       <h4 className="font-bold text-sm text-zinc-900 line-clamp-1">{prod.name}</h4>
-                      <p className="text-xs text-zinc-400 mb-2 line-clamp-1">{prod.subtitle || "بدون وصف فرعي"}</p>
+                      <p className="text-xs text-zinc-400 mb-2 line-clamp-1">{prod.subtitle || "Streetwear"}</p>
 
                       {/* Price row */}
                       <div className="pt-2 border-t border-zinc-100 flex items-center justify-between mb-3">
@@ -829,10 +829,10 @@ export default function AdminDashboardPage() {
                             target="_blank"
                             className="text-xs text-zinc-600 hover:text-black font-semibold underline"
                           >
-                            معاينة ↗
+                            Preview ↗
                           </Link>
                         ) : (
-                          <span className="text-[11px] text-red-500 font-bold">مخفي</span>
+                          <span className="text-[11px] text-red-500 font-bold">Hidden</span>
                         )}
                       </div>
 
@@ -849,17 +849,17 @@ export default function AdminDashboardPage() {
                                 ? "bg-amber-100 hover:bg-emerald-50 text-amber-900 hover:text-emerald-800 border border-amber-300 hover:border-emerald-300 shadow-xs"
                                 : "bg-zinc-100 hover:bg-amber-50 text-zinc-700 hover:text-amber-800 border border-zinc-200 hover:border-amber-300"
                             }`}
-                            title={isOutOfStock ? "السلعة نافدة - اضغط لتحويلها إلى متوفرة" : "السلعة متوفرة - اضغط لجعلها نفدت الكمية"}
+                            title={isOutOfStock ? "Click to set IN STOCK" : "Click to set SOLD OUT"}
                           >
                             {isOutOfStock ? (
                               <>
                                 <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
-                                <span>⚠️ نفدت الكمية</span>
+                                <span>⚠️ Sold Out</span>
                               </>
                             ) : (
                               <>
                                 <Box className="w-3.5 h-3.5 text-emerald-600" />
-                                <span>📦 متوفر</span>
+                                <span>📦 In Stock</span>
                               </>
                             )}
                           </button>
@@ -873,10 +873,10 @@ export default function AdminDashboardPage() {
                                 ? "bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 shadow-xs"
                                 : "bg-zinc-100 text-zinc-700 border border-zinc-200 hover:bg-zinc-200"
                             }`}
-                            title="تعديل نسبة التخفيض، السعر المشطوب والشارة"
+                            title="Edit Sale / Discount"
                           >
                             <Tag className="w-3.5 h-3.5 text-red-500" />
-                            <span>{prod.badge ? `تخفيض (${prod.badge})` : "🏷️ Solde / تخفيض"}</span>
+                            <span>{prod.badge ? `Sale (${prod.badge})` : "🏷️ Sale / Promo"}</span>
                           </button>
                         </div>
 
@@ -887,20 +887,20 @@ export default function AdminDashboardPage() {
                               onClick={() => handleToggleDelete(prod.id, false)}
                               disabled={isBusy}
                               className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold text-red-600 hover:text-white bg-red-50 hover:bg-red-600 border border-red-200 hover:border-red-600 transition active:scale-95 cursor-pointer disabled:opacity-50"
-                              title="حذف وإخفاء المنتج من المتجر"
+                              title="Delete from store"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
-                              <span>حذف (Delete)</span>
+                              <span>Delete</span>
                             </button>
                           ) : (
                             <button
                               onClick={() => handleToggleDelete(prod.id, true)}
                               disabled={isBusy}
                               className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold text-emerald-700 hover:text-white bg-emerald-50 hover:bg-emerald-600 border border-emerald-300 hover:border-emerald-600 transition active:scale-95 cursor-pointer disabled:opacity-50"
-                              title="استرجاع المنتج ليعود للعرض في المتجر"
+                              title="Restore to store"
                             >
                               <RotateCcw className="w-3.5 h-3.5" />
-                              <span>استرجاع (Restore)</span>
+                              <span>Restore</span>
                             </button>
                           )}
 
@@ -908,10 +908,10 @@ export default function AdminDashboardPage() {
                             onClick={() => handlePermanentDelete(prod.id, prod.name)}
                             disabled={isBusy}
                             className="inline-flex items-center justify-center gap-1 py-2 px-2.5 rounded-xl text-xs font-bold text-zinc-400 hover:text-red-600 hover:bg-red-50 border border-zinc-200 hover:border-red-200 transition cursor-pointer disabled:opacity-50"
-                            title="حذف نهائي لا يمكن استرجاعه من الداتابيز"
+                            title="Permanent Delete"
                           >
                             <Trash2 className="w-3.5 h-3.5 text-zinc-400 hover:text-red-500" />
-                            <span className="text-[10px]">نهائي</span>
+                            <span className="text-[10px]">Permanent</span>
                           </button>
                         </div>
                       </div>
