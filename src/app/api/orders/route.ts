@@ -139,20 +139,24 @@ export async function POST(req: Request) {
     `;
 
     // Trigger instant Email notification to axbwear@gmail.com
-    sendOrderEmailNotification({
-      id,
-      fullName,
-      phone,
-      wilayaName,
-      commune,
-      productTitle,
-      selectedSize,
-      selectedColor,
-      quantity,
-      deliveryType,
-      deliveryPrice,
-      totalPrice,
-    }).catch((err) => console.error("Email notification trigger error:", err));
+    try {
+      await sendOrderEmailNotification({
+        id,
+        fullName,
+        phone,
+        wilayaName,
+        commune,
+        productTitle,
+        selectedSize,
+        selectedColor,
+        quantity,
+        deliveryType,
+        deliveryPrice,
+        totalPrice,
+      });
+    } catch (err) {
+      console.error("Email notification trigger error:", err);
+    }
 
     // Trigger instant Telegram notification to phone if configured
     sendTelegramNotification({ id, fullName, phone, wilayaName, commune, productTitle, deliveryType, deliveryPrice, totalPrice });

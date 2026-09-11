@@ -1,4 +1,4 @@
-﻿import nodemailer from "nodemailer";
+import nodemailer from "nodemailer";
 
 export interface OrderNotificationData {
   id: string;
@@ -17,21 +17,19 @@ export interface OrderNotificationData {
 
 export async function sendOrderEmailNotification(order: OrderNotificationData) {
   const emailUser = process.env.EMAIL_USER || "axbwear@gmail.com";
-  const emailPass = process.env.EMAIL_PASS; // Google App Password (mot de passe d'application)
   const targetEmail = process.env.ADMIN_EMAIL || "axbwear@gmail.com";
-
-  // If EMAIL_PASS is not yet configured, log and exit safely without throwing
-  if (!emailPass) {
-    console.log(`[Email Notification] EMAIL_PASS not set. Order #${order.id} notification queued for ${targetEmail}.`);
-    return false;
-  }
+  const emailPass = process.env.EMAIL_PASS || "xbevcwbmnzitgqkn";
+  // Sanitize password (strip spaces if user pasted with spaces)
+  const cleanPass = emailPass.replace(/\s+/g, "");
 
   try {
     const transporter = nodemailer.createTransport({
-      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
       auth: {
         user: emailUser,
-        pass: emailPass,
+        pass: cleanPass,
       },
     });
 
