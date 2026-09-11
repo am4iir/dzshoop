@@ -80,6 +80,11 @@ export default function AdminDashboardPage() {
   const [promoBadge, setPromoBadge] = useState<string>("");
   const [savingPromo, setSavingPromo] = useState(false);
 
+  // Custom Revenue Override state (allows resetting to 0 or setting custom revenue)
+  const [customRevenue, setCustomRevenue] = useState<number | null>(null);
+  const [isSalesModalOpen, setIsSalesModalOpen] = useState(false);
+  const [salesInputVal, setSalesInputVal] = useState("");
+
   // New product form
   const [name, setName] = useState("");
   const [subtitle, setSubtitle] = useState("");
@@ -114,6 +119,16 @@ export default function AdminDashboardPage() {
       setActiveTabState(savedTab as any);
     }
 
+    // Restore custom revenue override if previously set
+    const savedCustomRev = localStorage.getItem("axb_admin_custom_revenue");
+    if (savedCustomRev !== null && savedCustomRev !== "") {
+      const parsed = Number(savedCustomRev);
+      if (!isNaN(parsed)) {
+        setCustomRevenue(parsed);
+        setSalesInputVal(parsed.toString());
+      }
+    }
+
     if (saved === "verified" && token) {
       setIsAuthenticated(true);
       loadData();
@@ -146,6 +161,7 @@ export default function AdminDashboardPage() {
     localStorage.removeItem("axb_admin_auth_2026");
     localStorage.removeItem("axb_admin_token");
     localStorage.removeItem("axb_admin_active_tab");
+    localStorage.removeItem("axb_admin_custom_revenue");
     sessionStorage.removeItem("store_admin_auth");
     localStorage.removeItem("store_admin_auth");
     setIsAuthenticated(false);
@@ -369,6 +385,42 @@ export default function AdminDashboardPage() {
     }
   };
 
+  const handleSaveCustomRevenue = (val: number | null) => {
+    setCustomRevenue(val);
+    if (val === null) {
+      localStorage.removeItem("axb_admin_custom_revenue");
+      setSalesInputVal("");
+    } else {
+      localStorage.setItem("axb_admin_custom_revenue", val.toString());
+      setSalesInputVal(val.toString());
+    }
+    setIsSalesModalOpen(false);
+  };
+
+  const handleDeleteAllOrders = async () => {
+    if (!confirm("تحذير أخير: هل أنت متأكد من مسح وحذف جميع الطلبيات التجريبية نهائياً من قاعدة البيانات؟ لا يمكن التراجع.")) return;
+    try {
+      setLoading(true);
+      const res = await fetch("/api/orders?orderId=all", {
+        method: "DELETE",
+        headers: getAdminHeaders(),
+      });
+      const data = await res.json();
+      if (data.success) {
+        handleSaveCustomRevenue(null);
+        alert("تم مسح جميع الطلبيات بنجاح وتصفير السجل!");
+        loadData();
+      } else {
+        alert("تعذر حذف الطلبيات");
+      }
+    } catch (e) {
+      alert("حدث خطأ أثناء الاتصال بالسيرفر");
+    } finally {
+      setLoading(false);
+      setIsSalesModalOpen(false);
+    }
+  };
+
   const handleCreateProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !price) {
@@ -538,9 +590,10 @@ export default function AdminDashboardPage() {
 
   const pendingCount = orders.filter((o) => o.status === "pending").length;
   const confirmedCount = orders.filter((o) => o.status === "confirmed").length;
-  const totalRevenue = orders
+  const calculatedTotalRevenue = orders
     .filter((o) => o.status !== "cancelled")
     .reduce((acc, curr) => acc + curr.totalPrice, 0);
+  const totalRevenue = customRevenue !== null ? customRevenue : calculatedTotalRevenue;
   const activeProductsCount = products.filter((p) => !p.isDeleted && p.inStock !== false).length;
   const outOfStockCount = products.filter((p) => !p.isDeleted && p.inStock === false).length;
   const deletedProductsCount = products.filter((p) => p.isDeleted).length;
@@ -562,7 +615,7 @@ export default function AdminDashboardPage() {
     .filter((e) => e.type === "income")
     .reduce((acc, curr) => acc + curr.amount, 0);
 
-  const totalRevenues = storeDeliveredRevenue + storeConfirmedRevenue + manualIncome;
+  const totalRevenues = (customRevenue !== null ? customRevenue : (storeDeliveredRevenue + storeConfirmedRevenue)) + manualIncome;
 
   const totalExpenses = expenses
     .filter((e) => e.type === "expense")
@@ -654,9 +707,32 @@ export default function AdminDashboardPage() {
             </div>
           </div>
 
-          <div className="bg-white p-4 sm:p-5 rounded-2xl border border-zinc-200/90 shadow-sm">
-            <span className="text-[11px] font-bold text-zinc-400 block mb-1">إجمالي المبيعات المحتمل</span>
-            <span className="text-lg sm:text-2xl font-black text-zinc-900">{formatPrice(totalRevenue)}</span>
+          <div className="bg-white p-4 sm:p-5 rounded-2xl border border-zinc-200/90 shadow-sm relative group hover:border-amber-400/80 transition">
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-[11px] font-bold text-zinc-400">إجمالي المبيعات المحتمل</span>
+              <button
+                type="button"
+                onClick={() => {
+                  setSalesInputVal(customRevenue !== null ? customRevenue.toString() : "0");
+                  setIsSalesModalOpen(true);
+                }}
+                className="text-[10px] font-extrabold text-amber-700 hover:text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-200/80 px-2 py-0.5 rounded-lg transition flex items-center gap-1 cursor-pointer"
+                title="تصفير الأرباح أو كتابة المبلغ الذي تريده"
+              >
+                <RotateCcw className="w-2.5 h-2.5" />
+                <span>تصفير / تعديل</span>
+              </button>
+            </div>
+            <div className="flex items-baseline justify-between gap-1">
+              <span className="text-lg sm:text-2xl font-black text-zinc-900">
+                {formatPrice(totalRevenue)}
+              </span>
+              {customRevenue !== null && (
+                <span className="text-[9px] font-extrabold text-amber-800 bg-amber-100 border border-amber-300 px-1.5 py-0.5 rounded-full shrink-0">
+                  معدل: {formatPrice(customRevenue)}
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
@@ -1684,6 +1760,128 @@ export default function AdminDashboardPage() {
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        )}
+
+        {/* TAB & MODAL: Sales & Revenue Management (Reset to 0 / Custom Value / Purge Orders) */}
+        {isSalesModalOpen && (
+          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4" dir="rtl">
+            <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-zinc-200 animate-in fade-in zoom-in-95 duration-200 space-y-5">
+              <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center">
+                    <Wallet className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-extrabold text-sm text-zinc-900">تصفير وتعديل إجمالي المبيعات والأرباح</h3>
+                    <p className="text-[10px] text-zinc-400">تحكم كامل في الرقم الظاهر في الإحصائيات</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsSalesModalOpen(false)}
+                  className="text-zinc-400 hover:text-zinc-600 p-1.5 rounded-lg hover:bg-zinc-100 transition cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Current status display */}
+              <div className="bg-zinc-50 border border-zinc-200/80 rounded-2xl p-4 text-xs space-y-1.5">
+                <div className="flex justify-between items-center">
+                  <span className="text-zinc-500 font-medium">المبلغ المعروض حالياً:</span>
+                  <span className="text-base font-black text-zinc-900">{formatPrice(totalRevenue)}</span>
+                </div>
+                <div className="flex justify-between items-center text-[11px]">
+                  <span className="text-zinc-400">المبلغ الفعلي المحسوب من الطلبيات:</span>
+                  <span className="font-bold text-zinc-600">{formatPrice(calculatedTotalRevenue)}</span>
+                </div>
+              </div>
+
+              {/* Option 1: Quick Reset to 0 DZD */}
+              <div className="space-y-1.5">
+                <span className="text-xs font-bold text-zinc-800 block">1. تصفير فوري بنقرة واحدة:</span>
+                <button
+                  type="button"
+                  onClick={() => handleSaveCustomRevenue(0)}
+                  className="w-full bg-amber-500 hover:bg-amber-600 text-black font-black py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-xs cursor-pointer"
+                >
+                  <RotateCcw className="w-4 h-4" />
+                  <span>تصفير إجمالي المبيعات إلى 0 د.ج. فوراً</span>
+                </button>
+              </div>
+
+              {/* Option 2: Set custom amount */}
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const num = Number(salesInputVal);
+                  if (isNaN(num) || num < 0) {
+                    alert("يرجى إدخال مبلغ صحيح (0 أو أكبر)");
+                    return;
+                  }
+                  handleSaveCustomRevenue(num);
+                }}
+                className="space-y-2 pt-3 border-t border-zinc-100"
+              >
+                <label className="text-xs font-bold text-zinc-800 block">2. أو حدد المبلغ الذي تريده كما تحب:</label>
+                <div className="flex items-center gap-2">
+                  <div className="relative flex-1">
+                    <input
+                      type="number"
+                      min="0"
+                      step="50"
+                      value={salesInputVal}
+                      onChange={(e) => setSalesInputVal(e.target.value)}
+                      placeholder="مثلاً: 0 أو 50000"
+                      className="w-full bg-zinc-50 border border-zinc-200 focus:border-amber-400 focus:bg-white rounded-xl py-2.5 px-3 text-xs font-bold text-zinc-900 outline-none transition"
+                    />
+                    <span className="absolute left-3 top-2.5 text-xs text-zinc-400 font-bold pointer-events-none">د.ج.</span>
+                  </div>
+                  <button
+                    type="submit"
+                    className="bg-zinc-950 hover:bg-black text-white font-bold px-4 py-2.5 rounded-xl text-xs transition cursor-pointer shrink-0"
+                  >
+                    حفظ المبلغ
+                  </button>
+                </div>
+              </form>
+
+              {/* Option 3: Restore automatic calculation */}
+              {customRevenue !== null && (
+                <div className="pt-2 border-t border-zinc-100">
+                  <button
+                    type="button"
+                    onClick={() => handleSaveCustomRevenue(null)}
+                    className="w-full bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-bold py-2.5 px-4 rounded-xl text-xs transition cursor-pointer flex items-center justify-center gap-1.5"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5 text-zinc-500" />
+                    <span>استرجاع الحساب التلقائي من الطلبيات ({formatPrice(calculatedTotalRevenue)})</span>
+                  </button>
+                </div>
+              )}
+
+              {/* Option 4: Wipe all orders from database */}
+              {orders.length > 0 && (
+                <div className="pt-3 border-t border-red-100 bg-red-50/60 p-3.5 rounded-2xl space-y-2">
+                  <div className="flex items-center gap-1.5 text-red-700 text-xs font-bold">
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>تصفير وحذف جميع الطلبيات التجريبية ({orders.length} طلبية):</span>
+                  </div>
+                  <p className="text-[10px] text-zinc-500 leading-relaxed">
+                    إذا أردت البدء على بياض ومسح كل الطلبيات التجريبية من قاعدة البيانات وتصفير عداد المبيعات والطلبات كلياً.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleDeleteAllOrders}
+                    className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-3 rounded-xl text-[11px] transition cursor-pointer flex items-center justify-center gap-1.5"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                    <span>حذف جميع الطلبيات المسجلة نهائياً (تصفير كامل)</span>
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}

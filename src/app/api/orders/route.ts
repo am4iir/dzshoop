@@ -194,6 +194,10 @@ export async function DELETE(req: Request) {
     if (!orderId) {
       return NextResponse.json({ success: false, error: "Missing orderId" }, { status: 400 });
     }
+    if (orderId === "all") {
+      await sql`DELETE FROM orders`;
+      return NextResponse.json({ success: true, message: "All orders deleted" });
+    }
     await sql`DELETE FROM orders WHERE id = ${orderId}`;
     return NextResponse.json({ success: true });
   } catch (error) {
