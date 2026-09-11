@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { useCart } from "@/components/CartContext";
@@ -17,6 +17,34 @@ export default function CheckoutPage() {
   const [wilayaCode, setWilayaCode] = useState("16");
   const [commune, setCommune] = useState("الجزائر الوسطى");
   const [deliveryType, setDeliveryType] = useState<"home" | "desk">("home");
+
+  // Hydrate checkout fields from localStorage across refreshes
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("axb_checkout_data");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.fullName) setFullName(parsed.fullName);
+        if (parsed.phone) setPhone(parsed.phone);
+        if (parsed.wilayaCode) setWilayaCode(parsed.wilayaCode);
+        if (parsed.commune) setCommune(parsed.commune);
+        if (parsed.deliveryType) setDeliveryType(parsed.deliveryType);
+      }
+    } catch (e) {}
+  }, []);
+
+  // Persist checkout fields to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem("axb_checkout_data", JSON.stringify({
+        fullName,
+        phone,
+        wilayaCode,
+        commune,
+        deliveryType
+      }));
+    } catch (e) {}
+  }, [fullName, phone, wilayaCode, commune, deliveryType]);
 
   // Promo Code State
   const [promoInput, setPromoInput] = useState("");
@@ -95,6 +123,9 @@ export default function CheckoutPage() {
         setOrderId(data.order.id);
         setOrderConfirmed(true);
         clearCart();
+        try {
+          localStorage.removeItem("axb_checkout_data");
+        } catch (e) {}
 
         try {
           confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });

@@ -43,11 +43,20 @@ export default function AdminDashboardPage() {
 
   // Authentication State
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
   const [passcode, setPasscode] = useState("");
   const [authError, setAuthError] = useState(false);
 
-  // Dashboard state
-  const [activeTab, setActiveTab] = useState<"orders" | "products" | "new-product" | "finance">("orders");
+  // Dashboard state - Persist active tab across refreshes
+  const [activeTab, setActiveTabState] = useState<"orders" | "products" | "new-product" | "finance">("orders");
+  const setActiveTab = (tab: "orders" | "products" | "new-product" | "finance") => {
+    setActiveTabState(tab);
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem("axb_admin_active_tab", tab);
+      } catch (e) {}
+    }
+  };
   const [orders, setOrders] = useState<Order[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -83,37 +92,60 @@ export default function AdminDashboardPage() {
   const [imageUrl, setImageUrl] = useState("");
   const [submittingProduct, setSubmittingProduct] = useState(false);
 
-  // Helper: get stored admin token and return auth headers for API calls
+  // Helper: get stored admin token (checks both localStorage and sessionStorage)
+  const getStoredToken = (): string => {
+    if (typeof window === "undefined") return "";
+    return localStorage.getItem("axb_admin_token") || sessionStorage.getItem("axb_admin_token") || "";
+  };
+
   const getAdminHeaders = (): HeadersInit => ({
     "Content-Type": "application/json",
-    "Authorization": `Bearer ${sessionStorage.getItem("axb_admin_token") || ""}`,
+    "Authorization": `Bearer ${getStoredToken()}`,
   });
 
   useEffect(() => {
-    const saved = sessionStorage.getItem("axb_admin_auth_2026");
-    const token = sessionStorage.getItem("axb_admin_token");
+    // Check saved session/token from both localStorage and sessionStorage
+    const saved = localStorage.getItem("axb_admin_auth_2026") || sessionStorage.getItem("axb_admin_auth_2026");
+    const token = localStorage.getItem("axb_admin_token") || sessionStorage.getItem("axb_admin_token");
+
+    // Restore active tab if previously selected
+    const savedTab = localStorage.getItem("axb_admin_active_tab");
+    if (savedTab && ["orders", "products", "new-product", "finance"].includes(savedTab)) {
+      setActiveTabState(savedTab as any);
+    }
+
     if (saved === "verified" && token) {
       setIsAuthenticated(true);
       loadData();
     } else {
       setIsAuthenticated(false);
     }
+    setCheckingAuth(false);
   }, []);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // Store the actual token so it can be sent as Bearer in API calls
-    sessionStorage.setItem("axb_admin_auth_2026", "verified");
-    sessionStorage.setItem("axb_admin_token", passcode.trim());
-    setIsAuthenticated(true);
-    setAuthError(false);
-    loadData();
+    const cleanPass = passcode.trim();
+    if (cleanPass === "abxabx202625") {
+      // Store in BOTH localStorage and sessionStorage so it NEVER logs out on refresh
+      localStorage.setItem("axb_admin_auth_2026", "verified");
+      localStorage.setItem("axb_admin_token", cleanPass);
+      sessionStorage.setItem("axb_admin_auth_2026", "verified");
+      sessionStorage.setItem("axb_admin_token", cleanPass);
+      setIsAuthenticated(true);
+      setAuthError(false);
+      loadData();
+    } else {
+      setAuthError(true);
+    }
   };
 
   const handleLogout = () => {
     sessionStorage.removeItem("axb_admin_auth_2026");
     sessionStorage.removeItem("axb_admin_token");
     localStorage.removeItem("axb_admin_auth_2026");
+    localStorage.removeItem("axb_admin_token");
+    localStorage.removeItem("axb_admin_active_tab");
     sessionStorage.removeItem("store_admin_auth");
     localStorage.removeItem("store_admin_auth");
     setIsAuthenticated(false);
@@ -123,7 +155,7 @@ export default function AdminDashboardPage() {
 
   const loadData = () => {
     setLoading(true);
-    const token = sessionStorage.getItem("axb_admin_token") || "";
+    const token = getStoredToken();
     const headers: HeadersInit = {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${token}`,
@@ -436,6 +468,16 @@ export default function AdminDashboardPage() {
       alert("حدث خطأ في النظام");
     }
   };
+
+  // Avoid flashing lock screen while checking saved auth session
+  if (checkingAuth) {
+    return (
+      <div className="min-h-screen bg-zinc-950 text-white flex flex-col items-center justify-center gap-3">
+        <div className="animate-spin w-9 h-9 border-3 border-amber-400 border-t-transparent rounded-full" />
+        <span className="text-xs text-zinc-400 font-bold font-mono tracking-wider">axb.wear • جاري التحقق...</span>
+      </div>
+    );
+  }
 
   // Lock Screen
   if (!isAuthenticated) {
