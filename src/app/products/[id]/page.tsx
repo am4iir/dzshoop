@@ -75,6 +75,20 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   const [orderConfirmed, setOrderConfirmed] = useState(false);
   const [orderId, setOrderId] = useState("");
 
+  // Hydrate confirmed order from sessionStorage across refreshes
+  useEffect(() => {
+    try {
+      const savedOrder = sessionStorage.getItem(`axb_confirmed_order_${resolvedParams.id}`);
+      if (savedOrder) {
+        const parsed = JSON.parse(savedOrder);
+        if (parsed.orderId) {
+          setOrderId(parsed.orderId);
+          setOrderConfirmed(true);
+        }
+      }
+    } catch (e) {}
+  }, [resolvedParams.id]);
+
   useEffect(() => {
     fetch("/api/products")
       .then((r) => r.json())
@@ -197,6 +211,9 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
         setOrderId(data.order.id);
         setOrderConfirmed(true);
         try {
+          sessionStorage.setItem(`axb_confirmed_order_${resolvedParams.id}`, JSON.stringify({ orderId: data.order.id }));
+        } catch (e) {}
+        try {
           localStorage.removeItem("axb_checkout_data");
         } catch (e) {}
         try {
@@ -246,7 +263,12 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
             <Link
               href="/"
-              className="inline-flex items-center gap-2 text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white"
+              onClick={() => {
+                try {
+                  sessionStorage.removeItem(`axb_confirmed_order_${resolvedParams.id}`);
+                } catch (e) {}
+              }}
+              className="inline-flex items-center gap-2 text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 px-5 py-2.5 rounded-xl transition cursor-pointer"
             >
               العودة لقائمة المنتجات
             </Link>
