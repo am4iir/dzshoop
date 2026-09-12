@@ -728,32 +728,32 @@ export default function AdminDashboardPage() {
               <button
                 type="button"
                 onClick={() => setLang("ar")}
-                className={`px-2 py-0.5 rounded-full transition cursor-pointer ${
+                className={`px-2.5 py-0.5 rounded-full transition cursor-pointer ${
                   lang === "ar" ? "bg-amber-400 text-zinc-950 font-black shadow-xs" : "text-zinc-400 hover:text-white"
                 }`}
                 title="العربية (الأساسية)"
               >
-                🇩🇿 ع
+                AR
               </button>
               <button
                 type="button"
                 onClick={() => setLang("en")}
-                className={`px-2 py-0.5 rounded-full transition cursor-pointer ${
+                className={`px-2.5 py-0.5 rounded-full transition cursor-pointer ${
                   lang === "en" ? "bg-amber-400 text-zinc-950 font-black shadow-xs" : "text-zinc-400 hover:text-white"
                 }`}
                 title="English"
               >
-                🇬🇧 EN
+                EN
               </button>
               <button
                 type="button"
                 onClick={() => setLang("fr")}
-                className={`px-2 py-0.5 rounded-full transition cursor-pointer ${
+                className={`px-2.5 py-0.5 rounded-full transition cursor-pointer ${
                   lang === "fr" ? "bg-amber-400 text-zinc-950 font-black shadow-xs" : "text-zinc-400 hover:text-white"
                 }`}
                 title="Français"
               >
-                🇫🇷 FR
+                FR
               </button>
             </div>
           </div>
@@ -986,42 +986,42 @@ export default function AdminDashboardPage() {
             </div>
 
             {/* Language Switcher next to theme: 1 AR | 2 EN | 3 FR */}
-            <div className="flex items-center bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-full p-0.5 text-[10px] sm:text-[11px] font-bold">
+            <div className="flex items-center bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-full p-0.5 text-[11px] sm:text-xs font-bold">
               <button
                 type="button"
                 onClick={() => setLang("ar")}
-                className={`px-2 py-1 rounded-full transition cursor-pointer ${
+                className={`px-2.5 py-1 rounded-full transition cursor-pointer ${
                   lang === "ar"
                     ? "bg-amber-400 text-zinc-950 font-black shadow-xs"
                     : "text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white"
                 }`}
                 title="العربية (الأساسية)"
               >
-                🇩🇿 ع
+                AR
               </button>
               <button
                 type="button"
                 onClick={() => setLang("en")}
-                className={`px-2 py-1 rounded-full transition cursor-pointer ${
+                className={`px-2.5 py-1 rounded-full transition cursor-pointer ${
                   lang === "en"
                     ? "bg-amber-400 text-zinc-950 font-black shadow-xs"
                     : "text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white"
                 }`}
                 title="English"
               >
-                🇬🇧 EN
+                EN
               </button>
               <button
                 type="button"
                 onClick={() => setLang("fr")}
-                className={`px-2 py-1 rounded-full transition cursor-pointer ${
+                className={`px-2.5 py-1 rounded-full transition cursor-pointer ${
                   lang === "fr"
                     ? "bg-amber-400 text-zinc-950 font-black shadow-xs"
                     : "text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white"
                 }`}
                 title="Français"
               >
-                🇫🇷 FR
+                FR
               </button>
             </div>
 
