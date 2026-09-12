@@ -35,7 +35,11 @@ import {
   DollarSign,
   ArrowDownRight,
   ArrowUpRight,
-  Receipt
+  Receipt,
+  Edit3,
+  Upload,
+  Image as ImageIcon,
+  Check
 } from "lucide-react";
 
 export default function AdminDashboardPage() {
@@ -96,6 +100,21 @@ export default function AdminDashboardPage() {
   const [colorsStr, setColorsStr] = useState("أسود, رمادي");
   const [imageUrl, setImageUrl] = useState("");
   const [submittingProduct, setSubmittingProduct] = useState(false);
+  const [newProductImageMode, setNewProductImageMode] = useState<"file" | "url">("file");
+
+  // Edit product modal state
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editSubtitle, setEditSubtitle] = useState("");
+  const [editPrice, setEditPrice] = useState("");
+  const [editOriginalPrice, setEditOriginalPrice] = useState("");
+  const [editBadge, setEditBadge] = useState("");
+  const [editSizesStr, setEditSizesStr] = useState("");
+  const [editColorsStr, setEditColorsStr] = useState("");
+  const [editDescription, setEditDescription] = useState("");
+  const [editImageUrl, setEditImageUrl] = useState("");
+  const [savingEdit, setSavingEdit] = useState(false);
+  const [editImageMode, setEditImageMode] = useState<"file" | "url">("file");
 
   // Helper: get stored admin token from current session
   const getStoredToken = (): string => {
@@ -360,6 +379,129 @@ export default function AdminDashboardPage() {
       alert("حدث خطأ في النظام");
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Helper: compress uploaded image using HTML canvas to keep payload small & fast
+  const compressImageFile = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const MAX_DIM = 1200;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > MAX_DIM) {
+              height = Math.round((height * MAX_DIM) / width);
+              width = MAX_DIM;
+            }
+          } else {
+            if (height > MAX_DIM) {
+              width = Math.round((width * MAX_DIM) / height);
+              height = MAX_DIM;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) {
+            resolve(event.target?.result as string);
+            return;
+          }
+          ctx.drawImage(img, 0, 0, width, height);
+          const dataUrl = canvas.toDataURL("image/jpeg", 0.82);
+          resolve(dataUrl);
+        };
+        img.onerror = (err) => reject(err);
+        img.src = event.target?.result as string;
+      };
+      reader.onerror = (err) => reject(err);
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleFileUploadForNew = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const base64 = await compressImageFile(file);
+      setImageUrl(base64);
+    } catch (err) {
+      alert("تعذر قراءة ملف الصورة، يرجى المحاولة مرة أخرى");
+    }
+  };
+
+  const handleFileUploadForEdit = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const base64 = await compressImageFile(file);
+      setEditImageUrl(base64);
+    } catch (err) {
+      alert("تعذر قراءة ملف الصورة، يرجى المحاولة مرة أخرى");
+    }
+  };
+
+  const openEditModal = (prod: Product) => {
+    setEditingProduct(prod);
+    setEditName(prod.name || "");
+    setEditSubtitle(prod.subtitle || "");
+    setEditPrice(prod.price ? prod.price.toString() : "");
+    setEditOriginalPrice(prod.originalPrice ? prod.originalPrice.toString() : "");
+    setEditBadge(prod.badge || "");
+    setEditSizesStr(Array.isArray(prod.sizes) ? prod.sizes.join(", ") : "");
+    setEditColorsStr(Array.isArray(prod.colors) ? prod.colors.join(", ") : "");
+    setEditDescription(prod.description || "");
+    const currentImg = prod.images?.[0] || "";
+    setEditImageUrl(currentImg);
+    setEditImageMode(currentImg.startsWith("data:") ? "file" : "url");
+  };
+
+  const handleSaveEditProduct = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingProduct) return;
+    const numPrice = Number(editPrice);
+    if (isNaN(numPrice) || numPrice <= 0) {
+      alert("يرجى إدخال سعر بيع صحيح للمنتج");
+      return;
+    }
+
+    setSavingEdit(true);
+    try {
+      const res = await fetch("/api/products", {
+        method: "PATCH",
+        headers: getAdminHeaders(),
+        body: JSON.stringify({
+          id: editingProduct.id,
+          action: "update",
+          name: editName.trim(),
+          subtitle: editSubtitle.trim(),
+          price: numPrice,
+          originalPrice: editOriginalPrice ? Number(editOriginalPrice) : null,
+          badge: editBadge.trim(),
+          sizes: editSizesStr.split(",").map((s) => s.trim()).filter(Boolean),
+          colors: editColorsStr.split(",").map((c) => c.trim()).filter(Boolean),
+          description: editDescription.trim(),
+          images: editImageUrl ? [editImageUrl] : editingProduct.images
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert("تم حفظ تعديلات المنتج بنجاح! ✅");
+        setEditingProduct(null);
+        loadData();
+      } else {
+        alert(data.error || "تعذر تعديل المنتج");
+      }
+    } catch (err) {
+      alert("حدث خطأ أثناء تعديل بيانات المنتج");
+    } finally {
+      setSavingEdit(false);
     }
   };
 
@@ -1111,8 +1253,19 @@ export default function AdminDashboardPage() {
                         )}
                       </div>
 
-                      {/* Action buttons: Stock, Promo, Delete, Restore */}
+                      {/* Action buttons: Edit, Stock, Promo, Delete, Restore */}
                       <div className="mt-auto pt-3 border-t border-zinc-100 space-y-2">
+                        {/* Edit Product Button */}
+                        <button
+                          onClick={() => openEditModal(prod)}
+                          disabled={isBusy}
+                          className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-black text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-200 hover:border-amber-300 transition active:scale-95 cursor-pointer shadow-xs disabled:opacity-50"
+                          title="تعديل اسم وسعر ووصف وصورة ومقاسات المنتج"
+                        >
+                          <Edit3 className="w-3.5 h-3.5 text-amber-600" />
+                          <span>تعديل تفاصيل المنتج (Edit)</span>
+                        </button>
+
                         {/* Row 1: Stock Status Toggle & Promotion Edit */}
                         <div className="flex items-center gap-2">
                           {/* Stock Toggle */}
@@ -1279,15 +1432,96 @@ export default function AdminDashboardPage() {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-zinc-700 font-bold mb-1.5">رابط صورة المنتج (Image URL)</label>
-                <input
-                  type="url"
-                  placeholder="https://images.unsplash.com/... (أو اترك فارغاً لاستخدام صورة افتراضية)"
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  className="w-full bg-zinc-50 border border-zinc-200 focus:border-zinc-900 focus:bg-white rounded-xl px-4 py-3 text-xs text-zinc-900 outline-none transition dir-ltr text-right"
-                />
+              {/* Product Image Section: File Upload from PC/Phone or URL */}
+              <div className="bg-zinc-50 border border-zinc-200 rounded-2xl p-4 space-y-3">
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <label className="block text-zinc-800 font-bold text-xs">
+                    صورة المنتج الرئيسية *
+                  </label>
+                  <div className="flex items-center bg-zinc-200/80 p-0.5 rounded-lg text-[11px] font-bold">
+                    <button
+                      type="button"
+                      onClick={() => setNewProductImageMode("file")}
+                      className={`px-2.5 py-1 rounded-md transition cursor-pointer ${
+                        newProductImageMode === "file" 
+                          ? "bg-white text-zinc-900 shadow-xs" 
+                          : "text-zinc-600 hover:text-zinc-900"
+                      }`}
+                    >
+                      📁 رفع من جهازك (PC / الهاتف)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setNewProductImageMode("url")}
+                      className={`px-2.5 py-1 rounded-md transition cursor-pointer ${
+                        newProductImageMode === "url" 
+                          ? "bg-white text-zinc-900 shadow-xs" 
+                          : "text-zinc-600 hover:text-zinc-900"
+                      }`}
+                    >
+                      🔗 إدخال رابط (URL)
+                    </button>
+                  </div>
+                </div>
+
+                {newProductImageMode === "file" ? (
+                  <div>
+                    <label className="flex flex-col items-center justify-center border-2 border-dashed border-zinc-300 hover:border-zinc-900 bg-white hover:bg-zinc-50/70 rounded-xl p-5 cursor-pointer transition group">
+                      <div className="w-10 h-10 rounded-full bg-zinc-100 group-hover:bg-amber-50 text-zinc-500 group-hover:text-amber-600 flex items-center justify-center mb-2 transition">
+                        <Upload className="w-5 h-5" />
+                      </div>
+                      <span className="text-xs font-bold text-zinc-800">
+                        اضغط هنا لاختيار صورة من جهازك
+                      </span>
+                      <span className="text-[10px] text-zinc-400 mt-0.5">
+                        يدعم جميع أنواع الصور (JPG, PNG, WEBP) - يتم ضغطها وتحسين سرعتها تلقائياً
+                      </span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileUploadForNew}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+                ) : (
+                  <div>
+                    <input
+                      type="url"
+                      placeholder="https://images.unsplash.com/... (أو اترك فارغاً لاستخدام صورة افتراضية)"
+                      value={imageUrl}
+                      onChange={(e) => setImageUrl(e.target.value)}
+                      className="w-full bg-white border border-zinc-200 focus:border-zinc-900 rounded-xl px-4 py-3 text-xs text-zinc-900 outline-none transition dir-ltr text-right"
+                    />
+                  </div>
+                )}
+
+                {/* Preview Selected Image */}
+                {imageUrl && (
+                  <div className="flex items-center gap-3 bg-white p-3 rounded-xl border border-zinc-200 shadow-xs">
+                    <img
+                      src={imageUrl}
+                      alt="معاينة الصورة"
+                      className="w-14 h-14 object-cover rounded-lg border border-zinc-200 shrink-0"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5 text-emerald-600 font-bold text-xs">
+                        <Check className="w-3.5 h-3.5" />
+                        <span>تم تحديد صورة المنتج بنجاح</span>
+                      </div>
+                      <span className="text-[10px] text-zinc-400 truncate block mt-0.5 dir-ltr text-left">
+                        {imageUrl.startsWith("data:") ? "صورة مخصصة مرفوعة من جهازك" : imageUrl}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setImageUrl("")}
+                      className="text-[11px] font-bold text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 px-2.5 py-1.5 rounded-lg transition cursor-pointer shrink-0"
+                    >
+                      إلغاء الصورة
+                    </button>
+                  </div>
+                )}
               </div>
 
               <div>
@@ -1758,6 +1992,224 @@ export default function AdminDashboardPage() {
                   <button
                     type="button"
                     onClick={() => setEditingPromoProduct(null)}
+                    className="px-4 py-3 rounded-xl border border-zinc-200 text-zinc-600 hover:bg-zinc-100 text-xs font-bold transition cursor-pointer"
+                  >
+                    إلغاء
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* MODAL: Full Edit Product Details (تعديل تفاصيل المنتج) */}
+        {editingProduct && (
+          <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto" dir="rtl">
+            <div className="bg-white rounded-3xl border border-zinc-200 w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+              {/* Modal Header */}
+              <div className="p-4 sm:p-5 border-b border-zinc-100 flex items-center justify-between bg-zinc-50/70 shrink-0">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
+                    <Edit3 className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-black text-sm text-zinc-900">تعديل تفاصيل المنتج</h3>
+                    <p className="text-[11px] text-zinc-500 line-clamp-1">{editingProduct.name}</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setEditingProduct(null)}
+                  className="text-zinc-400 hover:text-zinc-600 p-1.5 rounded-lg hover:bg-zinc-100 transition cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Modal Body - Scrollable */}
+              <form onSubmit={handleSaveEditProduct} className="p-5 space-y-4 overflow-y-auto text-xs">
+                <div>
+                  <label className="block text-zinc-700 font-bold mb-1.5">اسم المنتج *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    placeholder="مثال: T-shirt Oversized Streetwear"
+                    className="w-full bg-zinc-50 border border-zinc-200 focus:border-zinc-900 focus:bg-white rounded-xl px-4 py-2.5 text-xs text-zinc-900 outline-none transition"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-zinc-700 font-bold mb-1.5">وصف فرعي / Subtitle</label>
+                  <input
+                    type="text"
+                    value={editSubtitle}
+                    onChange={(e) => setEditSubtitle(e.target.value)}
+                    placeholder="مثال: قطن 100% ثقيل 400 GSM"
+                    className="w-full bg-zinc-50 border border-zinc-200 focus:border-zinc-900 focus:bg-white rounded-xl px-4 py-2.5 text-xs text-zinc-900 outline-none transition"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-zinc-700 font-bold mb-1.5">السعر الحالي للبيع (دج) *</label>
+                    <input
+                      type="number"
+                      required
+                      value={editPrice}
+                      onChange={(e) => setEditPrice(e.target.value)}
+                      placeholder="2800"
+                      className="w-full bg-zinc-50 border border-zinc-200 focus:border-zinc-900 focus:bg-white rounded-xl px-4 py-2.5 text-xs text-zinc-900 outline-none transition"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-zinc-700 font-bold mb-1.5">السعر الأصلي قبل التخفيض (دج)</label>
+                    <input
+                      type="number"
+                      value={editOriginalPrice}
+                      onChange={(e) => setEditOriginalPrice(e.target.value)}
+                      placeholder="3500 (اختياري)"
+                      className="w-full bg-zinc-50 border border-zinc-200 focus:border-zinc-900 focus:bg-white rounded-xl px-4 py-2.5 text-xs text-zinc-900 outline-none transition"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-zinc-700 font-bold mb-1.5">المقاسات (مفصولة بفاصلة)</label>
+                    <input
+                      type="text"
+                      value={editSizesStr}
+                      onChange={(e) => setEditSizesStr(e.target.value)}
+                      placeholder="S, M, L, XL"
+                      className="w-full bg-zinc-50 border border-zinc-200 focus:border-zinc-900 focus:bg-white rounded-xl px-4 py-2.5 text-xs text-zinc-900 outline-none transition"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-zinc-700 font-bold mb-1.5">الألوان (مفصولة بفاصلة)</label>
+                    <input
+                      type="text"
+                      value={editColorsStr}
+                      onChange={(e) => setEditColorsStr(e.target.value)}
+                      placeholder="أسود, رمادي, أبيض"
+                      className="w-full bg-zinc-50 border border-zinc-200 focus:border-zinc-900 focus:bg-white rounded-xl px-4 py-2.5 text-xs text-zinc-900 outline-none transition"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-zinc-700 font-bold mb-1.5">شارة العرض أو الخصم (Badge)</label>
+                  <input
+                    type="text"
+                    value={editBadge}
+                    onChange={(e) => setEditBadge(e.target.value)}
+                    placeholder="مثال: -20% أو 🔥 Solde أو جديد"
+                    className="w-full bg-zinc-50 border border-zinc-200 focus:border-zinc-900 focus:bg-white rounded-xl px-4 py-2.5 text-xs text-zinc-900 outline-none transition"
+                  />
+                </div>
+
+                {/* Edit Product Image */}
+                <div className="bg-zinc-50 border border-zinc-200 rounded-2xl p-4 space-y-3">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <label className="block text-zinc-800 font-bold text-xs">
+                      صورة المنتج
+                    </label>
+                    <div className="flex items-center bg-zinc-200/80 p-0.5 rounded-lg text-[11px] font-bold">
+                      <button
+                        type="button"
+                        onClick={() => setEditImageMode("file")}
+                        className={`px-2.5 py-1 rounded-md transition cursor-pointer ${
+                          editImageMode === "file" 
+                            ? "bg-white text-zinc-900 shadow-xs" 
+                            : "text-zinc-600 hover:text-zinc-900"
+                        }`}
+                      >
+                        📁 رفع من جهازك (PC / الهاتف)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setEditImageMode("url")}
+                        className={`px-2.5 py-1 rounded-md transition cursor-pointer ${
+                          editImageMode === "url" 
+                            ? "bg-white text-zinc-900 shadow-xs" 
+                            : "text-zinc-600 hover:text-zinc-900"
+                        }`}
+                      >
+                        🔗 رابط (URL)
+                      </button>
+                    </div>
+                  </div>
+
+                  {editImageMode === "file" ? (
+                    <div>
+                      <label className="flex flex-col items-center justify-center border-2 border-dashed border-zinc-300 hover:border-zinc-900 bg-white hover:bg-zinc-50/70 rounded-xl p-4 cursor-pointer transition group">
+                        <Upload className="w-5 h-5 text-zinc-400 group-hover:text-amber-600 mb-1.5 transition" />
+                        <span className="text-xs font-bold text-zinc-700">تغيير الصورة واختيار ملف من جهازك</span>
+                        <span className="text-[10px] text-zinc-400 mt-0.5">يدعم JPG, PNG, WEBP</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleFileUploadForEdit}
+                          className="hidden"
+                        />
+                      </label>
+                    </div>
+                  ) : (
+                    <div>
+                      <input
+                        type="url"
+                        placeholder="https://..."
+                        value={editImageUrl}
+                        onChange={(e) => setEditImageUrl(e.target.value)}
+                        className="w-full bg-white border border-zinc-200 focus:border-zinc-900 rounded-xl px-4 py-2.5 text-xs text-zinc-900 outline-none transition dir-ltr text-right"
+                      />
+                    </div>
+                  )}
+
+                  {/* Current / New Image Preview */}
+                  {editImageUrl && (
+                    <div className="flex items-center gap-3 bg-white p-2.5 rounded-xl border border-zinc-200">
+                      <img
+                        src={editImageUrl}
+                        alt="معاينة"
+                        className="w-12 h-12 object-cover rounded-lg border border-zinc-200 shrink-0"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <span className="text-[11px] font-bold text-zinc-700 block">الصورة الحالية للمنتج</span>
+                        <span className="text-[10px] text-zinc-400 truncate block mt-0.5 dir-ltr text-left">
+                          {editImageUrl.startsWith("data:") ? "صورة مرفوعة من جهازك" : editImageUrl}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-zinc-700 font-bold mb-1.5">وصف وتفاصيل المنتج</label>
+                  <textarea
+                    rows={3}
+                    value={editDescription}
+                    onChange={(e) => setEditDescription(e.target.value)}
+                    placeholder="اكتب تفاصيل القماش ومقاسات العارض والعناية..."
+                    className="w-full bg-zinc-50 border border-zinc-200 focus:border-zinc-900 focus:bg-white rounded-xl px-4 py-2.5 text-xs text-zinc-900 outline-none transition"
+                  />
+                </div>
+
+                {/* Modal actions */}
+                <div className="pt-3 border-t border-zinc-100 flex items-center gap-2">
+                  <button
+                    type="submit"
+                    disabled={savingEdit}
+                    className="flex-1 bg-zinc-950 hover:bg-black text-white font-extrabold py-3 px-4 rounded-xl text-xs transition cursor-pointer disabled:opacity-50 shadow-sm"
+                  >
+                    {savingEdit ? "جاري الحفظ..." : "حفظ التعديلات في المتجر"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEditingProduct(null)}
                     className="px-4 py-3 rounded-xl border border-zinc-200 text-zinc-600 hover:bg-zinc-100 text-xs font-bold transition cursor-pointer"
                   >
                     إلغاء

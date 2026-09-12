@@ -139,6 +139,40 @@ export async function PATCH(req: Request) {
         WHERE id = ${id}
       `;
       return NextResponse.json({ success: true, message: "تم تحديث التخفيض بنجاح" });
+    } else if (action === "update" || action === "edit") {
+      const name = typeof body.name === "string" && body.name.trim() ? body.name.trim() : "منتج بدون اسم";
+      const subtitle = typeof body.subtitle === "string" ? body.subtitle.trim() : "";
+      const price = Number(body.price);
+      if (isNaN(price) || price <= 0) {
+        return NextResponse.json({ success: false, error: "يرجى تحديد سعر صحيح للمنتج" }, { status: 400 });
+      }
+      const originalPrice = body.originalPrice !== null && body.originalPrice !== undefined && body.originalPrice !== ""
+        ? Number(body.originalPrice)
+        : null;
+      const description = typeof body.description === "string" ? body.description : "";
+      const badge = typeof body.badge === "string" ? body.badge.trim() : "";
+      const sizes = JSON.stringify(Array.isArray(body.sizes) && body.sizes.length > 0 ? body.sizes : ["S", "M", "L", "XL"]);
+      const colors = JSON.stringify(Array.isArray(body.colors) && body.colors.length > 0 ? body.colors : ["أسود"]);
+
+      if (Array.isArray(body.images) && body.images.length > 0) {
+        const images = JSON.stringify(body.images);
+        await sql`
+          UPDATE products 
+          SET name = ${name}, subtitle = ${subtitle}, price = ${price}, original_price = ${originalPrice}, 
+              description = ${description}, badge = ${badge}, sizes = ${sizes}::jsonb, colors = ${colors}::jsonb, 
+              images = ${images}::jsonb 
+          WHERE id = ${id}
+        `;
+      } else {
+        await sql`
+          UPDATE products 
+          SET name = ${name}, subtitle = ${subtitle}, price = ${price}, original_price = ${originalPrice}, 
+              description = ${description}, badge = ${badge}, sizes = ${sizes}::jsonb, colors = ${colors}::jsonb 
+          WHERE id = ${id}
+        `;
+      }
+
+      return NextResponse.json({ success: true, message: "تم تعديل بيانات المنتج بنجاح" });
     }
 
     return NextResponse.json({ success: false, error: "Invalid action" }, { status: 400 });
