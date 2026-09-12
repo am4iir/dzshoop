@@ -179,8 +179,18 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
       alert("عذراً، هذا المنتج غير متوفر في المخزن حالياً (نفدت الكمية)");
       return;
     }
-    if (!fullName || !phone) {
-      alert("يرجى إدخال الاسم ورقم الهاتف لإكمال الطلب");
+    if (!fullName.trim()) {
+      alert("يرجى إدخال الاسم الكامل لإكمال الطلب");
+      return;
+    }
+
+    let cleanPhone = phone.trim().replace(/[\s\-\.\(\)]/g, "");
+    if (cleanPhone.startsWith("+213")) cleanPhone = "0" + cleanPhone.slice(4);
+    else if (cleanPhone.startsWith("00213")) cleanPhone = "0" + cleanPhone.slice(5);
+    else if (cleanPhone.startsWith("213") && cleanPhone.length === 11) cleanPhone = "0" + cleanPhone.slice(3);
+
+    if (!cleanPhone || !/^0[5-7]\d{8}$/.test(cleanPhone)) {
+      alert("رقم الهاتف غير صحيح! يرجى إدخال رقم هاتف جزائري يبدأ بـ 05 أو 06 أو 07 مكون من 10 أرقام (مثال: 0555123456)");
       return;
     }
 
@@ -195,8 +205,8 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
           selectedSize,
           selectedColor,
           quantity,
-          fullName,
-          phone,
+          fullName: fullName.trim(),
+          phone: cleanPhone,
           wilayaName: currentWilaya.name,
           commune: commune || currentWilaya.communes[0] || "",
           deliveryType,
@@ -219,6 +229,8 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
         try {
           confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
         } catch (e) {}
+      } else {
+        alert(data.error || "حدث خطأ أثناء إرسال الطلب، يرجى المحاولة ثانية");
       }
     } catch (err) {
       setIsSubmitting(false);

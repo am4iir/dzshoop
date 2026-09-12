@@ -84,7 +84,14 @@ export async function POST(req: Request) {
     const selectedColor = body.selectedColor || "";
     const quantity = Math.max(1, Number(body.quantity) || 1);
     const fullName = (body.fullName || "").trim();
-    const phone = (body.phone || "").trim();
+    let phone = (body.phone || "").trim().replace(/[\s\-\.\(\)]/g, "");
+    if (phone.startsWith("+213")) {
+      phone = "0" + phone.slice(4);
+    } else if (phone.startsWith("00213")) {
+      phone = "0" + phone.slice(5);
+    } else if (phone.startsWith("213") && phone.length === 11) {
+      phone = "0" + phone.slice(3);
+    }
     const wilayaName = (body.wilayaName || "").trim();
     const commune = (body.commune || "").trim();
     const deliveryType = body.deliveryType === "desk" ? "desk" : "home";
@@ -92,18 +99,18 @@ export async function POST(req: Request) {
 
     if (!fullName || !phone || !wilayaName) {
       return NextResponse.json(
-        { success: false, error: "بيانات ناقصة - الاسم والهاتف والولاية مطلوبة" },
+        { success: false, error: "بيانات ناقصة - يرجى إدخال الاسم ورقم الهاتف والولاية" },
         { status: 400 }
       );
     }
     if (!/^0[5-7]\d{8}$/.test(phone)) {
       return NextResponse.json(
-        { success: false, error: "رقم الهاتف غير صحيح" },
+        { success: false, error: "رقم الهاتف غير صحيح! يرجى إدخال رقم جزائري يبدأ بـ 05 أو 06 أو 07 ويتكون من 10 أرقام (مثلاً: 0555123456)" },
         { status: 400 }
       );
     }
 
-    if (productId) {
+    if (productId && (!body.cartItems || body.cartItems.length <= 1)) {
       const productRows = await sql`
         SELECT price::float as price, in_stock, is_deleted 
         FROM products 
@@ -114,19 +121,10 @@ export async function POST(req: Request) {
       }
       const product = productRows[0];
       if (product.is_deleted) {
-        return NextResponse.json({ success: false, error: "هذا المنتج غير متوفر" }, { status: 400 });
+        return NextResponse.json({ success: false, error: "هذا المنتج غير متوفر حالياً" }, { status: 400 });
       }
       if (product.in_stock === false) {
         return NextResponse.json({ success: false, error: "نفدت كمية هذا المنتج حالياً" }, { status: 400 });
-      }
-      const expectedTotal = Math.round((product.price * quantity + deliveryPrice) * 100) / 100;
-      const clientTotal = Number(body.totalPrice) || 0;
-      if (Math.abs(clientTotal - expectedTotal) > 10) {
-        console.warn(`Price mismatch: client=${clientTotal} expected=${expectedTotal}`);
-        return NextResponse.json(
-          { success: false, error: "خطأ في حساب السعر - يرجى إعادة المحاولة" },
-          { status: 400 }
-        );
       }
     }
 

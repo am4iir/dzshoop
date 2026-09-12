@@ -95,8 +95,18 @@ export default function CheckoutPage() {
   const handleSubmitOrder = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!fullName.trim() || !phone.trim()) {
-      alert("يرجى إدخال الاسم ورقم الهاتف لإكمال الطلب");
+    if (!fullName.trim()) {
+      alert("يرجى إدخال الاسم الكامل لإكمال الطلب");
+      return;
+    }
+
+    let cleanPhone = phone.trim().replace(/[\s\-\.\(\)]/g, "");
+    if (cleanPhone.startsWith("+213")) cleanPhone = "0" + cleanPhone.slice(4);
+    else if (cleanPhone.startsWith("00213")) cleanPhone = "0" + cleanPhone.slice(5);
+    else if (cleanPhone.startsWith("213") && cleanPhone.length === 11) cleanPhone = "0" + cleanPhone.slice(3);
+
+    if (!cleanPhone || !/^0[5-7]\d{8}$/.test(cleanPhone)) {
+      alert("رقم الهاتف غير صحيح! يرجى إدخال رقم هاتف جزائري يبدأ بـ 05 أو 06 أو 07 مكون من 10 أرقام (مثال: 0555123456)");
       return;
     }
 
@@ -119,8 +129,8 @@ export default function CheckoutPage() {
           selectedSize: items[0]?.selectedSize || "",
           selectedColor: items[0]?.selectedColor || "",
           quantity: items.reduce((sum, i) => sum + i.quantity, 0),
-          fullName,
-          phone,
+          fullName: fullName.trim(),
+          phone: cleanPhone,
           wilayaName: currentWilaya.name,
           commune: commune || currentWilaya.communes[0] || "",
           deliveryType,
@@ -148,7 +158,7 @@ export default function CheckoutPage() {
           confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
         } catch (e) {}
       } else {
-        alert("حدث خطأ أثناء حفظ الطلب. يرجى المحاولة ثانية");
+        alert(data.error || "حدث خطأ أثناء حفظ الطلب. يرجى المحاولة ثانية");
       }
     } catch (err) {
       setIsSubmitting(false);
