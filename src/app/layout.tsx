@@ -5,6 +5,7 @@ import { CartProvider } from "@/components/CartContext";
 import { CartDrawer } from "@/components/CartDrawer";
 import { AnnouncementBar } from "@/components/AnnouncementBar";
 import { ThemeProvider } from "@/components/ThemeContext";
+import { LanguageProvider } from "@/components/LanguageContext";
 
 const tajawal = Tajawal({
   subsets: ["arabic"],
@@ -29,13 +30,15 @@ export default function RootLayout({
   return (
     <html lang="ar" dir="rtl" className={tajawal.variable} suppressHydrationWarning>
       <body className="font-sans antialiased bg-[#fafafa] dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 min-h-screen selection:bg-amber-400 selection:text-zinc-950 transition-colors duration-200">
-        <ThemeProvider>
-          <CartProvider>
-            <AnnouncementBar />
-            {children}
-            <CartDrawer />
-          </CartProvider>
-        </ThemeProvider>
+        <LanguageProvider>
+          <ThemeProvider>
+            <CartProvider>
+              <AnnouncementBar />
+              {children}
+              <CartDrawer />
+            </CartProvider>
+          </ThemeProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

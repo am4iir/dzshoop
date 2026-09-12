@@ -39,11 +39,51 @@ import {
   Edit3,
   Upload,
   Image as ImageIcon,
-  Check
+  Check,
+  Sun,
+  Moon,
+  Palette,
+  Globe
 } from "lucide-react";
+import { useLanguage } from "@/components/LanguageContext";
+import { useTheme } from "@/components/ThemeContext";
 
 export default function AdminDashboardPage() {
   const router = useRouter();
+  const { lang, setLang, t, dir } = useLanguage();
+  const { theme, toggleTheme } = useTheme();
+
+  // Admin Custom Theme state
+  type AdminTheme = "default" | "dark" | "navy" | "forest" | "sunset";
+  const [adminTheme, setAdminTheme] = useState<AdminTheme>("default");
+  const [themeDropdownOpen, setThemeDropdownOpen] = useState(false);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("axb_admin_theme_custom") as AdminTheme | null;
+      if (saved && ["default", "dark", "navy", "forest", "sunset"].includes(saved)) {
+        setAdminTheme(saved);
+        if (saved !== "default") {
+          document.documentElement.classList.add("dark");
+        } else {
+          document.documentElement.classList.remove("dark");
+        }
+      }
+    } catch (e) {}
+  }, []);
+
+  const changeAdminTheme = (newTh: AdminTheme) => {
+    setAdminTheme(newTh);
+    setThemeDropdownOpen(false);
+    try {
+      localStorage.setItem("axb_admin_theme_custom", newTh);
+    } catch (e) {}
+    if (newTh !== "default") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  };
 
   // Authentication State
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -680,17 +720,57 @@ export default function AdminDashboardPage() {
   // Lock Screen
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-zinc-950 text-white flex items-center justify-center p-4">
-        <div className="max-w-sm w-full bg-zinc-900 border border-zinc-800 rounded-3xl p-8 text-center shadow-2xl">
+      <div className="min-h-screen bg-zinc-950 text-white flex items-center justify-center p-4" dir={dir}>
+        <div className="max-w-sm w-full bg-zinc-900 border border-zinc-800 rounded-3xl p-8 text-center shadow-2xl relative">
+          {/* Top language switcher */}
+          <div className="flex justify-center mb-4">
+            <div className="flex items-center bg-zinc-950 border border-zinc-800 rounded-full p-0.5 text-[10px] font-bold">
+              <button
+                type="button"
+                onClick={() => setLang("ar")}
+                className={`px-2 py-0.5 rounded-full transition cursor-pointer ${
+                  lang === "ar" ? "bg-amber-400 text-zinc-950 font-black shadow-xs" : "text-zinc-400 hover:text-white"
+                }`}
+                title="العربية (الأساسية)"
+              >
+                🇩🇿 ع
+              </button>
+              <button
+                type="button"
+                onClick={() => setLang("en")}
+                className={`px-2 py-0.5 rounded-full transition cursor-pointer ${
+                  lang === "en" ? "bg-amber-400 text-zinc-950 font-black shadow-xs" : "text-zinc-400 hover:text-white"
+                }`}
+                title="English"
+              >
+                🇬🇧 EN
+              </button>
+              <button
+                type="button"
+                onClick={() => setLang("fr")}
+                className={`px-2 py-0.5 rounded-full transition cursor-pointer ${
+                  lang === "fr" ? "bg-amber-400 text-zinc-950 font-black shadow-xs" : "text-zinc-400 hover:text-white"
+                }`}
+                title="Français"
+              >
+                🇫🇷 FR
+              </button>
+            </div>
+          </div>
+
           <div className="w-14 h-14 rounded-2xl bg-zinc-800 border border-zinc-700/80 flex items-center justify-center mx-auto mb-5 text-amber-400 shadow-inner">
             <Lock className="w-6 h-6" />
           </div>
 
           <h2 className="text-xl font-bold tracking-tight text-white mb-1">
-            لوحة تحكم المتجر المحمية
+            {lang === "ar" ? "لوحة تحكم المتجر المحمية" : lang === "fr" ? "Tableau de bord protégé" : "Protected Store Dashboard"}
           </h2>
           <p className="text-xs text-zinc-400 mb-6">
-            أدخل رمز المرور السري (Passcode) للوصول إلى الطلبيات وإدارة المنتجات
+            {lang === "ar"
+              ? "أدخل رمز المرور السري (Passcode) للوصول إلى الطلبيات وإدارة المنتجات"
+              : lang === "fr"
+              ? "Entrez le mot de passe secret pour accéder aux commandes et produits"
+              : "Enter secret passcode to access orders and product management"}
           </p>
 
           <form onSubmit={handleLogin} className="space-y-4">
@@ -699,7 +779,7 @@ export default function AdminDashboardPage() {
                 type="password"
                 required
                 autoFocus
-                placeholder="رمز المرور (Passcode)"
+                placeholder={lang === "ar" ? "رمز المرور (Passcode)" : lang === "fr" ? "Mot de passe" : "Passcode"}
                 value={passcode}
                 onChange={(e) => {
                   setPasscode(e.target.value);
@@ -711,7 +791,7 @@ export default function AdminDashboardPage() {
               />
               {authError && (
                 <span className="text-[11px] text-red-400 block mt-1.5 font-medium">
-                  رمز المرور غير صحيح!
+                  {lang === "ar" ? "رمز المرور غير صحيح!" : lang === "fr" ? "Mot de passe incorrect !" : "Incorrect passcode!"}
                 </span>
               )}
             </div>
@@ -720,13 +800,13 @@ export default function AdminDashboardPage() {
               type="submit"
               className="w-full bg-white hover:bg-zinc-200 text-black font-extrabold py-3 px-4 rounded-xl text-xs transition shadow-md cursor-pointer"
             >
-              تسجيل الدخول للأدمن
+              {lang === "ar" ? "تسجيل الدخول للأدمن" : lang === "fr" ? "Connexion Admin" : "Admin Login"}
             </button>
           </form>
 
           <div className="mt-6 pt-4 border-t border-zinc-800/80">
             <Link href="/" className="text-xs text-zinc-500 hover:text-zinc-300">
-              ← العودة لمتجر الزبائن
+              {lang === "ar" ? "← العودة لمتجر الزبائن" : lang === "fr" ? "← Retour à la boutique" : "← Back to Store"}
             </Link>
           </div>
         </div>
@@ -783,38 +863,182 @@ export default function AdminDashboardPage() {
     return true;
   });
 
+  const getAdminThemeClass = () => {
+    switch (adminTheme) {
+      case "dark":
+        return "bg-zinc-950 text-zinc-100";
+      case "navy":
+        return "bg-[#091124] text-slate-100";
+      case "forest":
+        return "bg-[#061c14] text-emerald-100";
+      case "sunset":
+        return "bg-[#18110a] text-amber-100";
+      default:
+        return "bg-zinc-50 text-zinc-900";
+    }
+  };
+
+  const getAdminHeaderClass = () => {
+    switch (adminTheme) {
+      case "dark":
+        return "bg-zinc-900/95 border-zinc-800 text-white";
+      case "navy":
+        return "bg-[#0f1d3d]/95 border-blue-900/60 text-white";
+      case "forest":
+        return "bg-[#0c2e22]/95 border-emerald-900/60 text-white";
+      case "sunset":
+        return "bg-[#281a10]/95 border-amber-900/60 text-white";
+      default:
+        return "bg-white border-zinc-200 text-zinc-900";
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-zinc-50 text-zinc-900 pb-20">
+    <div className={`min-h-screen ${getAdminThemeClass()} pb-20 transition-colors duration-200`} dir={dir}>
       {/* Top Header */}
-      <header className="bg-white border-b border-zinc-200 sticky top-0 z-40">
-        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+      <header className={`${getAdminHeaderClass()} border-b sticky top-0 z-40 shadow-xs transition-colors duration-200`}>
+        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-2">
           <div className="flex items-center gap-3">
-            <span className="w-8 h-8 rounded-lg bg-zinc-900 text-white font-black flex items-center justify-center text-xs">
+            <span className="w-8 h-8 rounded-lg bg-zinc-900 text-white font-black flex items-center justify-center text-xs shadow-sm">
               AD
             </span>
             <div>
-              <h1 className="font-extrabold text-sm sm:text-base text-zinc-900 leading-tight">
-                لوحة تحكم المتجر (Admin)
+              <h1 className="font-extrabold text-xs sm:text-base leading-tight">
+                {t("admin", "title")}
               </h1>
-              <p className="text-[10px] text-zinc-400">إدارة الطلبات والمنتجات الفورية</p>
+              <p className="text-[10px] text-zinc-400 hidden sm:block">{t("admin", "subtitle")}</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            {/* Multi-Theme Selector */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setThemeDropdownOpen(!themeDropdownOpen)}
+                className="px-2.5 py-1.5 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white/80 dark:bg-zinc-800/80 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition flex items-center gap-1.5 text-xs font-bold cursor-pointer shadow-xs"
+                title="Themes / تغيير المظهر"
+              >
+                <Palette className="w-3.5 h-3.5 text-amber-500" />
+                <span className="hidden md:inline text-[11px]">
+                  {adminTheme === "default" && "☀️ Light"}
+                  {adminTheme === "dark" && "🌙 Dark"}
+                  {adminTheme === "navy" && "🌊 Navy"}
+                  {adminTheme === "forest" && "🌲 Forest"}
+                  {adminTheme === "sunset" && "🌅 Amber"}
+                </span>
+              </button>
+
+              {themeDropdownOpen && (
+                <div className={`absolute top-full mt-2 ${dir === "rtl" ? "left-0" : "right-0"} w-48 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl p-1.5 z-50 space-y-1 text-zinc-800 dark:text-zinc-200`}>
+                  <button
+                    type="button"
+                    onClick={() => changeAdminTheme("default")}
+                    className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
+                      adminTheme === "default" ? "bg-zinc-900 text-white" : "hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                    }`}
+                  >
+                    <span>☀️</span>
+                    <span>فاتح (Light)</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => changeAdminTheme("dark")}
+                    className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
+                      adminTheme === "dark" ? "bg-amber-400 text-zinc-950 font-black" : "hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                    }`}
+                  >
+                    <span>🌙</span>
+                    <span>داكن (Dark)</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => changeAdminTheme("navy")}
+                    className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
+                      adminTheme === "navy" ? "bg-blue-600 text-white" : "hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                    }`}
+                  >
+                    <span>🌊</span>
+                    <span>كحلي (Navy Blue)</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => changeAdminTheme("forest")}
+                    className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
+                      adminTheme === "forest" ? "bg-emerald-600 text-white" : "hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                    }`}
+                  >
+                    <span>🌲</span>
+                    <span>زمردي (Forest)</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => changeAdminTheme("sunset")}
+                    className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
+                      adminTheme === "sunset" ? "bg-amber-600 text-white" : "hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                    }`}
+                  >
+                    <span>🌅</span>
+                    <span>عنبر (Amber)</span>
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Language Switcher next to theme: 1 AR | 2 EN | 3 FR */}
+            <div className="flex items-center bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-full p-0.5 text-[10px] sm:text-[11px] font-bold">
+              <button
+                type="button"
+                onClick={() => setLang("ar")}
+                className={`px-2 py-1 rounded-full transition cursor-pointer ${
+                  lang === "ar"
+                    ? "bg-amber-400 text-zinc-950 font-black shadow-xs"
+                    : "text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white"
+                }`}
+                title="العربية (الأساسية)"
+              >
+                🇩🇿 ع
+              </button>
+              <button
+                type="button"
+                onClick={() => setLang("en")}
+                className={`px-2 py-1 rounded-full transition cursor-pointer ${
+                  lang === "en"
+                    ? "bg-amber-400 text-zinc-950 font-black shadow-xs"
+                    : "text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white"
+                }`}
+                title="English"
+              >
+                🇬🇧 EN
+              </button>
+              <button
+                type="button"
+                onClick={() => setLang("fr")}
+                className={`px-2 py-1 rounded-full transition cursor-pointer ${
+                  lang === "fr"
+                    ? "bg-amber-400 text-zinc-950 font-black shadow-xs"
+                    : "text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white"
+                }`}
+                title="Français"
+              >
+                🇫🇷 FR
+              </button>
+            </div>
+
             <Link
               href="/"
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-600 hover:text-black bg-zinc-100 hover:bg-zinc-200 px-3.5 py-2 rounded-xl transition"
+              className="inline-flex items-center gap-1 text-xs font-bold text-zinc-600 dark:text-zinc-300 hover:text-black dark:hover:text-white bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 px-3 py-1.5 rounded-xl transition"
             >
-              <span>زيارة المتجر كزبون</span>
-              <ArrowRight className="w-3.5 h-3.5 rotate-180" />
+              <span>{t("admin", "visitStore")}</span>
+              <ArrowRight className={`w-3.5 h-3.5 ${dir === "rtl" ? "rotate-180" : ""}`} />
             </Link>
 
             <button
               onClick={handleLogout}
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-red-600 hover:text-white bg-red-50 hover:bg-red-600 border border-red-200 hover:border-red-600 px-3.5 py-2 rounded-xl transition cursor-pointer"
+              className="inline-flex items-center gap-1 text-xs font-bold text-red-600 hover:text-white bg-red-50 hover:bg-red-600 border border-red-200 hover:border-red-600 px-3 py-1.5 rounded-xl transition cursor-pointer"
             >
               <LogOut className="w-3.5 h-3.5" />
-              <span>تسجيل الخروج</span>
+              <span className="hidden sm:inline">{t("admin", "logout")}</span>
             </button>
           </div>
         </div>
@@ -883,53 +1107,53 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex items-center gap-2 border-b border-zinc-200 pb-3 mb-6">
+        <div className="flex items-center gap-2 border-b border-zinc-200 dark:border-zinc-800 pb-3 mb-6 overflow-x-auto">
           <button
             onClick={() => setActiveTab("orders")}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
               activeTab === "orders"
-                ? "bg-zinc-900 text-white shadow-sm"
-                : "text-zinc-600 hover:bg-zinc-200/60"
+                ? "bg-zinc-900 dark:bg-amber-400 text-white dark:text-zinc-950 shadow-sm"
+                : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/60 dark:hover:bg-zinc-800"
             }`}
           >
             <ShoppingBag className="w-4 h-4" />
-            <span>قائمة الطلبيات ({orders.length})</span>
+            <span>{t("admin", "orders")} ({orders.length})</span>
           </button>
 
           <button
             onClick={() => setActiveTab("products")}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
               activeTab === "products"
-                ? "bg-zinc-900 text-white shadow-sm"
-                : "text-zinc-600 hover:bg-zinc-200/60"
+                ? "bg-zinc-900 dark:bg-amber-400 text-white dark:text-zinc-950 shadow-sm"
+                : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/60 dark:hover:bg-zinc-800"
             }`}
           >
             <Layers className="w-4 h-4" />
-            <span>المنتجات ({activeProductsCount})</span>
+            <span>{t("admin", "products")} ({activeProductsCount})</span>
           </button>
 
           <button
             onClick={() => setActiveTab("new-product")}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
               activeTab === "new-product"
-                ? "bg-zinc-900 text-white shadow-sm"
-                : "text-zinc-600 hover:bg-zinc-200/60"
+                ? "bg-zinc-900 dark:bg-amber-400 text-white dark:text-zinc-950 shadow-sm"
+                : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/60 dark:hover:bg-zinc-800"
             }`}
           >
             <Plus className="w-4 h-4" />
-            <span>إضافة منتج جديد</span>
+            <span>{t("admin", "addProduct")}</span>
           </button>
 
           <button
             onClick={() => setActiveTab("finance")}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
               activeTab === "finance"
-                ? "bg-zinc-900 text-white shadow-sm"
-                : "text-zinc-600 hover:bg-zinc-200/60"
+                ? "bg-zinc-900 dark:bg-amber-400 text-white dark:text-zinc-950 shadow-sm"
+                : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/60 dark:hover:bg-zinc-800"
             }`}
           >
             <Wallet className="w-4 h-4 text-amber-500" />
-            <span>الحسابات والأرباح (Caisse) 💰</span>
+            <span>{lang === "fr" ? "Finances (Caisse) 💰" : lang === "en" ? "Finance (Cash) 💰" : "الحسابات والأرباح (Caisse) 💰"}</span>
           </button>
         </div>
 

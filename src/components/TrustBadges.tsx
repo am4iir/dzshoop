@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Truck, ShieldCheck, Handshake, RotateCcw } from "lucide-react";
+import { useLanguage } from "./LanguageContext";
 
 export interface TrustBadgeItem {
   icon: React.ElementType;
@@ -15,34 +16,32 @@ export interface TrustBadgesProps {
   variant?: "card" | "grid";
 }
 
-export const DEFAULT_TRUST_BADGES: TrustBadgeItem[] = [
-  {
-    icon: Truck,
-    text: "توصيل سريع لـ 69 ولاية",
-    description: "شحن سريع وموثوق إلى جميع الولايات",
-  },
-  {
-    icon: ShieldCheck,
-    text: "جودة مضمونة 100%",
-    description: "منتجات أصلية وبأفضل جودة مختارة بعناية",
-  },
-  {
-    icon: Handshake,
-    text: "الدفع عند الاستلام",
-    description: "تسوق بكل راحة وأمان وادفع عند باب منزلك",
-  },
-  {
-    icon: RotateCcw,
-    text: "إمكانية الإرجاع",
-    description: "إمكانية الاستبدال والإرجاع بكل سهولة",
-  },
-];
-
 export function TrustBadges({
   className = "",
-  badges = DEFAULT_TRUST_BADGES,
+  badges,
   variant = "card",
 }: TrustBadgesProps) {
+  const { t, dir } = useLanguage();
+
+  const activeBadges: TrustBadgeItem[] = badges || [
+    {
+      icon: Truck,
+      text: t("home", "trustDelivery"),
+    },
+    {
+      icon: ShieldCheck,
+      text: t("home", "trustInspect"),
+    },
+    {
+      icon: Handshake,
+      text: t("home", "trustCOD"),
+    },
+    {
+      icon: RotateCcw,
+      text: t("home", "trustReturn"),
+    },
+  ];
+
   const containerClasses =
     variant === "card"
       ? "p-4 sm:p-6 bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 rounded-2xl shadow-sm"
@@ -50,12 +49,12 @@ export function TrustBadges({
 
   return (
     <section
-      aria-label="ميزات وضمانات المتجر"
+      aria-label="Features and guarantees"
       className={`w-full ${containerClasses} ${className}`}
-      dir="rtl"
+      dir={dir}
     >
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        {badges.map((badge, idx) => {
+        {activeBadges.map((badge, idx) => {
           const IconComponent = badge.icon;
           return (
             <div

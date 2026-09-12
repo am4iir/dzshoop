@@ -8,6 +8,7 @@ import { Product } from "@/lib/db";
 import { WILAYAS } from "@/data/products";
 import { formatPrice } from "@/lib/utils";
 import { useCart } from "@/components/CartContext";
+import { useLanguage } from "@/components/LanguageContext";
 import { TrustBadges } from "@/components/TrustBadges";
 import { SizeCalculatorModal } from "@/components/SizeCalculatorModal";
 import {
@@ -29,6 +30,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   const resolvedParams = use(params);
   const router = useRouter();
   const { addItem, openCart } = useCart();
+  const { t, dir, lang } = useLanguage();
 
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
@@ -251,7 +253,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   };
 
   return (
-    <div className="min-h-screen bg-[#fafafa] dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 pb-20 transition-colors duration-200">
+    <div className="min-h-screen bg-[#fafafa] dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 pb-20 transition-colors duration-200" dir={dir}>
       <Navbar />
 
       <main className="max-w-6xl mx-auto px-4 py-8 space-y-12">
@@ -260,9 +262,9 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
             <div className="w-16 h-16 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle2 className="w-8 h-8" />
             </div>
-            <h2 className="text-2xl font-black text-zinc-900 dark:text-white mb-2">تم تأكيد طلبك بنجاح!</h2>
+            <h2 className="text-2xl font-black text-zinc-900 dark:text-white mb-2">{t("product", "confirmSuccess")}</h2>
             <div className="flex items-center justify-center gap-2 mb-2">
-              <span className="text-xs text-zinc-500 dark:text-zinc-400">رقم الطلبية:</span>
+              <span className="text-xs text-zinc-500 dark:text-zinc-400">{t("product", "orderNumber")}</span>
               <span className="font-bold text-zinc-900 dark:text-white bg-zinc-100 dark:bg-zinc-800 px-2.5 py-1 rounded-lg font-mono text-sm border border-zinc-200 dark:border-zinc-700">
                 {orderId}
               </span>
@@ -273,28 +275,28 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                 title="نسخ رقم الطلبية"
               >
                 {copiedOrderId ? <Check className="w-3 h-3 text-emerald-600 dark:text-emerald-400" /> : <Copy className="w-3 h-3" />}
-                <span>{copiedOrderId ? "تم النسخ!" : "نسخ"}</span>
+                <span>{copiedOrderId ? t("product", "copied") : t("product", "copyId")}</span>
               </button>
             </div>
             <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-6">
-              سنتصل بك هاتفياً لتأكيد الشحن فوراً.
+              {t("product", "contactSoon")}
             </p>
 
-            <div className="bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-100 dark:border-zinc-700/60 rounded-2xl p-4 text-xs space-y-2 text-right mb-6">
+            <div className={`bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-100 dark:border-zinc-700/60 rounded-2xl p-4 text-xs space-y-2 ${dir === "rtl" ? "text-right" : "text-left"} mb-6`}>
               <div className="flex justify-between">
-                <span className="text-zinc-500 dark:text-zinc-400">المنتج:</span>
+                <span className="text-zinc-500 dark:text-zinc-400">Product:</span>
                 <span className="font-bold text-zinc-900 dark:text-white">{product.name} ({quantity})</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-zinc-500 dark:text-zinc-400">المقاس:</span>
+                <span className="text-zinc-500 dark:text-zinc-400">Size:</span>
                 <span className="font-bold text-zinc-900 dark:text-white">{selectedSize}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-zinc-500 dark:text-zinc-400">العنوان:</span>
+                <span className="text-zinc-500 dark:text-zinc-400">Wilaya:</span>
                 <span className="font-bold text-zinc-900 dark:text-white">{currentWilaya.name}</span>
               </div>
               <div className="flex justify-between pt-2 border-t border-zinc-200 dark:border-zinc-700 font-extrabold text-sm text-zinc-900 dark:text-white">
-                <span>المبلغ الكلي:</span>
+                <span>{t("product", "total")}</span>
                 <span className="text-emerald-600 dark:text-emerald-400">{formatPrice(grandTotal)}</span>
               </div>
             </div>
@@ -308,7 +310,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               }}
               className="inline-flex items-center gap-2 text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 px-5 py-2.5 rounded-xl transition cursor-pointer"
             >
-              العودة لقائمة المنتجات
+              {t("product", "backToStore")}
             </Link>
           </div>
         ) : (
@@ -368,14 +370,14 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                 {product.sizes && product.sizes.length > 0 && (
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <label className="block text-xs font-bold text-zinc-600 dark:text-zinc-300">المقاس المتوفر</label>
+                      <label className="block text-xs font-bold text-zinc-600 dark:text-zinc-300">{t("product", "chooseSize")}</label>
                       <button
                         type="button"
                         onClick={() => setIsSizeModalOpen(true)}
                         className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-600 dark:text-amber-400 hover:text-amber-700 bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100/80 dark:hover:bg-amber-900/50 px-2.5 py-1 rounded-lg border border-amber-200/80 dark:border-amber-800/80 transition cursor-pointer"
                       >
                         <Ruler className="w-3.5 h-3.5" />
-                        <span>احسب مقاسك المناسب 📏</span>
+                        <span>{t("product", "sizeGuide")} 📏</span>
                       </button>
                     </div>
                     <div className="flex flex-wrap gap-2">
@@ -406,7 +408,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                 {/* Colors Selection */}
                 {product.colors && product.colors.length > 0 && (
                   <div>
-                    <label className="block text-xs font-bold text-zinc-600 dark:text-zinc-300 mb-2">اللون</label>
+                    <label className="block text-xs font-bold text-zinc-600 dark:text-zinc-300 mb-2">{t("product", "chooseColor")}</label>
                     <div className="flex flex-wrap gap-2">
                       {product.colors.map((color) => (
                         <button
@@ -436,7 +438,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                       className="flex-1 bg-white dark:bg-zinc-900 border-2 border-zinc-900 dark:border-zinc-700 text-zinc-900 dark:text-white hover:bg-zinc-900 dark:hover:bg-zinc-800 hover:text-white font-extrabold py-3.5 px-4 rounded-xl text-xs sm:text-sm transition flex items-center justify-center gap-2 shadow-sm disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                     >
                       <ShoppingBag className="w-4 h-4" />
-                      <span>{product.inStock === false ? "Sold Out" : "أضف إلى السلة"}</span>
+                      <span>{product.inStock === false ? t("product", "soldOut") : t("product", "addToCart")}</span>
                     </button>
 
                     <button
@@ -445,7 +447,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                       disabled={product.inStock === false}
                       className="flex-1 bg-zinc-950 dark:bg-amber-400 hover:bg-black dark:hover:bg-amber-300 text-white dark:text-zinc-950 font-extrabold py-3.5 px-4 rounded-xl text-xs sm:text-sm transition flex items-center justify-center gap-2 shadow-md disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                     >
-                      <span>{product.inStock === false ? "⚠️ SOLD OUT" : "الشراء الآن ⚡"}</span>
+                      <span>{product.inStock === false ? "⚠️ SOLD OUT" : t("product", "orderNow")}</span>
                     </button>
                   </div>
                 </div>
@@ -453,7 +455,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                 {/* Direct Order Form Accordion Card */}
                 <div className="bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 rounded-2xl p-5 sm:p-6 shadow-sm">
                   <h3 className="text-sm font-black text-center text-zinc-900 dark:text-white mb-5">
-                    أو اطلب المباشر السريع أدناه
+                    {t("product", "fillForm")}
                   </h3>
 
                   <form onSubmit={handleOrderSubmit} className="space-y-4">
@@ -462,24 +464,24 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                         <input
                           type="text"
                           required
-                          placeholder="الاسم واللقب *"
+                          placeholder={t("product", "fullName")}
                           value={fullName}
                           onChange={(e) => setFullName(e.target.value)}
-                          className="w-full bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 focus:border-zinc-900 dark:focus:border-amber-400 focus:bg-white dark:focus:bg-zinc-800 rounded-xl py-3 pr-9 pl-3 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 outline-none transition"
+                          className={`w-full bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 focus:border-zinc-900 dark:focus:border-amber-400 focus:bg-white dark:focus:bg-zinc-800 rounded-xl py-3 ${dir === "rtl" ? "pr-9 pl-3" : "pl-9 pr-3"} text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 outline-none transition`}
                         />
-                        <User className="w-4 h-4 text-zinc-400 absolute right-3 top-3.5 pointer-events-none" />
+                        <User className={`w-4 h-4 text-zinc-400 absolute ${dir === "rtl" ? "right-3" : "left-3"} top-3.5 pointer-events-none`} />
                       </div>
 
                       <div className="relative">
                         <input
                           type="tel"
                           required
-                          placeholder="رقم الهاتف *"
+                          placeholder={t("product", "phone")}
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
-                          className="w-full bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 focus:border-zinc-900 dark:focus:border-amber-400 focus:bg-white dark:focus:bg-zinc-800 rounded-xl py-3 pr-9 pl-3 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 outline-none transition dir-ltr text-right"
+                          className={`w-full bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 focus:border-zinc-900 dark:focus:border-amber-400 focus:bg-white dark:focus:bg-zinc-800 rounded-xl py-3 ${dir === "rtl" ? "pr-9 pl-3 text-right" : "pl-9 pr-3 text-left"} text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 outline-none transition dir-ltr`}
                         />
-                        <Phone className="w-4 h-4 text-zinc-400 absolute right-3 top-3.5 pointer-events-none" />
+                        <Phone className={`w-4 h-4 text-zinc-400 absolute ${dir === "rtl" ? "right-3" : "left-3"} top-3.5 pointer-events-none`} />
                       </div>
                     </div>
 
@@ -524,7 +526,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
                     {/* Delivery Location */}
                     <div className="pt-2">
-                      <span className="block text-[11px] font-bold text-zinc-600 dark:text-zinc-300 mb-2">مكان التوصيل</span>
+                      <span className="block text-[11px] font-bold text-zinc-600 dark:text-zinc-300 mb-2">{t("product", "deliveryCost")}</span>
                       <div className="flex gap-6">
                         <label className="flex items-center gap-2 cursor-pointer">
                           <input
@@ -534,7 +536,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                             onChange={() => setDeliveryType("home")}
                             className="w-4 h-4 accent-zinc-900 dark:accent-amber-400"
                           />
-                          <span className="text-xs text-zinc-700 dark:text-zinc-300">توصيل للمنزل</span>
+                          <span className="text-xs text-zinc-700 dark:text-zinc-300">{t("product", "deliveryHome")}</span>
                         </label>
                         <label className="flex items-center gap-2 cursor-pointer">
                           <input
@@ -544,7 +546,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                             onChange={() => setDeliveryType("desk")}
                             className="w-4 h-4 accent-zinc-900 dark:accent-amber-400"
                           />
-                          <span className="text-xs text-zinc-700 dark:text-zinc-300">استلام من المكتب</span>
+                          <span className="text-xs text-zinc-700 dark:text-zinc-300">{t("product", "deliveryDesk")}</span>
                         </label>
                       </div>
                     </div>
@@ -552,15 +554,15 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                     {/* Price breakdown */}
                     <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800 space-y-1 text-xs">
                       <div className="flex justify-between text-zinc-600 dark:text-zinc-400">
-                        <span>سعر التوصيل</span>
+                        <span>{t("product", "deliveryCost")}</span>
                         <span className="font-semibold text-zinc-900 dark:text-zinc-200">{formatPrice(deliveryCost)}</span>
                       </div>
                       <div className="flex justify-between text-zinc-600 dark:text-zinc-400">
-                        <span>سعر المنتجات</span>
+                        <span>{t("product", "orderSummary")}</span>
                         <span className="font-semibold text-zinc-900 dark:text-zinc-200">{formatPrice(itemsTotal)}</span>
                       </div>
                       <div className="flex justify-between text-sm font-black text-emerald-600 dark:text-emerald-400 pt-1">
-                        <span>التكلفة الإجمالية</span>
+                        <span>{t("product", "total")}</span>
                         <span>{formatPrice(grandTotal)}</span>
                       </div>
                     </div>
@@ -573,10 +575,10 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                         className="flex-1 bg-zinc-950 dark:bg-amber-400 hover:bg-black dark:hover:bg-amber-300 text-white dark:text-zinc-950 font-black py-3.5 px-6 rounded-xl text-xs sm:text-sm tracking-wide transition shadow-sm disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                       >
                         {product.inStock === false
-                          ? "⚠️ SOLD OUT — Orders Unavailable"
+                          ? "⚠️ SOLD OUT"
                           : isSubmitting
-                          ? "جاري الإرسال..."
-                          : "تأكيد الطلب الفوري"}
+                          ? t("product", "processing")
+                          : t("product", "confirmOrder")}
                       </button>
 
                       <div className="flex items-center border border-zinc-200 dark:border-zinc-700 rounded-xl bg-zinc-50 dark:bg-zinc-800 px-2 h-11">

@@ -1,6 +1,8 @@
 "use client";
 
 import React, { memo } from "react";
+import { useLanguage } from "./LanguageContext";
+import { getAnnouncementMessages } from "@/lib/i18n";
 
 interface AnnouncementBarProps {
   messages?: string[];
@@ -8,24 +10,19 @@ interface AnnouncementBarProps {
   speedSeconds?: number;
 }
 
-const DEFAULT_MESSAGES = [
-  "🚚 توصيل سريع لـ 69 ولاية",
-  "💰 الدفع عند الاستلام",
-  "📦 معاينة الطرد قبل الدفع",
-  "✅ ضمان الجودة والإرجاع",
-];
-
 export const AnnouncementBar = memo(function AnnouncementBar({
-  messages = DEFAULT_MESSAGES,
+  messages,
   className = "",
   speedSeconds = 25,
 }: AnnouncementBarProps) {
-  const repeatedMessages = [...messages, ...messages, ...messages, ...messages];
+  const { lang, dir } = useLanguage();
+  const activeMessages = messages || getAnnouncementMessages(lang);
+  const repeatedMessages = [...activeMessages, ...activeMessages, ...activeMessages, ...activeMessages];
 
   return (
     <div
       className={`relative w-full overflow-hidden bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 text-zinc-300 border-b border-zinc-800/80 select-none ${className}`}
-      dir="rtl"
+      dir={dir}
     >
       <style>{`
         @keyframes announcement-scroll {

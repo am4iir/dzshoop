@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { useCart } from "@/components/CartContext";
+import { useLanguage } from "@/components/LanguageContext";
 import { WILAYAS } from "@/data/products";
 import { formatPrice } from "@/lib/utils";
 import { CheckCircle2, ShoppingBag, ArrowLeft, MapPin, Phone, User, Tag, Check, Copy } from "lucide-react";
@@ -11,6 +12,7 @@ import confetti from "canvas-confetti";
 
 export default function CheckoutPage() {
   const { items, totalPrice, clearCart } = useCart();
+  const { t, dir, lang } = useLanguage();
 
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
@@ -177,7 +179,7 @@ export default function CheckoutPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fafafa] dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 pb-20 transition-colors duration-200" dir="rtl">
+    <div className="min-h-screen bg-[#fafafa] dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 pb-20 transition-colors duration-200" dir={dir}>
       <Navbar />
 
       <main className="max-w-5xl mx-auto px-4 py-8">
@@ -186,9 +188,9 @@ export default function CheckoutPage() {
             <div className="w-16 h-16 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle2 className="w-8 h-8" />
             </div>
-            <h2 className="text-2xl font-black text-zinc-900 dark:text-white mb-2">تم إرسال طلبك بنجاح!</h2>
+            <h2 className="text-2xl font-black text-zinc-900 dark:text-white mb-2">{t("checkout", "confirmSuccess")}</h2>
             <div className="flex items-center justify-center gap-2 mb-2">
-              <span className="text-xs text-zinc-500 dark:text-zinc-400">رقم الطلبية:</span>
+              <span className="text-xs text-zinc-500 dark:text-zinc-400">{t("checkout", "orderNumber")}</span>
               <span className="font-bold text-zinc-900 dark:text-white bg-zinc-100 dark:bg-zinc-800 px-2.5 py-1 rounded-lg font-mono text-sm border border-zinc-200 dark:border-zinc-700">
                 {orderId}
               </span>
@@ -199,28 +201,28 @@ export default function CheckoutPage() {
                 title="نسخ رقم الطلبية"
               >
                 {copiedOrderId ? <Check className="w-3 h-3 text-emerald-600 dark:text-emerald-400" /> : <Copy className="w-3 h-3" />}
-                <span>{copiedOrderId ? "تم النسخ!" : "نسخ"}</span>
+                <span>{copiedOrderId ? t("checkout", "copied") : t("checkout", "copyId")}</span>
               </button>
             </div>
             <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-6">
-              سنتصل بك هاتفياً لتأكيد الشحن فوراً.
+              {t("checkout", "contactSoon")}
             </p>
 
-            <div className="bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-100 dark:border-zinc-700/60 rounded-2xl p-4 text-xs space-y-2 text-right mb-6">
+            <div className={`bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-100 dark:border-zinc-700/60 rounded-2xl p-4 text-xs space-y-2 ${dir === "rtl" ? "text-right" : "text-left"} mb-6`}>
               <div className="flex justify-between">
-                <span className="text-zinc-500 dark:text-zinc-400">الاسم:</span>
+                <span className="text-zinc-500 dark:text-zinc-400">{t("checkout", "fullName")}:</span>
                 <span className="font-bold text-zinc-900 dark:text-white">{fullName}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-zinc-500 dark:text-zinc-400">رقم الهاتف:</span>
+                <span className="text-zinc-500 dark:text-zinc-400">{t("checkout", "phone")}:</span>
                 <span className="font-bold text-zinc-900 dark:text-white" dir="ltr">{phone}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-zinc-500 dark:text-zinc-400">العنوان:</span>
+                <span className="text-zinc-500 dark:text-zinc-400">{t("checkout", "wilaya")}:</span>
                 <span className="font-bold text-zinc-900 dark:text-white">{currentWilaya.name} - {commune}</span>
               </div>
               <div className="flex justify-between pt-2 border-t border-zinc-200 dark:border-zinc-700 font-extrabold text-sm text-zinc-900 dark:text-white">
-                <span>المبلغ الكلي عند الاستلام:</span>
+                <span>{t("checkout", "total")}:</span>
                 <span className="text-emerald-600 dark:text-emerald-400">{formatPrice(grandTotal)}</span>
               </div>
             </div>
@@ -234,45 +236,45 @@ export default function CheckoutPage() {
               }}
               className="inline-flex items-center gap-2 text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 px-5 py-2.5 rounded-xl transition cursor-pointer"
             >
-              العودة للرئيسية
+              {t("checkout", "backToStore")}
             </Link>
           </div>
         ) : items.length === 0 ? (
           <div className="py-20 text-center max-w-md mx-auto">
             <ShoppingBag className="w-16 h-16 text-zinc-300 dark:text-zinc-700 mx-auto mb-4" />
-            <h2 className="text-xl font-extrabold text-zinc-900 dark:text-white mb-2">سلتك فارغة</h2>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-6">يرجى إضافة منتجات إلى السلة قبل الدخول لصفحة التأكيد</p>
+            <h2 className="text-xl font-extrabold text-zinc-900 dark:text-white mb-2">{t("checkout", "cartEmpty")}</h2>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-6">{t("checkout", "cartEmptyDesc")}</p>
             <Link
               href="/"
               className="inline-flex items-center justify-center bg-zinc-900 dark:bg-amber-400 text-white dark:text-zinc-950 font-bold px-6 py-3 rounded-xl text-xs hover:bg-black dark:hover:bg-amber-300 transition"
             >
-              تصفح الكوليكشن
+              {t("checkout", "backToStore")}
             </Link>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             {/* Form Column */}
             <div className="lg:col-span-7 bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 rounded-3xl p-6 sm:p-8 shadow-sm">
-              <h2 className="text-lg font-black text-zinc-900 dark:text-white mb-6">معلومات التوصيل والاستلام</h2>
+              <h2 className="text-lg font-black text-zinc-900 dark:text-white mb-6">{t("checkout", "title")}</h2>
 
               <form onSubmit={handleSubmitOrder} className="space-y-4">
                 <div>
                   <label className="block text-xs font-bold text-zinc-600 dark:text-zinc-300 mb-1.5 flex items-center gap-1.5">
-                    <User className="w-4 h-4 text-zinc-400" /> الاسم الكامل *
+                    <User className="w-4 h-4 text-zinc-400" /> {t("checkout", "fullName")}
                   </label>
                   <input
                     type="text"
                     required
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    placeholder="اسمك الكامل"
+                    placeholder={t("checkout", "fullName")}
                     className="w-full bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 focus:border-zinc-900 dark:focus:border-amber-400 focus:bg-white dark:focus:bg-zinc-800 rounded-xl py-3 px-4 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 outline-none transition"
                   />
                 </div>
 
                 <div>
                   <label className="block text-xs font-bold text-zinc-600 dark:text-zinc-300 mb-1.5 flex items-center gap-1.5">
-                    <Phone className="w-4 h-4 text-zinc-400" /> رقم الهاتف *
+                    <Phone className="w-4 h-4 text-zinc-400" /> {t("checkout", "phone")}
                   </label>
                   <input
                     type="tel"
@@ -280,14 +282,14 @@ export default function CheckoutPage() {
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="05 / 06 / 07 XX XX XX XX"
-                    className="w-full bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 focus:border-zinc-900 dark:focus:border-amber-400 focus:bg-white dark:focus:bg-zinc-800 rounded-xl py-3 px-4 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 outline-none transition text-right dir-ltr"
+                    className={`w-full bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 focus:border-zinc-900 dark:focus:border-amber-400 focus:bg-white dark:focus:bg-zinc-800 rounded-xl py-3 px-4 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 outline-none transition ${dir === "rtl" ? "text-right" : "text-left"} dir-ltr`}
                   />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                   <div>
                     <label className="block text-xs font-bold text-zinc-600 dark:text-zinc-300 mb-1.5 flex items-center gap-1.5">
-                      <MapPin className="w-4 h-4 text-zinc-400" /> الولاية *
+                      <MapPin className="w-4 h-4 text-zinc-400" /> {t("checkout", "wilaya")}
                     </label>
                     <select
                       value={wilayaCode}
@@ -310,7 +312,7 @@ export default function CheckoutPage() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-zinc-600 dark:text-zinc-300 mb-1.5">البلدية *</label>
+                    <label className="block text-xs font-bold text-zinc-600 dark:text-zinc-300 mb-1.5">{t("checkout", "commune")}</label>
                     <select
                       value={commune}
                       onChange={(e) => setCommune(e.target.value)}
@@ -327,18 +329,18 @@ export default function CheckoutPage() {
 
                 {/* Delivery Choice */}
                 <div className="pt-3">
-                  <label className="block text-xs font-bold text-zinc-600 dark:text-zinc-300 mb-2">طريقة التوصيل:</label>
+                  <label className="block text-xs font-bold text-zinc-600 dark:text-zinc-300 mb-2">{t("checkout", "deliveryCost")}</label>
                   <div className="grid grid-cols-2 gap-3">
                     <button
                       type="button"
                       onClick={() => setDeliveryType("home")}
-                      className={`p-3 rounded-xl border text-right transition-all cursor-pointer ${
+                      className={`p-3 rounded-xl border ${dir === "rtl" ? "text-right" : "text-left"} transition-all cursor-pointer ${
                         deliveryType === "home"
                           ? "border-zinc-900 dark:border-white bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 shadow-sm"
                           : "border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/50 text-zinc-700 dark:text-zinc-300 hover:border-zinc-300 dark:hover:border-zinc-600"
                       }`}
                     >
-                      <span className="text-xs font-bold block">توصيل للمنزل</span>
+                      <span className="text-xs font-bold block">{t("checkout", "deliveryHome")}</span>
                       <span className="text-[11px] opacity-80 mt-0.5 block">
                         +{formatPrice(currentWilaya.homeDelivery)}
                       </span>
@@ -347,13 +349,13 @@ export default function CheckoutPage() {
                     <button
                       type="button"
                       onClick={() => setDeliveryType("desk")}
-                      className={`p-3 rounded-xl border text-right transition-all cursor-pointer ${
+                      className={`p-3 rounded-xl border ${dir === "rtl" ? "text-right" : "text-left"} transition-all cursor-pointer ${
                         deliveryType === "desk"
                           ? "border-zinc-900 dark:border-white bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 shadow-sm"
                           : "border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/50 text-zinc-700 dark:text-zinc-300 hover:border-zinc-300 dark:hover:border-zinc-600"
                       }`}
                     >
-                      <span className="text-xs font-bold block">استلام من المكتب</span>
+                      <span className="text-xs font-bold block">{t("checkout", "deliveryDesk")}</span>
                       <span className="text-[11px] opacity-80 mt-0.5 block">
                         +{formatPrice(currentWilaya.deskDelivery)}
                       </span>
@@ -366,7 +368,7 @@ export default function CheckoutPage() {
                   disabled={isSubmitting}
                   className="w-full bg-zinc-950 dark:bg-amber-400 hover:bg-black dark:hover:bg-amber-300 text-white dark:text-zinc-950 font-extrabold py-4 px-6 rounded-xl text-sm transition shadow-md mt-6 disabled:opacity-50 cursor-pointer"
                 >
-                  {isSubmitting ? "جاري تسجيل الطلب..." : "تأكيد الطلب الآن"}
+                  {isSubmitting ? t("checkout", "processing") : t("checkout", "confirmOrder")}
                 </button>
               </form>
             </div>
@@ -374,7 +376,7 @@ export default function CheckoutPage() {
             {/* Cart Summary Column */}
             <div className="lg:col-span-5 bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 rounded-3xl p-6 shadow-sm space-y-4">
               <h2 className="text-base font-black text-zinc-900 dark:text-white pb-3 border-b border-zinc-100 dark:border-zinc-800">
-                ملخص السلة ({items.length} منتجات)
+                {t("checkout", "orderSummary")} ({items.length})
               </h2>
 
               <div className="space-y-3 max-h-80 overflow-y-auto pr-1">
@@ -388,7 +390,7 @@ export default function CheckoutPage() {
                     <div className="flex-1">
                       <h4 className="font-bold text-zinc-900 dark:text-white">{item.productName}</h4>
                       <p className="text-zinc-500 dark:text-zinc-400 text-[11px]">
-                        المقاس: {item.selectedSize} | الكمية: {item.quantity}
+                        {item.selectedSize ? `${item.selectedSize} • ` : ""}x{item.quantity}
                       </p>
                       <p className="font-black text-zinc-900 dark:text-white mt-1">
                         {formatPrice(item.unitPrice * item.quantity)}
@@ -404,25 +406,25 @@ export default function CheckoutPage() {
                   <div className="relative flex-1">
                     <input
                       type="text"
-                      placeholder="كود التخفيض (مثلاً AB10)"
+                      placeholder={t("checkout", "promoCode")}
                       value={promoInput}
                       onChange={(e) => setPromoInput(e.target.value)}
-                      className="w-full bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 rounded-xl py-2 px-3 pr-8 text-xs outline-none focus:border-zinc-900 dark:focus:border-amber-400 text-zinc-900 dark:text-white uppercase font-mono"
+                      className={`w-full bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 rounded-xl py-2 px-3 ${dir === "rtl" ? "pr-8" : "pl-8"} text-xs outline-none focus:border-zinc-900 dark:focus:border-amber-400 text-zinc-900 dark:text-white uppercase font-mono`}
                     />
-                    <Tag className="w-3.5 h-3.5 text-zinc-400 absolute right-2.5 top-2.5 pointer-events-none" />
+                    <Tag className={`w-3.5 h-3.5 text-zinc-400 absolute ${dir === "rtl" ? "right-2.5" : "left-2.5"} top-2.5 pointer-events-none`} />
                   </div>
                   <button
                     type="submit"
                     className="bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 px-4 py-2 rounded-xl text-xs font-bold hover:bg-black dark:hover:bg-zinc-200 transition cursor-pointer"
                   >
-                    تطبيق
+                    {t("checkout", "applyPromo")}
                   </button>
                 </form>
 
                 {appliedPromo && (
                   <div className="mt-2 text-xs text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1 bg-emerald-50 dark:bg-emerald-950/40 p-2 rounded-lg border border-emerald-200 dark:border-emerald-800/60">
                     <Check className="w-3.5 h-3.5" />
-                    <span>تم تطبيق الخصم ({appliedPromo.code}): -{formatPrice(appliedPromo.discount)}</span>
+                    <span>({appliedPromo.code}): -{formatPrice(appliedPromo.discount)}</span>
                   </div>
                 )}
 
@@ -433,23 +435,23 @@ export default function CheckoutPage() {
 
               <div className="space-y-2 pt-2 text-xs">
                 <div className="flex justify-between text-zinc-600 dark:text-zinc-400">
-                  <span>مجموع المنتجات</span>
+                  <span>{t("checkout", "subtotal")}</span>
                   <span className="font-bold text-zinc-900 dark:text-white">{formatPrice(totalPrice)}</span>
                 </div>
 
                 {appliedPromo && (
                   <div className="flex justify-between text-emerald-600 dark:text-emerald-400 font-bold">
-                    <span>قيمة الخصم</span>
+                    <span>{t("checkout", "discount")}</span>
                     <span>-{formatPrice(appliedPromo.discount)}</span>
                   </div>
                 )}
 
                 <div className="flex justify-between text-zinc-600 dark:text-zinc-400">
-                  <span>مصاريف التوصيل</span>
+                  <span>{t("checkout", "deliveryCost")}</span>
                   <span className="font-bold text-zinc-900 dark:text-white">{formatPrice(deliveryCost)}</span>
                 </div>
                 <div className="flex justify-between text-base font-black text-emerald-600 dark:text-emerald-400 pt-3 border-t border-zinc-200 dark:border-zinc-800">
-                  <span>المبلغ الإجمالي</span>
+                  <span>{t("checkout", "total")}</span>
                   <span>{formatPrice(grandTotal)}</span>
                 </div>
               </div>
