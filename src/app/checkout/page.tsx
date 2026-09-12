@@ -6,7 +6,7 @@ import { Navbar } from "@/components/Navbar";
 import { useCart } from "@/components/CartContext";
 import { WILAYAS } from "@/data/products";
 import { formatPrice } from "@/lib/utils";
-import { CheckCircle2, ShoppingBag, ArrowLeft, MapPin, Phone, User, Tag, Check } from "lucide-react";
+import { CheckCircle2, ShoppingBag, ArrowLeft, MapPin, Phone, User, Tag, Check, Copy } from "lucide-react";
 import confetti from "canvas-confetti";
 
 export default function CheckoutPage() {
@@ -17,6 +17,16 @@ export default function CheckoutPage() {
   const [wilayaCode, setWilayaCode] = useState("16");
   const [commune, setCommune] = useState("الجزائر الوسطى");
   const [deliveryType, setDeliveryType] = useState<"home" | "desk">("home");
+  const [copiedOrderId, setCopiedOrderId] = useState(false);
+
+  const handleCopyOrderId = () => {
+    if (!orderId) return;
+    try {
+      navigator.clipboard.writeText(orderId);
+      setCopiedOrderId(true);
+      setTimeout(() => setCopiedOrderId(false), 2000);
+    } catch (e) {}
+  };
 
   // Hydrate checkout fields from localStorage across refreshes
   useEffect(() => {
@@ -176,10 +186,24 @@ export default function CheckoutPage() {
             <div className="w-16 h-16 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle2 className="w-8 h-8" />
             </div>
-            <h2 className="text-2xl font-black text-zinc-900 dark:text-white mb-1">تم إرسال طلبك بنجاح!</h2>
+            <h2 className="text-2xl font-black text-zinc-900 dark:text-white mb-2">تم إرسال طلبك بنجاح!</h2>
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <span className="text-xs text-zinc-500 dark:text-zinc-400">رقم الطلبية:</span>
+              <span className="font-bold text-zinc-900 dark:text-white bg-zinc-100 dark:bg-zinc-800 px-2.5 py-1 rounded-lg font-mono text-sm border border-zinc-200 dark:border-zinc-700">
+                {orderId}
+              </span>
+              <button
+                type="button"
+                onClick={handleCopyOrderId}
+                className="text-[11px] font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/50 hover:bg-amber-100 dark:hover:bg-amber-900/60 border border-amber-200 dark:border-amber-800 px-2 py-1 rounded-lg transition flex items-center gap-1 cursor-pointer"
+                title="نسخ رقم الطلبية"
+              >
+                {copiedOrderId ? <Check className="w-3 h-3 text-emerald-600 dark:text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                <span>{copiedOrderId ? "تم النسخ!" : "نسخ"}</span>
+              </button>
+            </div>
             <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-6">
-              رقم الطلبية: <span className="font-bold text-zinc-900 dark:text-white bg-zinc-100 dark:bg-zinc-800 px-2.5 py-1 rounded font-mono">{orderId}</span>
-              <br />سنتصل بك هاتفياً لتأكيد الشحن فوراً.
+              سنتصل بك هاتفياً لتأكيد الشحن فوراً.
             </p>
 
             <div className="bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-100 dark:border-zinc-700/60 rounded-2xl p-4 text-xs space-y-2 text-right mb-6">
