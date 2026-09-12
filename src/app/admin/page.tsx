@@ -97,10 +97,10 @@ export default function AdminDashboardPage() {
   const [imageUrl, setImageUrl] = useState("");
   const [submittingProduct, setSubmittingProduct] = useState(false);
 
-  // Helper: get stored admin token (checks both localStorage and sessionStorage)
+  // Helper: get stored admin token from current session
   const getStoredToken = (): string => {
     if (typeof window === "undefined") return "";
-    return localStorage.getItem("axb_admin_token") || sessionStorage.getItem("axb_admin_token") || "";
+    return sessionStorage.getItem("axb_admin_token") || "";
   };
 
   const getAdminHeaders = (): HeadersInit => ({
@@ -109,9 +109,14 @@ export default function AdminDashboardPage() {
   });
 
   useEffect(() => {
-    // Check saved session/token from both localStorage and sessionStorage
-    const saved = localStorage.getItem("axb_admin_auth_2026") || sessionStorage.getItem("axb_admin_auth_2026");
-    const token = localStorage.getItem("axb_admin_token") || sessionStorage.getItem("axb_admin_token");
+    // Clear any persistent tokens from localStorage so admin always requires password on new visits/tabs
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.removeItem("axb_admin_auth_2026");
+        localStorage.removeItem("axb_admin_token");
+        localStorage.removeItem("store_admin_auth");
+      } catch (e) {}
+    }
 
     // Restore active tab if previously selected
     const savedTab = localStorage.getItem("axb_admin_active_tab");
@@ -129,6 +134,10 @@ export default function AdminDashboardPage() {
       }
     }
 
+    // Check saved session in current tab (sessionStorage persists across F5 refresh, but locks on new tab or browser close)
+    const saved = sessionStorage.getItem("axb_admin_auth_2026");
+    const token = sessionStorage.getItem("axb_admin_token");
+
     if (saved === "verified" && token) {
       setIsAuthenticated(true);
       loadData();
@@ -142,9 +151,7 @@ export default function AdminDashboardPage() {
     e.preventDefault();
     const cleanPass = passcode.trim();
     if (cleanPass === "abxabx202625") {
-      // Store in BOTH localStorage and sessionStorage so it NEVER logs out on refresh
-      localStorage.setItem("axb_admin_auth_2026", "verified");
-      localStorage.setItem("axb_admin_token", cleanPass);
+      // Store ONLY in sessionStorage: persists across refresh in this tab, but locks when opening new tab/browser
       sessionStorage.setItem("axb_admin_auth_2026", "verified");
       sessionStorage.setItem("axb_admin_token", cleanPass);
       setIsAuthenticated(true);
@@ -160,9 +167,6 @@ export default function AdminDashboardPage() {
     sessionStorage.removeItem("axb_admin_token");
     localStorage.removeItem("axb_admin_auth_2026");
     localStorage.removeItem("axb_admin_token");
-    localStorage.removeItem("axb_admin_active_tab");
-    localStorage.removeItem("axb_admin_custom_revenue");
-    sessionStorage.removeItem("store_admin_auth");
     localStorage.removeItem("store_admin_auth");
     setIsAuthenticated(false);
     setPasscode("");
