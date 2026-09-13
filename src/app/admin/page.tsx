@@ -204,9 +204,10 @@ export default function AdminDashboardPage() {
       .finally(() => setCheckingAuth(false));
   }, []);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const cleanPass = passcode.trim();
+    const submittedPasscode = new FormData(e.currentTarget).get("passcode");
+    const cleanPass = typeof submittedPasscode === "string" ? submittedPasscode.trim() : "";
 
     try {
       const response = await fetch("/api/admin/login", {
@@ -754,6 +755,7 @@ export default function AdminDashboardPage() {
             <div>
               <input
                 type="password"
+                name="passcode"
                 required
                 autoFocus
                 placeholder={lang === "ar" ? "رمز المرور (Passcode)" : lang === "fr" ? "Mot de passe" : "Passcode"}
