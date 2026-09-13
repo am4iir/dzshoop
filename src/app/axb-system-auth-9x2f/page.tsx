@@ -880,45 +880,25 @@ export default function AdminDashboardPage() {
           </div>
 
           <div className="flex items-center gap-1.5 sm:gap-2">
-            {/* Multi-Theme Selector */}
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => setThemeDropdownOpen(!themeDropdownOpen)}
-                className="px-2.5 py-1.5 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white/80 dark:bg-zinc-800/80 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition flex items-center gap-1.5 text-xs font-bold cursor-pointer shadow-xs"
-                title="Themes / تغيير المظهر"
-              >
-                <Palette className="w-3.5 h-3.5 text-amber-500" />
-                <span className="hidden md:inline text-[11px]">
-                  {adminTheme === "white" ? "☀️ White" : "🌙 Black"}
-                </span>
-              </button>
-
-              {themeDropdownOpen && (
-                <div className={`absolute top-full mt-2 ${dir === "rtl" ? "left-0" : "right-0"} w-44 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl p-1.5 z-50 space-y-1 text-zinc-800 dark:text-zinc-200`}>
-                  <button
-                    type="button"
-                    onClick={() => changeAdminTheme("white")}
-                    className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
-                      adminTheme === "white" ? "bg-zinc-900 text-white" : "hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                    }`}
-                  >
-                    <span>☀️</span>
-                    <span>White</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => changeAdminTheme("black")}
-                    className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
-                      adminTheme === "black" ? "bg-amber-400 text-zinc-950 font-black" : "hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                    }`}
-                  >
-                    <span>🌙</span>
-                    <span>Black</span>
-                  </button>
-                </div>
+            {/* 1-Click Theme Toggle */}
+            <button
+              type="button"
+              onClick={() => changeAdminTheme(adminTheme === "white" ? "black" : "white")}
+              className="px-2.5 py-1.5 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white/80 dark:bg-zinc-800/80 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition flex items-center gap-1.5 text-xs font-bold cursor-pointer shadow-xs"
+              title="تغيير المظهر"
+            >
+              {adminTheme === "white" ? (
+                <>
+                  <Moon className="w-4 h-4 text-zinc-600" />
+                  <span className="hidden md:inline text-[11px]">Black</span>
+                </>
+              ) : (
+                <>
+                  <Sun className="w-4 h-4 text-amber-500" />
+                  <span className="hidden md:inline text-[11px]">White</span>
+                </>
               )}
-            </div>
+            </button>
 
             <Link
               href="/"
