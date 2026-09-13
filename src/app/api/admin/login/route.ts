@@ -1,5 +1,7 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
+import UAParser from "ua-parser-js";
 import { createAdminSessionToken, createCsrfToken, getAdminSecret } from "@/lib/auth";
+import { sendAdminLoginEmailNotification } from "@/lib/email";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { logger } from "@/lib/logger";
 
@@ -37,6 +39,24 @@ export async function POST(req: Request) {
       path: "/",
       maxAge: 60 * 60 * 8,
     });
+
+    const userAgent = new UAParser(req.headers.get("user-agent") || "").getResult();
+    const operatingSystem = userAgent.os.name === "Windows"
+      ? `Windows ${userAgent.os.version || "10/11"}`
+      : [userAgent.os.name, userAgent.os.version].filter(Boolean).join(" ") || "Unknown";
+    const browser = [userAgent.browser.name, userAgent.browser.version].filter(Boolean).join(" ") || "Unknown";
+    const deviceType = userAgent.device.type === "mobile"
+      ? "Mobile"
+      : userAgent.device.type === "tablet"
+        ? "Tablet"
+        : "Desktop";
+
+    after(() => sendAdminLoginEmailNotification({
+      loggedInAt: new Date().toISOString(),
+      operatingSystem,
+      browser,
+      deviceType,
+    }));
 
     return response;
   } catch {

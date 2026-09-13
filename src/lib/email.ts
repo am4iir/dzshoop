@@ -16,6 +16,13 @@ export interface OrderNotificationData {
   totalPrice: number;
 }
 
+export interface AdminLoginNotificationData {
+  loggedInAt: string;
+  operatingSystem: string;
+  browser: string;
+  deviceType: "Desktop" | "Mobile" | "Tablet";
+}
+
 function escapeHtml(value: string): string {
   return value.replace(/[&<>'"]/g, (character) => ({
     "&": "&amp;",
@@ -183,6 +190,62 @@ export async function sendOrderEmailNotification(order: OrderNotificationData) {
     return true;
   } catch (error) {
     logger.error("email_notification_failed", { orderId: order.id });
+    return false;
+  }
+}
+
+export async function sendAdminLoginEmailNotification(login: AdminLoginNotificationData) {
+  const emailUser = process.env.EMAIL_USER;
+  const targetEmail = process.env.ADMIN_EMAIL;
+  const emailPass = process.env.EMAIL_PASS;
+
+  if (!emailUser || !targetEmail || !emailPass) {
+    logger.warn("admin_login_email_disabled_missing_configuration");
+    return false;
+  }
+
+  try {
+    const transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: emailUser,
+        pass: emailPass.replace(/\s+/g, ""),
+      },
+    });
+
+    const htmlContent = `
+<!DOCTYPE html>
+<html lang="en">
+<body style="font-family:Arial,sans-serif;background:#f4f4f5;color:#18181b;padding:24px">
+  <div style="max-width:520px;margin:auto;background:#fff;border:1px solid #e4e4e7;border-radius:16px;padding:24px">
+    <h2 style="margin-top:0">Admin panel login</h2>
+    <p>A successful admin login was detected.</p>
+    <table style="width:100%;border-collapse:collapse">
+      <tr><td style="padding:8px 0;color:#71717a">Date and time (UTC)</td><td style="padding:8px 0;font-weight:bold">${escapeHtml(login.loggedInAt)}</td></tr>
+      <tr><td style="padding:8px 0;color:#71717a">Operating system</td><td style="padding:8px 0;font-weight:bold">${escapeHtml(login.operatingSystem)}</td></tr>
+      <tr><td style="padding:8px 0;color:#71717a">Browser</td><td style="padding:8px 0;font-weight:bold">${escapeHtml(login.browser)}</td></tr>
+      <tr><td style="padding:8px 0;color:#71717a">Device type</td><td style="padding:8px 0;font-weight:bold">${escapeHtml(login.deviceType)}</td></tr>
+    </table>
+  </div>
+</body>
+</html>`;
+
+    await transporter.sendMail({
+      from: `"axb.wear Store" <${emailUser}>`,
+      to: targetEmail,
+      subject: `Admin login detected - ${login.deviceType} - ${login.browser}`,
+      text: `A successful admin login was detected. Date and time (UTC): ${login.loggedInAt}. Operating system: ${login.operatingSystem}. Browser: ${login.browser}. Device type: ${login.deviceType}.`,
+      html: htmlContent,
+    });
+
+    logger.info("admin_login_email_sent", { browser: login.browser, deviceType: login.deviceType });
+    return true;
+  } catch (error) {
+    logger.error("admin_login_email_failed", {
+      message: error instanceof Error ? error.message : "Unknown email error",
+    });
     return false;
   }
 }
