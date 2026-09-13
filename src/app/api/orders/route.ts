@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { sql, initDbTables } from "@/lib/db";
-import { isAdminAuthorized, unauthorizedResponse } from "@/lib/auth";
+import { isAdminAuthorized, isCsrfProtectedRequest, isSameOrigin, unauthorizedResponse } from "@/lib/auth";
 import { sendOrderEmailNotification } from "@/lib/email";
+import { checkRateLimit } from "@/lib/rate-limit";
+import { WILAYAS } from "@/data/wilayas";
+import { logger } from "@/lib/logger";
 
 async function autoCleanupCompletedOrders() {
   try {
@@ -11,7 +14,7 @@ async function autoCleanupCompletedOrders() {
       AND created_at < NOW() - INTERVAL '48 hours'
     `;
   } catch (err) {
-    console.error("Auto cleanup error:", err);
+    logger.error("orders_cleanup_failed");
   }
 }
 
@@ -37,12 +40,12 @@ async function sendTelegramNotification(orderData: {
       body: JSON.stringify({ chat_id: chatId, text, parse_mode: "Markdown" }),
     });
   } catch (err) {
-    console.error("Telegram notification error:", err);
+    logger.error("telegram_notification_failed");
   }
 }
 
 export async function GET(req: Request) {
-  if (!isAdminAuthorized(req)) return unauthorizedResponse();
+  if (!isSameOrigin(req) || !isAdminAuthorized(req)) return unauthorizedResponse();
   try {
     await initDbTables();
     await autoCleanupCompletedOrders();
@@ -74,17 +77,47 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
+  const rate = checkRateLimit(req, { maxRequests: 15, windowMs: 60 * 1000 });
+  if (!rate.allowed) {
+    logger.warn("order_rate_limited", { retryAfterMs: rate.retryAfterMs });
+    return NextResponse.json(
+      { success: false, error: "Too many requests. Please wait a moment and try again." },
+      { status: 429, headers: { "Retry-After": String(Math.ceil((rate.retryAfterMs ?? 0) / 1000)) } }
+    );
+  }
+
   try {
     await initDbTables();
     const body = await req.json();
+    if (body.totalPrice !== undefined || body.deliveryPrice !== undefined || body.productTitle !== undefined || body.unitPrice !== undefined) {
+      logger.warn("order_client_pricing_fields_ignored");
+    }
 
-    const productId = body.productId || "";
-    const productTitle = body.productTitle || "منتج";
-    const selectedSize = body.selectedSize || "M";
-    const selectedColor = body.selectedColor || "";
-    const quantity = Math.max(1, Number(body.quantity) || 1);
-    const fullName = (body.fullName || "").trim();
-    let phone = (body.phone || "").trim().replace(/[\s\-\.\(\)]/g, "");
+    const requestedItems = Array.isArray(body.cartItems) && body.cartItems.length > 0
+      ? body.cartItems
+      : [{
+          productId: body.productId,
+          quantity: body.quantity,
+          selectedSize: body.selectedSize,
+          selectedColor: body.selectedColor,
+        }];
+    if (requestedItems.length > 20) {
+      logger.warn("order_rejected", { reason: "too_many_items" });
+      return NextResponse.json({ success: false, error: "عدد المنتجات في الطلب غير صالح" }, { status: 400 });
+    }
+
+    const items: Array<{ productId: string; quantity: number; selectedSize: string; selectedColor: string }> = requestedItems.map((item: any) => ({
+      productId: typeof item?.productId === "string" ? item.productId.trim() : "",
+      quantity: Number.isInteger(Number(item?.quantity)) ? Math.max(1, Math.min(20, Number(item.quantity))) : 0,
+      selectedSize: typeof item?.selectedSize === "string" ? item.selectedSize.trim().slice(0, 50) : "",
+      selectedColor: typeof item?.selectedColor === "string" ? item.selectedColor.trim().slice(0, 50) : "",
+    }));
+    if (items.some((item) => !item.productId || item.quantity < 1) || items.reduce((sum, item) => sum + item.quantity, 0) > 20) {
+      logger.warn("order_rejected", { reason: "invalid_items" });
+      return NextResponse.json({ success: false, error: "بيانات المنتجات أو الكمية غير صالحة" }, { status: 400 });
+    }
+    const fullName = (String(body.fullName || "").trim()).slice(0, 120);
+    let phone = (String(body.phone || "").trim()).replace(/[\s\-\.\(\)]/g, "");
     if (phone.startsWith("+213")) {
       phone = "0" + phone.slice(4);
     } else if (phone.startsWith("00213")) {
@@ -92,43 +125,66 @@ export async function POST(req: Request) {
     } else if (phone.startsWith("213") && phone.length === 11) {
       phone = "0" + phone.slice(3);
     }
-    const wilayaName = (body.wilayaName || "").trim();
-    const commune = (body.commune || "").trim();
+    const wilayaCode = typeof body.wilayaCode === "string" ? body.wilayaCode.trim() : "";
+    const wilaya = WILAYAS.find((item) => item.code === wilayaCode);
+    const wilayaName = wilaya?.name || "";
+    const requestedCommune = typeof body.commune === "string" ? body.commune.trim() : "";
+    const commune = wilaya?.communes.includes(requestedCommune) ? requestedCommune : (wilaya?.communes[0] || "");
     const deliveryType = body.deliveryType === "desk" ? "desk" : "home";
-    const deliveryPrice = Math.max(0, Number(body.deliveryPrice) || 0);
+    const deliveryPrice = wilaya ? (deliveryType === "home" ? wilaya.homeDelivery : wilaya.deskDelivery) : 0;
 
-    if (!fullName || !phone || !wilayaName) {
+    if (!fullName || !phone || !wilaya) {
+      logger.warn("order_rejected", { reason: "invalid_customer_or_zone" });
       return NextResponse.json(
         { success: false, error: "بيانات ناقصة - يرجى إدخال الاسم ورقم الهاتف والولاية" },
         { status: 400 }
       );
     }
     if (!/^0[5-7]\d{8}$/.test(phone)) {
+      logger.warn("order_rejected", { reason: "invalid_phone" });
       return NextResponse.json(
         { success: false, error: "رقم الهاتف غير صحيح! يرجى إدخال رقم جزائري يبدأ بـ 05 أو 06 أو 07 ويتكون من 10 أرقام (مثلاً: 0555123456)" },
         { status: 400 }
       );
     }
 
-    if (productId && (!body.cartItems || body.cartItems.length <= 1)) {
-      const productRows = await sql`
-        SELECT price::float as price, in_stock, is_deleted 
-        FROM products 
-        WHERE id = ${productId}
-      `;
-      if (!productRows || productRows.length === 0) {
-        return NextResponse.json({ success: false, error: "المنتج غير موجود" }, { status: 400 });
-      }
-      const product = productRows[0];
-      if (product.is_deleted) {
-        return NextResponse.json({ success: false, error: "هذا المنتج غير متوفر حالياً" }, { status: 400 });
-      }
-      if (product.in_stock === false) {
-        return NextResponse.json({ success: false, error: "نفدت كمية هذا المنتج حالياً" }, { status: 400 });
-      }
+    const productIds = [...new Set(items.map((item) => item.productId))];
+    const productRows = await sql`
+      SELECT id, name, price::float as price, sizes, colors, in_stock, is_deleted
+      FROM products
+      WHERE id = ANY(${productIds})
+    `;
+    if (productRows.length !== productIds.length) {
+      logger.warn("order_rejected", { reason: "unknown_product" });
+      return NextResponse.json({ success: false, error: "أحد المنتجات غير موجود" }, { status: 400 });
     }
 
-    const totalPrice = Number(body.totalPrice) || 0;
+    const productsById = new Map(productRows.map((product) => [product.id, product]));
+    const pricedItems = items.map((item) => {
+      const product = productsById.get(item.productId);
+      if (!product || product.is_deleted || product.in_stock === false) return null;
+      if (item.selectedSize && Array.isArray(product.sizes) && !product.sizes.includes(item.selectedSize)) return null;
+      if (item.selectedColor && Array.isArray(product.colors) && !product.colors.includes(item.selectedColor)) return null;
+      return { ...item, product };
+    });
+    if (pricedItems.some((item) => !item)) {
+      logger.warn("order_rejected", { reason: "unavailable_product_or_option" });
+      return NextResponse.json({ success: false, error: "أحد المنتجات أو خياراته غير متوفر" }, { status: 400 });
+    }
+
+    const validItems = pricedItems as Array<{ productId: string; quantity: number; selectedSize: string; selectedColor: string; product: any }>;
+    const productTitle = validItems.map((item) => `${item.product.name} (${item.selectedSize || "M"}) ×${item.quantity}`).join(" + ").slice(0, 200);
+    const itemsTotal = validItems.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+    const promoCode = typeof body.promoCode === "string" ? body.promoCode.trim().toUpperCase() : "";
+    const discount = ["AB10", "DZ10", "JWI10"].includes(promoCode)
+      ? Math.round(itemsTotal * 0.1)
+      : promoCode === "PROMO500" ? 500 : 0;
+    const totalPrice = Math.max(0, itemsTotal - discount + deliveryPrice);
+    const productId = validItems[0].productId;
+    const selectedSize = validItems[0].selectedSize || "M";
+    const selectedColor = validItems[0].selectedColor;
+    const quantity = validItems.reduce((sum, item) => sum + item.quantity, 0);
+
     const id = "DZ-" + Math.floor(100000 + Math.random() * 900000);
 
     await sql`
@@ -153,7 +209,7 @@ export async function POST(req: Request) {
         totalPrice,
       });
     } catch (err) {
-      console.error("Email notification trigger error:", err);
+      logger.error("email_notification_failed");
     }
 
     // Trigger instant Telegram notification to phone if configured
@@ -161,13 +217,13 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true, order: { id, fullName, totalPrice } });
   } catch (error) {
-    console.error("Create order error:", error);
+    logger.error("order_creation_failed");
     return NextResponse.json({ success: false, error: "Failed to create order" }, { status: 500 });
   }
 }
 
 export async function PATCH(req: Request) {
-  if (!isAdminAuthorized(req)) return unauthorizedResponse();
+  if (!isSameOrigin(req) || !isAdminAuthorized(req) || !isCsrfProtectedRequest(req)) return unauthorizedResponse();
   try {
     await initDbTables();
     const { orderId, status } = await req.json();
@@ -184,7 +240,7 @@ export async function PATCH(req: Request) {
 }
 
 export async function DELETE(req: Request) {
-  if (!isAdminAuthorized(req)) return unauthorizedResponse();
+  if (!isSameOrigin(req) || !isAdminAuthorized(req) || !isCsrfProtectedRequest(req)) return unauthorizedResponse();
   try {
     await initDbTables();
     const { searchParams } = new URL(req.url);

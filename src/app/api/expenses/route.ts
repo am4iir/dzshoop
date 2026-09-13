@@ -1,9 +1,10 @@
 ﻿import { NextResponse } from "next/server";
 import { sql, initDbTables } from "@/lib/db";
-import { isAdminAuthorized, unauthorizedResponse } from "@/lib/auth";
+import { isAdminAuthorized, isCsrfProtectedRequest, isSameOrigin, unauthorizedResponse } from "@/lib/auth";
+import { logger } from "@/lib/logger";
 
 export async function GET(req: Request) {
-  if (!isAdminAuthorized(req)) return unauthorizedResponse();
+  if (!isSameOrigin(req) || !isAdminAuthorized(req) || !isCsrfProtectedRequest(req)) return unauthorizedResponse();
   try {
     await initDbTables();
     const rows = await sql`
@@ -20,13 +21,13 @@ export async function GET(req: Request) {
     `;
     return NextResponse.json(rows);
   } catch (error) {
-    console.error("Fetch expenses error:", error);
+    logger.error("expenses_fetch_failed");
     return NextResponse.json([], { status: 500 });
   }
 }
 
 export async function POST(req: Request) {
-  if (!isAdminAuthorized(req)) return unauthorizedResponse();
+  if (!isSameOrigin(req) || !isAdminAuthorized(req) || !isCsrfProtectedRequest(req)) return unauthorizedResponse();
   try {
     await initDbTables();
     const body = await req.json();
@@ -53,7 +54,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true, id });
   } catch (error) {
-    console.error("Create expense error:", error);
+    logger.error("expense_creation_failed");
     return NextResponse.json({ success: false, error: "Failed to record expense" }, { status: 500 });
   }
 }
@@ -72,7 +73,7 @@ export async function DELETE(req: Request) {
     await sql`DELETE FROM expenses WHERE id = ${id}`;
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Delete expense error:", error);
+    logger.error("expense_deletion_failed");
     return NextResponse.json({ success: false, error: "Failed to delete expense" }, { status: 500 });
   }
 }

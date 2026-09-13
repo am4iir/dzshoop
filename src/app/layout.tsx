@@ -14,11 +14,17 @@ const tajawal = Tajawal({
 });
 
 export const metadata: Metadata = {
-  title: "axb.wear | official streetwear store",
   description: "axb.wear official store - barae × amir streetwear brand in algeria. exclusive premium cotton collection with cash on delivery nationwide.",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
+  title: {
+    default: "axb.wear | official streetwear store",
+    template: "%s | axb.wear",
+  },
   openGraph: {
     title: "axb.wear | barae × amir streetwear",
     description: "new collection, premium heavyweight fabrics and fast shipping to 69 wilayas.",
+    type: "website",
+    siteName: "axb.wear",
   }
 };
 

@@ -53,21 +53,25 @@ export default function AdminDashboardPage() {
   const { theme, toggleTheme } = useTheme();
 
   // Admin Custom Theme state
-  type AdminTheme = "default" | "dark" | "navy" | "forest" | "sunset";
-  const [adminTheme, setAdminTheme] = useState<AdminTheme>("default");
+  type AdminTheme = "white" | "black";
+  const [adminTheme, setAdminTheme] = useState<AdminTheme>("white");
   const [themeDropdownOpen, setThemeDropdownOpen] = useState(false);
 
   useEffect(() => {
     setLang("ar");
     try {
       const saved = localStorage.getItem("axb_admin_theme_custom") as AdminTheme | null;
-      if (saved && ["default", "dark", "navy", "forest", "sunset"].includes(saved)) {
+      if (saved && ["white", "black"].includes(saved)) {
         setAdminTheme(saved);
-        if (saved !== "default") {
+        if (saved === "black") {
           document.documentElement.classList.add("dark");
         } else {
           document.documentElement.classList.remove("dark");
         }
+      } else {
+        if (saved) localStorage.removeItem("axb_admin_theme_custom");
+        setAdminTheme("white");
+        document.documentElement.classList.remove("dark");
       }
     } catch (e) {}
   }, []);
@@ -78,7 +82,7 @@ export default function AdminDashboardPage() {
     try {
       localStorage.setItem("axb_admin_theme_custom", newTh);
     } catch (e) {}
-    if (newTh !== "default") {
+    if (newTh === "black") {
       document.documentElement.classList.add("dark");
     } else {
       document.documentElement.classList.remove("dark");
@@ -156,15 +160,9 @@ export default function AdminDashboardPage() {
   const [savingEdit, setSavingEdit] = useState(false);
   const [editImageMode, setEditImageMode] = useState<"file" | "url">("file");
 
-  // Helper: get stored admin token from current session
-  const getStoredToken = (): string => {
-    if (typeof window === "undefined") return "";
-    return sessionStorage.getItem("axb_admin_token") || "";
-  };
-
   const getAdminHeaders = (): HeadersInit => ({
     "Content-Type": "application/json",
-    "Authorization": `Bearer ${getStoredToken()}`,
+    "X-CSRF-Token": decodeURIComponent(document.cookie.match(/(?:^|;\s*)axb_admin_csrf=([^;]+)/)?.[1] || ""),
   });
 
   useEffect(() => {
@@ -193,35 +191,50 @@ export default function AdminDashboardPage() {
       }
     }
 
-    // Check saved session in current tab (sessionStorage persists across F5 refresh, but locks on new tab or browser close)
-    const saved = sessionStorage.getItem("axb_admin_auth_2026");
-    const token = sessionStorage.getItem("axb_admin_token");
-
-    if (saved === "verified" && token) {
-      setIsAuthenticated(true);
-      loadData();
-    } else {
-      setIsAuthenticated(false);
-    }
-    setCheckingAuth(false);
+    fetch("/api/admin/session", { credentials: "include" })
+      .then((response) => {
+        if (response.ok) {
+          setIsAuthenticated(true);
+          loadData();
+        } else {
+          setIsAuthenticated(false);
+        }
+      })
+      .catch(() => setIsAuthenticated(false))
+      .finally(() => setCheckingAuth(false));
   }, []);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     const cleanPass = passcode.trim();
-    if (cleanPass === "abxabx202625") {
-      // Store ONLY in sessionStorage: persists across refresh in this tab, but locks when opening new tab/browser
-      sessionStorage.setItem("axb_admin_auth_2026", "verified");
-      sessionStorage.setItem("axb_admin_token", cleanPass);
-      setIsAuthenticated(true);
-      setAuthError(false);
-      loadData();
-    } else {
+
+    try {
+      const response = await fetch("/api/admin/login", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ passcode: cleanPass }),
+      });
+
+      if (response.ok) {
+        setIsAuthenticated(true);
+        setAuthError(false);
+        loadData();
+      } else {
+        setAuthError(true);
+      }
+    } catch {
       setAuthError(true);
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/admin/logout", { method: "POST", headers: getAdminHeaders(), credentials: "include" });
+    } catch {
+      // no-op
+    }
+
     sessionStorage.removeItem("axb_admin_auth_2026");
     sessionStorage.removeItem("axb_admin_token");
     localStorage.removeItem("axb_admin_auth_2026");
@@ -234,15 +247,11 @@ export default function AdminDashboardPage() {
 
   const loadData = () => {
     setLoading(true);
-    const token = getStoredToken();
-    const headers: HeadersInit = {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`,
-    };
+    const headers: HeadersInit = getAdminHeaders();
     Promise.all([
-      fetch("/api/orders", { headers }).then((r) => r.json()),
-      fetch("/api/products?all=true", { headers }).then((r) => r.json()),
-      fetch("/api/expenses", { headers }).then((r) => r.json())
+      fetch("/api/orders", { headers, credentials: "include" }).then((r) => r.json()),
+      fetch("/api/products?all=true", { headers, credentials: "include" }).then((r) => r.json()),
+      fetch("/api/expenses", { headers, credentials: "include" }).then((r) => r.json())
     ]).then(([ordersData, productsData, expensesData]) => {
       setOrders(Array.isArray(ordersData) ? ordersData : []);
       setProducts(Array.isArray(productsData) ? productsData : []);
@@ -425,6 +434,10 @@ export default function AdminDashboardPage() {
   // Helper: compress uploaded image using HTML canvas to keep payload small & fast
   const compressImageFile = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
+      if (!["image/jpeg", "image/png", "image/webp"].includes(file.type) || file.size > 5 * 1024 * 1024) {
+        reject(new Error("Unsupported image type or size"));
+        return;
+      }
       const reader = new FileReader();
       reader.onload = (event) => {
         const img = new Image();
@@ -829,14 +842,9 @@ export default function AdminDashboardPage() {
 
   const getAdminThemeClass = () => {
     switch (adminTheme) {
-      case "dark":
+      case "black":
         return "bg-zinc-950 text-zinc-100";
-      case "navy":
-        return "bg-[#091124] text-slate-100";
-      case "forest":
-        return "bg-[#061c14] text-emerald-100";
-      case "sunset":
-        return "bg-[#18110a] text-amber-100";
+      case "white":
       default:
         return "bg-zinc-50 text-zinc-900";
     }
@@ -844,14 +852,9 @@ export default function AdminDashboardPage() {
 
   const getAdminHeaderClass = () => {
     switch (adminTheme) {
-      case "dark":
+      case "black":
         return "bg-zinc-900/95 border-zinc-800 text-white";
-      case "navy":
-        return "bg-[#0f1d3d]/95 border-blue-900/60 text-white";
-      case "forest":
-        return "bg-[#0c2e22]/95 border-emerald-900/60 text-white";
-      case "sunset":
-        return "bg-[#281a10]/95 border-amber-900/60 text-white";
+      case "white":
       default:
         return "bg-white border-zinc-200 text-zinc-900";
     }
@@ -885,65 +888,31 @@ export default function AdminDashboardPage() {
               >
                 <Palette className="w-3.5 h-3.5 text-amber-500" />
                 <span className="hidden md:inline text-[11px]">
-                  {adminTheme === "default" && "☀️ Light"}
-                  {adminTheme === "dark" && "🌙 Dark"}
-                  {adminTheme === "navy" && "🌊 Navy"}
-                  {adminTheme === "forest" && "🌲 Forest"}
-                  {adminTheme === "sunset" && "🌅 Amber"}
+                  {adminTheme === "white" ? "☀️ White" : "🌙 Black"}
                 </span>
               </button>
 
               {themeDropdownOpen && (
-                <div className={`absolute top-full mt-2 ${dir === "rtl" ? "left-0" : "right-0"} w-48 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl p-1.5 z-50 space-y-1 text-zinc-800 dark:text-zinc-200`}>
+                <div className={`absolute top-full mt-2 ${dir === "rtl" ? "left-0" : "right-0"} w-44 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl p-1.5 z-50 space-y-1 text-zinc-800 dark:text-zinc-200`}>
                   <button
                     type="button"
-                    onClick={() => changeAdminTheme("default")}
+                    onClick={() => changeAdminTheme("white")}
                     className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
-                      adminTheme === "default" ? "bg-zinc-900 text-white" : "hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                      adminTheme === "white" ? "bg-zinc-900 text-white" : "hover:bg-zinc-100 dark:hover:bg-zinc-800"
                     }`}
                   >
                     <span>☀️</span>
-                    <span>فاتح (Light)</span>
+                    <span>White</span>
                   </button>
                   <button
                     type="button"
-                    onClick={() => changeAdminTheme("dark")}
+                    onClick={() => changeAdminTheme("black")}
                     className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
-                      adminTheme === "dark" ? "bg-amber-400 text-zinc-950 font-black" : "hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                      adminTheme === "black" ? "bg-amber-400 text-zinc-950 font-black" : "hover:bg-zinc-100 dark:hover:bg-zinc-800"
                     }`}
                   >
                     <span>🌙</span>
-                    <span>داكن (Dark)</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => changeAdminTheme("navy")}
-                    className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
-                      adminTheme === "navy" ? "bg-blue-600 text-white" : "hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                    }`}
-                  >
-                    <span>🌊</span>
-                    <span>كحلي (Navy Blue)</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => changeAdminTheme("forest")}
-                    className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
-                      adminTheme === "forest" ? "bg-emerald-600 text-white" : "hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                    }`}
-                  >
-                    <span>🌲</span>
-                    <span>زمردي (Forest)</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => changeAdminTheme("sunset")}
-                    className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
-                      adminTheme === "sunset" ? "bg-amber-600 text-white" : "hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                    }`}
-                  >
-                    <span>🌅</span>
-                    <span>عنبر (Amber)</span>
+                    <span>Black</span>
                   </button>
                 </div>
               )}

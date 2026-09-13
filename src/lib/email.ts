@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import { logger } from "@/lib/logger";
 
 export interface OrderNotificationData {
   id: string;
@@ -15,10 +16,26 @@ export interface OrderNotificationData {
   totalPrice: number;
 }
 
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>'"]/g, (character) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    "'": "&#39;",
+    '"': "&quot;",
+  })[character] || character);
+}
+
 export async function sendOrderEmailNotification(order: OrderNotificationData) {
-  const emailUser = process.env.EMAIL_USER || "axbwear@gmail.com";
-  const targetEmail = process.env.ADMIN_EMAIL || "axbwear@gmail.com";
-  const emailPass = process.env.EMAIL_PASS || "xbevcwbmnzitgqkn";
+  const emailUser = process.env.EMAIL_USER;
+  const targetEmail = process.env.ADMIN_EMAIL;
+  const emailPass = process.env.EMAIL_PASS;
+
+  if (!emailUser || !targetEmail || !emailPass) {
+    logger.warn("email_disabled_missing_configuration");
+    return false;
+  }
+
   // Sanitize password (strip spaces if user pasted with spaces)
   const cleanPass = emailPass.replace(/\s+/g, "");
 
@@ -34,6 +51,16 @@ export async function sendOrderEmailNotification(order: OrderNotificationData) {
     });
 
     const cleanPhone = order.phone.replace(/\D/g, "").replace(/^0/, "213");
+    const htmlOrder = {
+      id: escapeHtml(order.id),
+      fullName: escapeHtml(order.fullName),
+      phone: escapeHtml(order.phone),
+      wilayaName: escapeHtml(order.wilayaName),
+      commune: escapeHtml(order.commune),
+      productTitle: escapeHtml(order.productTitle),
+      selectedSize: escapeHtml(order.selectedSize || "قياسي"),
+      selectedColor: escapeHtml(order.selectedColor || ""),
+    };
     const waText = encodeURIComponent(
       `السلام عليكم ${order.fullName}، معك متجر axb.wear بخصوص طلبيتك رقم ${order.id} (${order.productTitle}) بمبلغ ${order.totalPrice} دج. هل أنت متفرغ لتأكيد الشحن؟`
     );
@@ -76,22 +103,22 @@ export async function sendOrderEmailNotification(order: OrderNotificationData) {
     </div>
 
     <div class="content">
-      <div class="order-title">وصلتك طلبية جديدة برقم: <span style="color:#09090b; font-family: monospace;">${order.id}</span></div>
+      <div class="order-title">وصلتك طلبية جديدة برقم: <span style="color:#09090b; font-family: monospace;">${htmlOrder.id}</span></div>
 
       <!-- Customer Info -->
       <div class="info-card">
         <div style="font-weight: 800; font-size: 13px; margin-bottom: 10px; color: #334155;">👤 معلومات الزبون:</div>
         <div class="row">
           <span class="label">الاسم الكامل:</span>
-          <span class="value">${order.fullName}</span>
+          <span class="value">${htmlOrder.fullName}</span>
         </div>
         <div class="row">
           <span class="label">رقم الهاتف:</span>
-          <span class="value" dir="ltr">${order.phone}</span>
+          <span class="value" dir="ltr">${htmlOrder.phone}</span>
         </div>
         <div class="row">
           <span class="label">العنوان والولاية:</span>
-          <span class="value">${order.wilayaName} - ${order.commune}</span>
+          <span class="value">${htmlOrder.wilayaName} - ${htmlOrder.commune}</span>
         </div>
         <div class="row">
           <span class="label">نوع التوصيل:</span>
@@ -104,11 +131,11 @@ export async function sendOrderEmailNotification(order: OrderNotificationData) {
         <div style="font-weight: 800; font-size: 13px; margin-bottom: 10px; color: #334155;">📦 تفاصيل السلعة:</div>
         <div class="row">
           <span class="label">المنتج:</span>
-          <span class="value">${order.productTitle}</span>
+          <span class="value">${htmlOrder.productTitle}</span>
         </div>
         <div class="row">
           <span class="label">المقاس / اللون:</span>
-          <span class="value">${order.selectedSize || "قياسي"}${order.selectedColor ? " / " + order.selectedColor : ""}</span>
+          <span class="value">${htmlOrder.selectedSize}${htmlOrder.selectedColor ? " / " + htmlOrder.selectedColor : ""}</span>
         </div>
         <div class="row">
           <span class="label">الكمية:</span>
@@ -128,7 +155,7 @@ export async function sendOrderEmailNotification(order: OrderNotificationData) {
       <div style="text-align: center; margin-top: 20px;">
         <div style="font-size: 12px; font-weight: 700; margin-bottom: 10px; color: #64748b;">إجراءات سريعة لتأكيد الشحن:</div>
         <div class="buttons">
-          <a href="tel:${order.phone}" class="btn btn-phone">📞 اتصل بالزبون</a>
+          <a href="tel:${encodeURIComponent(order.phone)}" class="btn btn-phone">📞 اتصل بالزبون</a>
           <a href="${waLink}" target="_blank" class="btn btn-wa">💬 محادثة واتساب</a>
           <a href="https://abx-wear.vercel.app/admin" target="_blank" class="btn btn-admin">⚙️ لوحة الأدمن</a>
         </div>
@@ -152,10 +179,10 @@ export async function sendOrderEmailNotification(order: OrderNotificationData) {
       html: htmlContent,
     });
 
-    console.log(`[Email Notification] Successfully sent order #${order.id} notification to ${targetEmail}`);
+    logger.info("email_notification_sent", { orderId: order.id });
     return true;
   } catch (error) {
-    console.error("[Email Notification] Failed to send email notification:", error);
+    logger.error("email_notification_failed", { orderId: order.id });
     return false;
   }
 }

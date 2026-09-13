@@ -143,11 +143,10 @@ export default function CheckoutPage() {
           quantity: items.reduce((sum, i) => sum + i.quantity, 0),
           fullName: fullName.trim(),
           phone: cleanPhone,
-          wilayaName: currentWilaya.name,
+          wilayaCode,
           commune: commune || currentWilaya.communes[0] || "",
           deliveryType,
-          deliveryPrice: deliveryCost,
-          totalPrice: grandTotal,
+          promoCode: appliedPromo?.code || "",
           cartItems: items,
         }),
       });

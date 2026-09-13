@@ -1,9 +1,24 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['images.unsplash.com', 'images.pexels.com'],
+    remotePatterns: [
+      { protocol: 'https', hostname: 'images.unsplash.com' },
+      { protocol: 'https', hostname: 'images.pexels.com' },
+    ],
   },
   async headers() {
+    const securityPolicy = [
+      "default-src 'self'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "frame-ancestors 'self'",
+      "object-src 'none'",
+      "img-src 'self' data: https://images.unsplash.com https://images.pexels.com",
+      "style-src 'self' 'unsafe-inline'",
+      "font-src 'self' data:",
+      "script-src 'self' 'unsafe-inline'",
+      "connect-src 'self'",
+    ].join('; ');
     return [
       {
         source: '/(.*)',
@@ -31,6 +46,10 @@ const nextConfig = {
           {
             key: 'Referrer-Policy',
             value: 'origin-when-cross-origin'
+          },
+          {
+            key: 'Content-Security-Policy',
+            value: securityPolicy
           },
           {
             key: 'Cache-Control',

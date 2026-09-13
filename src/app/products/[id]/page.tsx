@@ -221,11 +221,9 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
           quantity,
           fullName: fullName.trim(),
           phone: cleanPhone,
-          wilayaName: currentWilaya.name,
+          wilayaCode,
           commune: commune || currentWilaya.communes[0] || "",
           deliveryType,
-          deliveryPrice: deliveryCost,
-          totalPrice: grandTotal,
         }),
       });
       const data = await res.json();
