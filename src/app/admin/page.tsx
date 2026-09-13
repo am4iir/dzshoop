@@ -43,7 +43,6 @@ import {
   Sun,
   Moon,
   Palette,
-  Globe
 } from "lucide-react";
 import { useLanguage } from "@/components/LanguageContext";
 import { useTheme } from "@/components/ThemeContext";
@@ -59,6 +58,7 @@ export default function AdminDashboardPage() {
   const [themeDropdownOpen, setThemeDropdownOpen] = useState(false);
 
   useEffect(() => {
+    setLang("ar");
     try {
       const saved = localStorage.getItem("axb_admin_theme_custom") as AdminTheme | null;
       if (saved && ["default", "dark", "navy", "forest", "sunset"].includes(saved)) {
@@ -722,42 +722,6 @@ export default function AdminDashboardPage() {
     return (
       <div className="min-h-screen bg-zinc-950 text-white flex items-center justify-center p-4" dir={dir}>
         <div className="max-w-sm w-full bg-zinc-900 border border-zinc-800 rounded-3xl p-8 text-center shadow-2xl relative">
-          {/* Top language switcher */}
-          <div className="flex justify-center mb-4">
-            <div className="flex items-center bg-zinc-950 border border-zinc-800 rounded-full p-0.5 text-[10px] font-bold">
-              <button
-                type="button"
-                onClick={() => setLang("ar")}
-                className={`px-2.5 py-0.5 rounded-full transition cursor-pointer ${
-                  lang === "ar" ? "bg-amber-400 text-zinc-950 font-black shadow-xs" : "text-zinc-400 hover:text-white"
-                }`}
-                title="العربية (الأساسية)"
-              >
-                AR
-              </button>
-              <button
-                type="button"
-                onClick={() => setLang("en")}
-                className={`px-2.5 py-0.5 rounded-full transition cursor-pointer ${
-                  lang === "en" ? "bg-amber-400 text-zinc-950 font-black shadow-xs" : "text-zinc-400 hover:text-white"
-                }`}
-                title="English"
-              >
-                EN
-              </button>
-              <button
-                type="button"
-                onClick={() => setLang("fr")}
-                className={`px-2.5 py-0.5 rounded-full transition cursor-pointer ${
-                  lang === "fr" ? "bg-amber-400 text-zinc-950 font-black shadow-xs" : "text-zinc-400 hover:text-white"
-                }`}
-                title="Français"
-              >
-                FR
-              </button>
-            </div>
-          </div>
-
           <div className="w-14 h-14 rounded-2xl bg-zinc-800 border border-zinc-700/80 flex items-center justify-center mx-auto mb-5 text-amber-400 shadow-inner">
             <Lock className="w-6 h-6" />
           </div>
@@ -983,46 +947,6 @@ export default function AdminDashboardPage() {
                   </button>
                 </div>
               )}
-            </div>
-
-            {/* Language Switcher next to theme: 1 AR | 2 EN | 3 FR */}
-            <div className="flex items-center bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-full p-0.5 text-[11px] sm:text-xs font-bold">
-              <button
-                type="button"
-                onClick={() => setLang("ar")}
-                className={`px-2.5 py-1 rounded-full transition cursor-pointer ${
-                  lang === "ar"
-                    ? "bg-amber-400 text-zinc-950 font-black shadow-xs"
-                    : "text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white"
-                }`}
-                title="العربية (الأساسية)"
-              >
-                AR
-              </button>
-              <button
-                type="button"
-                onClick={() => setLang("en")}
-                className={`px-2.5 py-1 rounded-full transition cursor-pointer ${
-                  lang === "en"
-                    ? "bg-amber-400 text-zinc-950 font-black shadow-xs"
-                    : "text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white"
-                }`}
-                title="English"
-              >
-                EN
-              </button>
-              <button
-                type="button"
-                onClick={() => setLang("fr")}
-                className={`px-2.5 py-1 rounded-full transition cursor-pointer ${
-                  lang === "fr"
-                    ? "bg-amber-400 text-zinc-950 font-black shadow-xs"
-                    : "text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white"
-                }`}
-                title="Français"
-              >
-                FR
-              </button>
             </div>
 
             <Link
