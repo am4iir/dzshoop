@@ -164,7 +164,7 @@ export async function sendOrderEmailNotification(order: OrderNotificationData) {
         <div class="buttons">
           <a href="tel:${encodeURIComponent(order.phone)}" class="btn btn-phone">📞 اتصل بالزبون</a>
           <a href="${waLink}" target="_blank" class="btn btn-wa">💬 محادثة واتساب</a>
-          <a href="https://dzshoop.vercel.app/brx-panel-ctrl-7k4m" target="_blank" class="btn btn-admin">⚙️ لوحة الأدمن</a>
+          <a href="https://bx-wear-dz.vercel.app/brx-panel-ctrl-7k4m" target="_blank" class="btn btn-admin">⚙️ لوحة الأدمن</a>
         </div>
       </div>
     </div>
