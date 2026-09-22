@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Search, ShoppingBag, Sun, Moon, Package, X } from "lucide-react";
+import { Search, ShoppingBag, Sun, Moon, X } from "lucide-react";
 import { useCart } from "./CartContext";
 import { useTheme } from "./ThemeContext";
 import { useLanguage } from "./LanguageContext";
@@ -59,19 +59,8 @@ export function Navbar({ searchQuery = "", onSearchChange }: NavbarProps) {
           </div>
         </div>
 
-        {/* Actions - Track link, Mobile Search, Language, Theme, Cart */}
+        {/* Actions - Mobile Search, Language, Theme, Cart */}
         <div className="flex items-center gap-1.5 sm:gap-2.5">
-          {/* Track order quick link button */}
-          <Link
-            href="/track"
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 text-[11px] font-bold text-zinc-300 hover:text-white transition group"
-            title="تتبع طلبيتك"
-          >
-            <Package className="w-3.5 h-3.5 text-amber-400 group-hover:scale-110 transition" />
-            <span className="hidden sm:inline">
-              {lang === "ar" ? "تتبع الطلب" : lang === "fr" ? "Suivi" : "Track"}
-            </span>
-          </Link>
 
           {/* Mobile Search Toggle */}
           <button

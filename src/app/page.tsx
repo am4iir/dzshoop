@@ -122,13 +122,15 @@ export default function HomePage() {
                 <ArrowDown className="w-4 h-4" />
               </a>
 
-              <Link
-                href="/track"
+              <a
+                href="https://wa.me/213555000000"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl bg-zinc-800/90 hover:bg-zinc-700/90 border border-zinc-700 text-white font-bold text-xs sm:text-sm transition duration-200"
               >
-                <Package className="w-4 h-4 text-amber-400" />
-                <span>{lang === "ar" ? "تتبع طلبيتك" : "Track Order"}</span>
-              </Link>
+                <MessageCircle className="w-4 h-4 text-emerald-400" />
+                <span>{lang === "ar" ? "تواصل واتساب" : "WhatsApp"}</span>
+              </a>
             </div>
 
             {/* Micro Trust Pointers */}
@@ -444,12 +446,6 @@ export default function HomePage() {
             <ul className="space-y-2 text-[11px]">
               <li>
                 <Link href="/" className="hover:text-white transition">{t("home", "footerHome")}</Link>
-              </li>
-              <li>
-                <Link href="/track" className="hover:text-amber-400 transition flex items-center justify-center md:justify-start gap-1">
-                  <Package className="w-3.5 h-3.5" />
-                  <span>{lang === "ar" ? "تتبع طلبيتك مباشرة" : "Track Order"}</span>
-                </Link>
               </li>
               <li>
                 <Link href="/checkout" className="hover:text-white transition">{t("home", "footerCart")}</Link>
