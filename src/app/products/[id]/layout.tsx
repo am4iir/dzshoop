@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "تفاصيل المنتج",
-  description: "اكتشف تفاصيل منتجات axb.wear، المقاسات، الألوان، والأسعار مع التوصيل في الجزائر.",
+  description: "اكتشف تفاصيل منتجات bx.wear.dz، المقاسات، الألوان، والأسعار مع التوصيل في الجزائر.",
   openGraph: {
-    title: "تفاصيل المنتج | axb.wear",
-    description: "منتجات streetwear أصلية من axb.wear مع التوصيل في الجزائر.",
+    title: "تفاصيل المنتج | bx.wear.dz",
+    description: "منتجات streetwear أصلية من bx.wear.dz مع التوصيل في الجزائر.",
     type: "website",
   },
 };

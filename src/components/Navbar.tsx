@@ -22,14 +22,14 @@ export function Navbar({ searchQuery = "", onSearchChange }: NavbarProps) {
         {/* Minimalist Lowercase Brand Logo */}
         <Link href="/" className="flex items-center gap-2.5 group shrink-0">
           <span className="w-9 h-9 rounded-xl bg-white text-zinc-950 font-black flex items-center justify-center text-xs tracking-tighter shadow-md group-hover:bg-amber-400 transition duration-300">
-            axb
+            bx
           </span>
           <div className="leading-tight">
             <span className="font-black tracking-wider text-base text-white font-mono lowercase block">
-              axb<span className="text-amber-400">.wear</span>
+              bx<span className="text-amber-400">.wear.dz</span>
             </span>
             <span className="text-[9px] text-zinc-400 font-bold tracking-widest block -mt-0.5 lowercase">
-              official streetwear
+              official streetwear dz
             </span>
           </div>
         </Link>

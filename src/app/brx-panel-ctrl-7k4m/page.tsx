@@ -726,7 +726,7 @@ export default function AdminDashboardPage() {
     return (
       <div className="min-h-screen bg-zinc-950 text-white flex flex-col items-center justify-center gap-3">
         <div className="animate-spin w-9 h-9 border-3 border-amber-400 border-t-transparent rounded-full" />
-        <span className="text-xs text-zinc-400 font-bold font-mono tracking-wider">axb.wear • جاري التحقق...</span>
+        <span className="text-xs text-zinc-400 font-bold font-mono tracking-wider">bx.wear.dz • جاري التحقق...</span>
       </div>
     );
   }
@@ -1096,7 +1096,7 @@ export default function AdminDashboardPage() {
                         </a>
                         <a
                           href={`https://wa.me/213${order.phone.replace(/\D/g, "").replace(/^0/, "")}?text=${encodeURIComponent(
-                            `السلام عليكم ${order.fullName}، معك متجر axb.wear بخصوص طلبيتك رقم ${order.id} (${order.productTitle}) بمبلغ ${order.totalPrice} دج. هل أنت متفرغ لتأكيد الشحن؟`
+                            `السلام عليكم ${order.fullName}، معك متجر bx.wear.dz بخصوص طلبيتك رقم ${order.id} (${order.productTitle}) بمبلغ ${order.totalPrice} دج. هل أنت متفرغ لتأكيد الشحن؟`
                           )}`}
                           target="_blank"
                           rel="noopener noreferrer"

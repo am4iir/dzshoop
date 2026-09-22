@@ -36,7 +36,7 @@ export default function NotFound() {
       
       {/* Brand water mark */}
       <div className="absolute bottom-10 left-1/2 -translate-x-1/2 font-mono text-2xl font-black lowercase text-zinc-800">
-        axb<span className="text-amber-400/20">.wear</span>
+        bx<span className="text-amber-400/20">.wear.dz</span>
       </div>
     </div>
   );

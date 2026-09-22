@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-export const metadata: Metadata = { title: "شروط الاستخدام | axb.wear", description: "شروط استخدام متجر axb.wear والشراء عند الاستلام." };
+export const metadata: Metadata = { title: "شروط الاستخدام | bx.wear.dz", description: "شروط استخدام متجر bx.wear.dz والشراء عند الاستلام." };
 
 export default function TermsPage() {
   return <LegalPage title="شروط الاستخدام" sections={["يتم تأكيد الطلبات هاتفياً قبل الشحن.", "الأسعار المعروضة بالدينار الجزائري وتشمل تفاصيل التوصيل الموضحة في صفحة الدفع.", "يمنع استخدام المتجر لأي نشاط غير قانوني أو احتيالي."]} />;

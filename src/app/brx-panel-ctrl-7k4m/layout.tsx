@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "لوحة الإدارة",
-  description: "لوحة إدارة متجر axb.wear.",
+  description: "لوحة إدارة متجر bx.wear.dz.",
   robots: { index: false, follow: false },
 };
 

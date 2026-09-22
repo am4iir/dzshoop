@@ -64,16 +64,16 @@ export default function HomePage() {
       <Navbar searchQuery={search} onSearchChange={setSearch} />
 
       <main className="max-w-6xl mx-auto px-4 py-6 space-y-10">
-        {/* Minimalist Lowercase axb.wear Hero Banner */}
+        {/* Minimalist Lowercase bx.wear.dz Hero Banner */}
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-zinc-950 via-zinc-900 to-black text-white p-8 sm:p-14 shadow-2xl border border-zinc-800">
           <div className="relative z-10 max-w-xl space-y-5">
             <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold bg-amber-400/10 text-amber-400 border border-amber-400/20 shadow-sm lowercase font-mono">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>axb.wear • drop 2026</span>
+              <span>bx.wear.dz • drop 2026</span>
             </span>
 
             <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight font-mono lowercase">
-              axb<span className="text-amber-400">.wear</span>
+              bx<span className="text-amber-400">.wear.dz</span>
             </h1>
 
             <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed font-medium">
@@ -254,7 +254,7 @@ export default function HomePage() {
           {/* Col 1: Brand Info */}
           <div className="space-y-3">
             <div className="font-mono font-black text-lg text-white tracking-widest lowercase">
-              axb<span className="text-amber-400">.wear</span>
+              bx<span className="text-amber-400">.wear.dz</span>
             </div>
             <p className="text-zinc-400 text-[11px] leading-relaxed max-w-sm">
               {t("home", "footerBrandDesc")}
@@ -280,7 +280,7 @@ export default function HomePage() {
             <p className="text-[11px] text-zinc-400">{t("home", "footerSupportDesc")}</p>
             <div className="pt-1">
               <span className="inline-block bg-zinc-900 border border-zinc-800 text-amber-400 px-3 py-1 rounded-full text-[11px] font-mono font-bold">
-                Instagram: @axb.wear
+                Instagram: @bx.wear.dz
               </span>
             </div>
           </div>

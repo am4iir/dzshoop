@@ -69,7 +69,7 @@ export async function sendOrderEmailNotification(order: OrderNotificationData) {
       selectedColor: escapeHtml(order.selectedColor || ""),
     };
     const waText = encodeURIComponent(
-      `السلام عليكم ${order.fullName}، معك متجر axb.wear بخصوص طلبيتك رقم ${order.id} (${order.productTitle}) بمبلغ ${order.totalPrice} دج. هل أنت متفرغ لتأكيد الشحن؟`
+      `السلام عليكم ${order.fullName}، معك متجر bx.wear.dz بخصوص طلبيتك رقم ${order.id} (${order.productTitle}) بمبلغ ${order.totalPrice} دج. هل أنت متفرغ لتأكيد الشحن؟`
     );
     const waLink = `https://wa.me/${cleanPhone}?text=${waText}`;
 
@@ -105,7 +105,7 @@ export async function sendOrderEmailNotification(order: OrderNotificationData) {
 <body>
   <div class="container">
     <div class="header">
-      <div class="logo">axb<span>.wear</span></div>
+      <div class="logo">bx<span>.wear.dz</span></div>
       <div class="badge">🛍️ طلبية جديدة في المتجر!</div>
     </div>
 
@@ -164,14 +164,14 @@ export async function sendOrderEmailNotification(order: OrderNotificationData) {
         <div class="buttons">
           <a href="tel:${encodeURIComponent(order.phone)}" class="btn btn-phone">📞 اتصل بالزبون</a>
           <a href="${waLink}" target="_blank" class="btn btn-wa">💬 محادثة واتساب</a>
-          <a href="https://abx-wear.vercel.app/admin" target="_blank" class="btn btn-admin">⚙️ لوحة الأدمن</a>
+          <a href="https://dzshoop.vercel.app/brx-panel-ctrl-7k4m" target="_blank" class="btn btn-admin">⚙️ لوحة الأدمن</a>
         </div>
       </div>
     </div>
 
     <div class="footer">
-      متجر axb.wear • إشعار تلقائي بالطلبات الجديدة<br>
-      © 2026 axb.wear • barae × amir
+      متجر bx.wear.dz • إشعار تلقائي بالطلبات الجديدة<br>
+      © 2026 bx.wear.dz • barae
     </div>
   </div>
 </body>
@@ -179,9 +179,9 @@ export async function sendOrderEmailNotification(order: OrderNotificationData) {
     `;
 
     await transporter.sendMail({
-      from: `"axb.wear Store" <${emailUser}>`,
+      from: `"bx.wear.dz Store" <${emailUser}>`,
       to: targetEmail,
-      subject: `🛍️ طلبية جديدة في axb.wear! (#${order.id}) - ${order.fullName} - ${order.totalPrice} دج`,
+      subject: `🛍️ طلبية جديدة في bx.wear.dz! (#${order.id}) - ${order.fullName} - ${order.totalPrice} دج`,
       text: `وصلتك طلبية جديدة رقم ${order.id} من ${order.fullName} (${order.phone}) - المنتج: ${order.productTitle} - المبلغ: ${order.totalPrice} دج.`,
       html: htmlContent,
     });
@@ -233,7 +233,7 @@ export async function sendAdminLoginEmailNotification(login: AdminLoginNotificat
 </html>`;
 
     await transporter.sendMail({
-      from: `"axb.wear Store" <${emailUser}>`,
+      from: `"bx.wear.dz Store" <${emailUser}>`,
       to: targetEmail,
       subject: `Admin login detected - ${login.deviceType} - ${login.browser}`,
       text: `A successful admin login was detected. Date and time (UTC): ${login.loggedInAt}. Operating system: ${login.operatingSystem}. Browser: ${login.browser}. Device type: ${login.deviceType}.`,

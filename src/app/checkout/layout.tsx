@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "إتمام الطلب",
-  description: "أكمل طلبك من axb.wear مع عرض السعر النهائي وتكلفة التوصيل قبل التأكيد.",
+  description: "أكمل طلبك من bx.wear.dz مع عرض السعر النهائي وتكلفة التوصيل قبل التأكيد.",
   robots: { index: false, follow: false },
 };
 

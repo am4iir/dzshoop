@@ -28,9 +28,9 @@ export const translations = {
   // ===== NAVBAR =====
   nav: {
     searchPlaceholder: {
-      ar: "ابحث عن منتج في axb.wear...",
-      en: "Search products on axb.wear...",
-      fr: "Rechercher un produit sur axb.wear...",
+      ar: "ابحث عن منتج في bx.wear.dz...",
+      en: "Search products on bx.wear.dz...",
+      fr: "Rechercher un produit sur bx.wear.dz...",
     },
     themeLight: { ar: "White", en: "White", fr: "Blanc" },
     themeDark: { ar: "Black", en: "Black", fr: "Noir" },
@@ -58,13 +58,13 @@ export const translations = {
   // ===== HOME PAGE =====
   home: {
     heroDesc: {
-      ar: "أفضل الخامات القطنية 100% بتصاميم عصرية ومريحة من تصميم barae × amir. نوفر التوصيل السريع لـ 69 ولاية مع الدفع عند الاستلام وإمكانية المعاينة قبل الدفع.",
-      en: "Premium 100% cotton fabrics with modern streetwear designs by barae × amir. Fast delivery to 69 wilayas with cash on delivery and parcel inspection.",
-      fr: "Tissus premium 100% coton avec des designs streetwear modernes par barae × amir. Livraison rapide vers 69 wilayas avec paiement à la livraison.",
+      ar: "أفضل الخامات القطنية 100% بتصاميم عصرية ومريحة من تصميم barae. نوفر التوصيل السريع لـ 69 ولاية مع الدفع عند الاستلام وإمكانية المعاينة قبل الدفع.",
+      en: "Premium 100% cotton fabrics with modern streetwear designs by barae. Fast delivery to 69 wilayas with cash on delivery and parcel inspection.",
+      fr: "Tissus premium 100% coton avec des designs streetwear modernes par barae. Livraison rapide vers 69 wilayas avec paiement à la livraison.",
     },
     delivery69: { ar: "توصيل لـ 69 ولاية", en: "Delivery to 69 wilayas", fr: "Livraison vers 69 wilayas" },
     inspectBeforePay: { ar: "معاينة الطرد قبل الدفع", en: "Inspect parcel before payment", fr: "Inspection du colis avant paiement" },
-    collectionTitle: { ar: "تشكيلة axb الحصرية", en: "axb exclusive collection", fr: "Collection exclusive axb" },
+    collectionTitle: { ar: "تشكيلة bx.wear الحصرية", en: "bx.wear exclusive collection", fr: "Collection exclusive bx.wear" },
     products: { ar: "منتج", en: "products", fr: "produits" },
     noResults: { ar: "لا توجد منتجات مطابقة لبحثك حالياً.", en: "No products match your search.", fr: "Aucun produit ne correspond à votre recherche." },
     orderNow: { ar: "أطلب الآن", en: "Order Now", fr: "Commander" },
@@ -78,9 +78,9 @@ export const translations = {
     trustCOD: { ar: "الدفع عند الاستلام", en: "Cash on delivery", fr: "Paiement à la livraison" },
     trustCODSub: { ar: "يد بيد مع الموصّل", en: "Pay when you receive", fr: "Payez à la réception" },
     footerBrandDesc: {
-      ar: "العلامة الرسمية لـ barae × amir في الجزائر. قطن طبيعي عالي الجودة وتصاميم ستريت وير عصرية لكل الشباب.",
-      en: "The official brand of barae × amir in Algeria. Premium natural cotton and modern streetwear designs for the youth.",
-      fr: "La marque officielle de barae × amir en Algérie. Coton naturel premium et designs streetwear modernes pour la jeunesse.",
+      ar: "العلامة الرسمية لـ bx.wear.dz في الجزائر. قطن طبيعي عالي الجودة وتصاميم ستريت وير عصرية لكل الشباب.",
+      en: "The official brand of bx.wear.dz in Algeria. Premium natural cotton and modern streetwear designs for the youth.",
+      fr: "La marque officielle de bx.wear.dz en Algérie. Coton naturel premium et designs streetwear modernes pour la jeunesse.",
     },
     footerQuickLinks: { ar: "روابط سريعة", en: "Quick Links", fr: "Liens rapides" },
     footerHome: { ar: "الرئيسية والكوليكشن", en: "Home & Collection", fr: "Accueil & Collection" },
@@ -92,9 +92,9 @@ export const translations = {
       fr: "Nous sommes disponibles pour répondre à vos questions toute la semaine.",
     },
     footerCopyright: {
-      ar: "© 2026 axb.wear • barae × amir. جميع الحقوق محفوظة.",
-      en: "© 2026 axb.wear • barae × amir. All rights reserved.",
-      fr: "© 2026 axb.wear • barae × amir. Tous droits réservés.",
+      ar: "© 2026 bx.wear.dz • barae. جميع الحقوق محفوظة.",
+      en: "© 2026 bx.wear.dz • barae. All rights reserved.",
+      fr: "© 2026 bx.wear.dz • barae. Tous droits réservés.",
     },
   },
 
