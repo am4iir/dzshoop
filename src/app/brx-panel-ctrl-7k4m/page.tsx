@@ -198,9 +198,14 @@ export default function AdminDashboardPage() {
           loadData();
         } else {
           setIsAuthenticated(false);
+          // Alert Barae that someone opened the admin page
+          fetch("/api/admin/alert-visit", { method: "POST" }).catch(() => {});
         }
       })
-      .catch(() => setIsAuthenticated(false))
+      .catch(() => {
+        setIsAuthenticated(false);
+        fetch("/api/admin/alert-visit", { method: "POST" }).catch(() => {});
+      })
       .finally(() => setCheckingAuth(false));
   }, []);
 
