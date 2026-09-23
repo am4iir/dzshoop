@@ -196,7 +196,7 @@ export default function CheckoutPage() {
               <button
                 type="button"
                 onClick={handleCopyOrderId}
-                className="text-[11px] font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/50 hover:bg-amber-100 dark:hover:bg-amber-900/60 border border-amber-200 dark:border-amber-800 px-2 py-1 rounded-lg transition flex items-center gap-1 cursor-pointer"
+                className="text-[11px] font-bold text-violet-700 dark:text-violet-400 bg-violet-50 dark:bg-violet-950/50 hover:bg-violet-100 dark:hover:bg-violet-900/60 border border-violet-200 dark:border-violet-800 px-2 py-1 rounded-lg transition flex items-center gap-1 cursor-pointer"
                 title="نسخ رقم الطلبية"
               >
                 {copiedOrderId ? <Check className="w-3 h-3 text-emerald-600 dark:text-emerald-400" /> : <Copy className="w-3 h-3" />}
@@ -207,7 +207,7 @@ export default function CheckoutPage() {
               {t("checkout", "contactSoon")}
             </p>
 
-            <div className={`bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-100 dark:border-zinc-700/60 rounded-2xl p-4 text-xs space-y-2 ${dir === "rtl" ? "text-right" : "text-left"} mb-6`}>
+            <div className={`bg-zinc-50 dark:bg-[#08080f] border border-zinc-100 dark:border-white/10 rounded-2xl p-4 text-xs space-y-2 ${dir === "rtl" ? "text-right" : "text-left"} mb-6`}>
               <div className="flex justify-between">
                 <span className="text-zinc-500 dark:text-zinc-400">{t("checkout", "fullName")}:</span>
                 <span className="font-bold text-zinc-900 dark:text-white">{fullName}</span>
@@ -220,9 +220,9 @@ export default function CheckoutPage() {
                 <span className="text-zinc-500 dark:text-zinc-400">{t("checkout", "wilaya")}:</span>
                 <span className="font-bold text-zinc-900 dark:text-white">{currentWilaya.name} - {commune}</span>
               </div>
-              <div className="flex justify-between pt-2 border-t border-zinc-200 dark:border-zinc-700 font-extrabold text-sm text-zinc-900 dark:text-white">
+              <div className="flex justify-between pt-2 border-t border-zinc-200 dark:border-white/10 font-extrabold text-sm text-zinc-900 dark:text-white">
                 <span>{t("checkout", "total")}:</span>
-                <span className="text-emerald-600 dark:text-emerald-400">{formatPrice(grandTotal)}</span>
+                <span className="text-violet-400">{formatPrice(grandTotal)}</span>
               </div>
             </div>
 
@@ -233,7 +233,7 @@ export default function CheckoutPage() {
                   sessionStorage.removeItem("axb_confirmed_checkout_order");
                 } catch (e) {}
               }}
-              className="inline-flex items-center gap-2 text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 px-5 py-2.5 rounded-xl transition cursor-pointer"
+              className="inline-flex items-center gap-2 text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white border border-zinc-200 dark:border-white/10 hover:bg-zinc-100 dark:hover:bg-zinc-800 px-5 py-2.5 rounded-xl transition cursor-pointer"
             >
               {t("checkout", "backToStore")}
             </Link>
@@ -245,7 +245,7 @@ export default function CheckoutPage() {
             <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-6">{t("checkout", "cartEmptyDesc")}</p>
             <Link
               href="/"
-              className="inline-flex items-center justify-center bg-zinc-900 dark:bg-amber-400 text-white dark:text-zinc-950 font-bold px-6 py-3 rounded-xl text-xs hover:bg-black dark:hover:bg-amber-300 transition"
+              className="inline-flex items-center justify-center bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold px-6 py-3 rounded-xl text-xs hover:from-violet-500 hover:to-indigo-500 transition shadow-lg shadow-violet-600/30"
             >
               {t("checkout", "backToStore")}
             </Link>
@@ -253,7 +253,7 @@ export default function CheckoutPage() {
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             {/* Form Column */}
-            <div className="lg:col-span-7 bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 rounded-3xl p-6 sm:p-8 shadow-sm">
+            <div className="lg:col-span-7 bg-white dark:bg-[#0c0d14] border border-zinc-200/90 dark:border-white/10 rounded-3xl p-6 sm:p-8 shadow-sm">
               <h2 className="text-lg font-black text-zinc-900 dark:text-white mb-6">{t("checkout", "title")}</h2>
 
               <form onSubmit={handleSubmitOrder} className="space-y-4">
@@ -267,7 +267,7 @@ export default function CheckoutPage() {
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     placeholder={t("checkout", "fullName")}
-                    className="w-full bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 focus:border-zinc-900 dark:focus:border-amber-400 focus:bg-white dark:focus:bg-zinc-800 rounded-xl py-3 px-4 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 outline-none transition"
+                    className="w-full bg-zinc-50 dark:bg-[#07070a] border border-zinc-200 dark:border-white/10 focus:border-violet-500 focus:bg-white dark:focus:bg-[#07070a] rounded-xl py-3 px-4 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 outline-none transition"
                   />
                 </div>
 
@@ -281,7 +281,7 @@ export default function CheckoutPage() {
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="05 / 06 / 07 XX XX XX XX"
-                    className={`w-full bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 focus:border-zinc-900 dark:focus:border-amber-400 focus:bg-white dark:focus:bg-zinc-800 rounded-xl py-3 px-4 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 outline-none transition ${dir === "rtl" ? "text-right" : "text-left"} dir-ltr`}
+                    className={`w-full bg-zinc-50 dark:bg-[#07070a] border border-zinc-200 dark:border-white/10 focus:border-violet-500 focus:bg-white dark:focus:bg-[#07070a] rounded-xl py-3 px-4 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 outline-none transition ${dir === "rtl" ? "text-right" : "text-left"} dir-ltr`}
                   />
                 </div>
 
@@ -300,10 +300,10 @@ export default function CheckoutPage() {
                           setCommune(w.communes[0]);
                         }
                       }}
-                      className="w-full bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 focus:border-zinc-900 dark:focus:border-amber-400 focus:bg-white dark:focus:bg-zinc-800 rounded-xl py-3 px-3 text-xs text-zinc-900 dark:text-white outline-none transition cursor-pointer"
+                      className="w-full bg-zinc-50 dark:bg-[#07070a] border border-zinc-200 dark:border-white/10 focus:border-violet-500 focus:bg-white dark:focus:bg-[#07070a] rounded-xl py-3 px-3 text-xs text-zinc-900 dark:text-white outline-none transition cursor-pointer"
                     >
                       {WILAYAS.map((w) => (
-                        <option key={w.code} value={w.code} className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white">
+                        <option key={w.code} value={w.code} className="bg-white dark:bg-[#07070a] text-zinc-900 dark:text-white">
                           {w.name}
                         </option>
                       ))}
@@ -315,10 +315,10 @@ export default function CheckoutPage() {
                     <select
                       value={commune}
                       onChange={(e) => setCommune(e.target.value)}
-                      className="w-full bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 focus:border-zinc-900 dark:focus:border-amber-400 focus:bg-white dark:focus:bg-zinc-800 rounded-xl py-3 px-3 text-xs text-zinc-900 dark:text-white outline-none transition cursor-pointer"
+                      className="w-full bg-zinc-50 dark:bg-[#07070a] border border-zinc-200 dark:border-white/10 focus:border-violet-500 focus:bg-white dark:focus:bg-[#07070a] rounded-xl py-3 px-3 text-xs text-zinc-900 dark:text-white outline-none transition cursor-pointer"
                     >
                       {currentWilaya.communes.map((c) => (
-                        <option key={c} value={c} className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white">
+                        <option key={c} value={c} className="bg-white dark:bg-[#07070a] text-zinc-900 dark:text-white">
                           {c}
                         </option>
                       ))}
@@ -335,8 +335,8 @@ export default function CheckoutPage() {
                       onClick={() => setDeliveryType("home")}
                       className={`p-3 rounded-xl border ${dir === "rtl" ? "text-right" : "text-left"} transition-all cursor-pointer ${
                         deliveryType === "home"
-                          ? "border-zinc-900 dark:border-white bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 shadow-sm"
-                          : "border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/50 text-zinc-700 dark:text-zinc-300 hover:border-zinc-300 dark:hover:border-zinc-600"
+                          ? "border-violet-500 bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md shadow-violet-600/30"
+                          : "border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#07070a] text-zinc-700 dark:text-zinc-300 hover:border-violet-500/40"
                       }`}
                     >
                       <span className="text-xs font-bold block">{t("checkout", "deliveryHome")}</span>
@@ -350,8 +350,8 @@ export default function CheckoutPage() {
                       onClick={() => setDeliveryType("desk")}
                       className={`p-3 rounded-xl border ${dir === "rtl" ? "text-right" : "text-left"} transition-all cursor-pointer ${
                         deliveryType === "desk"
-                          ? "border-zinc-900 dark:border-white bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 shadow-sm"
-                          : "border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/50 text-zinc-700 dark:text-zinc-300 hover:border-zinc-300 dark:hover:border-zinc-600"
+                          ? "border-violet-500 bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md shadow-violet-600/30"
+                          : "border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#07070a] text-zinc-700 dark:text-zinc-300 hover:border-violet-500/40"
                       }`}
                     >
                       <span className="text-xs font-bold block">{t("checkout", "deliveryDesk")}</span>
@@ -365,7 +365,7 @@ export default function CheckoutPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-zinc-950 dark:bg-amber-400 hover:bg-black dark:hover:bg-amber-300 text-white dark:text-zinc-950 font-extrabold py-4 px-6 rounded-xl text-sm transition shadow-md mt-6 disabled:opacity-50 cursor-pointer"
+                  className="w-full bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-extrabold py-4 px-6 rounded-xl text-sm transition shadow-lg shadow-violet-600/30 mt-6 disabled:opacity-50 cursor-pointer"
                 >
                   {isSubmitting ? t("checkout", "processing") : t("checkout", "confirmOrder")}
                 </button>
@@ -373,18 +373,18 @@ export default function CheckoutPage() {
             </div>
 
             {/* Cart Summary Column */}
-            <div className="lg:col-span-5 bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 rounded-3xl p-6 shadow-sm space-y-4">
-              <h2 className="text-base font-black text-zinc-900 dark:text-white pb-3 border-b border-zinc-100 dark:border-zinc-800">
+            <div className="lg:col-span-5 bg-white dark:bg-[#0c0d14] border border-zinc-200/90 dark:border-white/10 rounded-3xl p-6 shadow-sm space-y-4">
+              <h2 className="text-base font-black text-zinc-900 dark:text-white pb-3 border-b border-zinc-100 dark:border-white/10">
                 {t("checkout", "orderSummary")} ({items.length})
               </h2>
 
               <div className="space-y-3 max-h-80 overflow-y-auto pr-1">
                 {items.map((item, idx) => (
-                  <div key={idx} className="flex gap-3 text-xs border-b border-zinc-100 dark:border-zinc-800 pb-3">
+                  <div key={idx} className="flex gap-3 text-xs border-b border-zinc-100 dark:border-white/10 pb-3">
                     <img
                       src={item.productImage}
                       alt={item.productName}
-                      className="w-14 h-16 object-cover rounded-lg bg-zinc-100 dark:bg-zinc-800 shrink-0"
+                      className="w-14 h-16 object-cover rounded-lg bg-zinc-100 dark:bg-[#07070a] shrink-0"
                     />
                     <div className="flex-1">
                       <h4 className="font-bold text-zinc-900 dark:text-white">{item.productName}</h4>
@@ -400,7 +400,7 @@ export default function CheckoutPage() {
               </div>
 
               {/* Promo Code Input */}
-              <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800">
+              <div className="pt-2 border-t border-zinc-100 dark:border-white/10">
                 <form onSubmit={handleApplyPromo} className="flex gap-2">
                   <div className="relative flex-1">
                     <input
@@ -408,13 +408,13 @@ export default function CheckoutPage() {
                       placeholder={t("checkout", "promoCode")}
                       value={promoInput}
                       onChange={(e) => setPromoInput(e.target.value)}
-                      className={`w-full bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 rounded-xl py-2 px-3 ${dir === "rtl" ? "pr-8" : "pl-8"} text-xs outline-none focus:border-zinc-900 dark:focus:border-amber-400 text-zinc-900 dark:text-white uppercase font-mono`}
+                      className={`w-full bg-zinc-50 dark:bg-[#07070a] border border-zinc-200 dark:border-white/10 rounded-xl py-2 px-3 ${dir === "rtl" ? "pr-8" : "pl-8"} text-xs outline-none focus:border-violet-500 dark:focus:border-violet-500 text-zinc-900 dark:text-white uppercase font-mono`}
                     />
                     <Tag className={`w-3.5 h-3.5 text-zinc-400 absolute ${dir === "rtl" ? "right-2.5" : "left-2.5"} top-2.5 pointer-events-none`} />
                   </div>
                   <button
                     type="submit"
-                    className="bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 px-4 py-2 rounded-xl text-xs font-bold hover:bg-black dark:hover:bg-zinc-200 transition cursor-pointer"
+                    className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white px-4 py-2 rounded-xl text-xs font-bold transition shadow-sm cursor-pointer"
                   >
                     {t("checkout", "applyPromo")}
                   </button>

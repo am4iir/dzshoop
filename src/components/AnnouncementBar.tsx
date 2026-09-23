@@ -21,7 +21,7 @@ export const AnnouncementBar = memo(function AnnouncementBar({
 
   return (
     <div
-      className={`relative w-full overflow-hidden bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 text-zinc-300 border-b border-zinc-800/80 select-none ${className}`}
+      className={`relative w-full overflow-hidden bg-[#07070a] text-zinc-300 border-b border-violet-900/30 select-none ${className}`}
       dir={dir}
     >
       <style>{`
@@ -45,23 +45,23 @@ export const AnnouncementBar = memo(function AnnouncementBar({
       `}</style>
 
       {/* Subtle edge fade gradients */}
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-8 sm:w-16 bg-gradient-to-l from-zinc-950 to-transparent z-10" />
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-8 sm:w-16 bg-gradient-to-r from-zinc-950 to-transparent z-10" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-8 sm:w-16 bg-gradient-to-l from-[#07070a] to-transparent z-10" />
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-8 sm:w-16 bg-gradient-to-r from-[#07070a] to-transparent z-10" />
 
       {/* Marquee Content */}
-      <div className="py-2 overflow-hidden">
+      <div className="py-2.5 overflow-hidden">
         <div className="announcement-track flex items-center">
           {repeatedMessages.map((msg, index) => (
             <div
               key={index}
-              className="inline-flex items-center text-[11px] sm:text-xs font-medium text-zinc-300 hover:text-white transition-colors duration-150 px-4 shrink-0"
+              className="inline-flex items-center text-[11px] sm:text-xs font-semibold text-zinc-300 hover:text-violet-300 transition-colors duration-150 px-4 shrink-0 tracking-wide"
             >
               <span>{msg}</span>
               <span
-                className="mr-4 text-zinc-700 select-none font-bold"
+                className="mr-4 text-violet-500/70 select-none font-black"
                 aria-hidden="true"
               >
-                •
+                ✦
               </span>
             </div>
           ))}

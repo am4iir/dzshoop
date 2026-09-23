@@ -44,7 +44,7 @@ export function TrustBadges({
 
   const containerClasses =
     variant === "card"
-      ? "p-4 sm:p-6 bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 rounded-2xl shadow-sm"
+      ? "p-4 sm:p-6 bg-white dark:bg-[#0c0d14] border border-zinc-200/80 dark:border-white/10 rounded-2xl shadow-sm"
       : "p-2 sm:p-4";
 
   return (
@@ -59,9 +59,9 @@ export function TrustBadges({
           return (
             <div
               key={idx}
-              className="flex flex-col items-center text-center p-3 sm:p-4 bg-zinc-50 dark:bg-zinc-800/60 hover:bg-zinc-100/80 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-700/80 rounded-xl transition-all duration-200 group"
+              className="flex flex-col items-center text-center p-3 sm:p-4 bg-zinc-50 dark:bg-[#08080f] hover:bg-zinc-100/80 dark:hover:bg-[#12131e] border border-zinc-200 dark:border-white/10 rounded-xl transition-all duration-200 group"
             >
-              <div className="w-10 h-10 rounded-full bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-2.5 group-hover:scale-110 group-hover:bg-emerald-100/80 dark:group-hover:bg-emerald-900/60 transition-all duration-200 shrink-0">
+              <div className="w-10 h-10 rounded-full bg-violet-50 dark:bg-violet-950/40 text-violet-600 dark:text-violet-400 flex items-center justify-center mb-2.5 group-hover:scale-110 group-hover:bg-violet-100/80 dark:group-hover:bg-violet-900/50 transition-all duration-200 shrink-0">
                 <IconComponent className="w-5 h-5" strokeWidth={2.2} />
               </div>
               <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-200 leading-tight">

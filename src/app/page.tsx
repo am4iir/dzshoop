@@ -14,11 +14,10 @@ import {
   Package,
   ArrowDown,
   Flame,
-  CheckCircle2,
   Star,
   ShoppingBag,
-  ExternalLink,
   MessageCircle,
+  Gem,
 } from "lucide-react";
 
 export default function HomePage() {
@@ -76,49 +75,49 @@ export default function HomePage() {
   }, [products, search, selectedCategory]);
 
   return (
-    <div className="min-h-screen bg-[#fafafa] dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 pb-20 transition-colors duration-200" dir={dir}>
+    <div className="min-h-screen bg-[#f8fafc] dark:bg-[#07070a] text-zinc-900 dark:text-zinc-100 pb-20 transition-colors duration-200" dir={dir}>
       <Navbar searchQuery={search} onSearchChange={setSearch} />
 
       <main className="max-w-6xl mx-auto px-4 py-6 space-y-12">
-        {/* ==================== HIGH-END STREETWEAR HERO BANNER ==================== */}
-        <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-zinc-950 via-zinc-900 to-black text-white p-7 sm:p-14 shadow-2xl border border-zinc-800">
+        {/* ==================== HIGH-FASHION EDITORIAL HERO BANNER ==================== */}
+        <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0c0d17] via-[#08080f] to-[#040407] text-white p-7 sm:p-14 shadow-2xl border border-white/10">
           <div className="relative z-10 max-w-2xl space-y-6">
             {/* Tag Badge */}
             <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold bg-amber-400/10 text-amber-400 border border-amber-400/20 shadow-sm lowercase font-mono">
-                <Flame className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
+              <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold bg-violet-500/15 text-violet-300 border border-violet-500/30 shadow-sm lowercase font-mono">
+                <Flame className="w-3.5 h-3.5 text-violet-400 animate-pulse" />
                 <span>bx.wear.dz • drop 2026</span>
               </span>
-              <span className="hidden sm:inline-flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-semibold bg-zinc-800/80 text-zinc-300 border border-zinc-700">
-                <Sparkles className="w-3 h-3 text-amber-400" />
-                <span>LIMITED STREETWEAR EDITION</span>
+              <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold bg-white/5 text-zinc-300 border border-white/10">
+                <Sparkles className="w-3 h-3 text-violet-400" />
+                <span>HAUTE STREETWEAR ALGERIA</span>
               </span>
             </div>
 
             {/* Hero Main Heading */}
             <div className="space-y-2">
               <h1 className="text-3xl sm:text-6xl font-black tracking-tight leading-tight lowercase font-mono">
-                bx<span className="text-amber-400">.wear.dz</span>
+                bx<span className="bg-clip-text text-transparent bg-gradient-to-r from-violet-400 via-purple-300 to-indigo-400">.wear.dz</span>
               </h1>
-              <p className="text-xs sm:text-sm font-bold tracking-widest text-zinc-400 uppercase">
-                Algerian Heavyweight Streetwear Atelier
+              <p className="text-xs sm:text-sm font-black tracking-[0.25em] text-violet-400/90 uppercase">
+                L'Atelier du Streetwear Algérien
               </p>
             </div>
 
             {/* Description */}
             <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed font-medium max-w-xl">
               {lang === "ar"
-                ? "أرقى تشكيلة ستريت وير في الجزائر بخامات قطنية 100% ثقيلة (Heavyweight 320 GSM). توصيل سريع لـ 58 ولاية مع الدفع عند الاستلام وحق المعاينة قبل الدفع."
-                : t("home", "heroDesc")}
+                ? "أرقى تشكيلة ستريت وير في الجزائر بخامات قطنية 100% ثقيلة فاخرة (Heavyweight 340 GSM). شحن سريع لجميع الولايات الـ 58 مع الدفع عند الاستلام بعد معاينة وفحص الطرد."
+                : "Exclusive heavyweight streetwear atelier in Algeria. Premium 100% cotton with nationwide fast shipping and parcel inspection before payment."}
             </p>
 
             {/* CTA Buttons */}
             <div className="flex flex-wrap items-center gap-3 pt-2">
               <a
                 href="#collection"
-                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-zinc-950 font-black text-xs sm:text-sm shadow-lg hover:scale-105 transition-all duration-200 cursor-pointer"
+                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-black text-xs sm:text-sm shadow-xl shadow-violet-600/30 hover:scale-105 transition-all duration-200 cursor-pointer"
               >
-                <span>{lang === "ar" ? "تصفح الكوليكشن الآن" : "Shop Collection"}</span>
+                <span>{lang === "ar" ? "تصفح الكوليكشن الحصرية" : "Explore Collection"}</span>
                 <ArrowDown className="w-4 h-4" />
               </a>
 
@@ -126,33 +125,37 @@ export default function HomePage() {
                 href="https://wa.me/213555000000"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl bg-zinc-800/90 hover:bg-zinc-700/90 border border-zinc-700 text-white font-bold text-xs sm:text-sm transition duration-200"
+                className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl bg-[#0e0f17] hover:bg-zinc-800 border border-violet-500/30 text-violet-200 hover:text-white font-bold text-xs sm:text-sm transition duration-200"
               >
-                <MessageCircle className="w-4 h-4 text-emerald-400" />
-                <span>{lang === "ar" ? "تواصل واتساب" : "WhatsApp"}</span>
+                <MessageCircle className="w-4 h-4 text-violet-400" />
+                <span>{lang === "ar" ? "خدمة VIP واتساب" : "VIP WhatsApp"}</span>
               </a>
             </div>
 
             {/* Micro Trust Pointers */}
-            <div className="flex flex-wrap items-center gap-4 sm:gap-6 pt-3 text-[11px] sm:text-xs font-bold border-t border-zinc-800/80 text-zinc-400">
+            <div className="flex flex-wrap items-center gap-4 sm:gap-6 pt-3 text-[11px] sm:text-xs font-bold border-t border-white/10 text-zinc-400">
               <div className="flex items-center gap-1.5 text-zinc-300">
-                <Truck className="w-4 h-4 text-emerald-400" />
-                <span>{lang === "ar" ? "توصيل سريع 58 ولاية" : "Fast delivery to 58 wilayas"}</span>
+                <Truck className="w-4 h-4 text-violet-400" />
+                <span>{lang === "ar" ? "توصيل سريع 58 ولاية" : "58 Wilayas Fast Delivery"}</span>
               </div>
               <div className="flex items-center gap-1.5 text-zinc-300">
                 <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                <span>{lang === "ar" ? "معاينة وفحص قبل الدفع" : "Inspect parcel before pay"}</span>
+                <span>{lang === "ar" ? "معاينة وفحص قبل الدفع" : "Inspect Before Payment"}</span>
               </div>
               <div className="flex items-center gap-1.5 text-zinc-300">
-                <RotateCcw className="w-4 h-4 text-emerald-400" />
-                <span>{lang === "ar" ? "استبدال المقاس مضمون" : "Easy size exchange"}</span>
+                <RotateCcw className="w-4 h-4 text-violet-400" />
+                <span>{lang === "ar" ? "استبدال المقاس مضمون" : "Easy Size Exchange"}</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-zinc-300">
+                <Gem className="w-4 h-4 text-violet-400" />
+                <span>{lang === "ar" ? "قطن 100% ثقيل 340 GSM" : "Heavyweight Cotton"}</span>
               </div>
             </div>
           </div>
 
           {/* Ambient Lighting Background Accents */}
-          <div className="absolute top-0 right-0 -mt-10 -mr-10 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-80 h-80 bg-zinc-700/20 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute top-0 right-0 -mt-16 -mr-16 w-96 h-96 bg-violet-600/20 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-0 -mb-16 -ml-16 w-96 h-96 bg-indigo-600/15 rounded-full blur-3xl pointer-events-none" />
         </section>
 
         {/* ==================== CATEGORIES FILTER BAR ==================== */}
@@ -165,8 +168,8 @@ export default function HomePage() {
                 onClick={() => setSelectedCategory(cat.id)}
                 className={`px-4 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all duration-200 cursor-pointer ${
                   selectedCategory === cat.id
-                    ? "bg-zinc-950 dark:bg-amber-400 text-white dark:text-zinc-950 shadow-md scale-105 border border-zinc-900 dark:border-amber-400"
-                    : "bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-300 hover:border-zinc-400 dark:hover:border-zinc-600"
+                    ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-lg shadow-violet-600/30 scale-105 border border-violet-400/40"
+                    : "bg-white dark:bg-[#0c0d14] border border-zinc-200 dark:border-white/10 text-zinc-600 dark:text-zinc-300 hover:border-violet-500/40"
                 }`}
               >
                 {cat.label}
@@ -176,12 +179,12 @@ export default function HomePage() {
         </div>
 
         {/* ==================== PRODUCT GRID HEADER ==================== */}
-        <div className="flex items-center justify-between border-b border-zinc-200/60 dark:border-zinc-800 pb-3">
+        <div className="flex items-center justify-between border-b border-zinc-200/80 dark:border-white/10 pb-3">
           <div className="flex items-center gap-2">
             <h2 className="text-xl sm:text-2xl font-black text-zinc-900 dark:text-white tracking-tight">
               {t("home", "collectionTitle")}
             </h2>
-            <span className="bg-amber-400/15 text-amber-600 dark:text-amber-400 text-[11px] font-mono font-bold px-2 py-0.5 rounded-full border border-amber-400/20">
+            <span className="bg-violet-500/15 text-violet-600 dark:text-violet-300 text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full border border-violet-500/30">
               {filtered.length} {t("home", "products")}
             </span>
           </div>
@@ -195,11 +198,11 @@ export default function HomePage() {
         {loading ? (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="animate-pulse bg-zinc-200/70 dark:bg-zinc-800/70 rounded-3xl h-96" />
+              <div key={i} className="animate-pulse bg-zinc-200/70 dark:bg-zinc-800/50 rounded-3xl h-96" />
             ))}
           </div>
         ) : filtered.length === 0 ? (
-          <div className="text-center py-20 bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 space-y-3">
+          <div className="text-center py-20 bg-white dark:bg-[#0c0d14] rounded-3xl border border-zinc-200 dark:border-white/10 text-zinc-500 dark:text-zinc-400 space-y-3">
             <Package className="w-10 h-10 mx-auto text-zinc-400 stroke-1" />
             <p className="text-xs sm:text-sm font-bold">{t("home", "noResults")}</p>
             <button
@@ -207,7 +210,7 @@ export default function HomePage() {
                 setSearch("");
                 setSelectedCategory("all");
               }}
-              className="text-xs font-bold text-amber-500 underline cursor-pointer"
+              className="text-xs font-bold text-violet-500 underline cursor-pointer"
             >
               {lang === "ar" ? "إعادة تعيين الفلاتر" : "Reset filters"}
             </button>
@@ -217,10 +220,10 @@ export default function HomePage() {
             {filtered.map((prod) => (
               <div
                 key={prod.id}
-                className="group flex flex-col bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200/90 dark:border-zinc-800/90 overflow-hidden hover:shadow-xl hover:border-zinc-400 dark:hover:border-zinc-700 transition-all duration-300 relative"
+                className="group flex flex-col bg-white dark:bg-[#0c0d14] rounded-3xl border border-zinc-200/90 dark:border-white/10 overflow-hidden hover:shadow-2xl hover:border-violet-500/50 hover:shadow-violet-500/10 transition-all duration-300 relative"
               >
                 {/* Product Image Showcase */}
-                <div className="relative aspect-[3/4] bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
+                <div className="relative aspect-[3/4] bg-zinc-100 dark:bg-zinc-900 overflow-hidden">
                   <img
                     src={
                       prod.images[0] ||
@@ -241,15 +244,15 @@ export default function HomePage() {
                     } flex flex-col items-start gap-1.5 z-10`}
                   >
                     {prod.inStock === false ? (
-                      <span className="bg-zinc-950/90 text-amber-400 border border-amber-400/40 font-black text-[10px] px-2.5 py-0.5 rounded-full shadow-md backdrop-blur-xs tracking-wider uppercase">
+                      <span className="bg-black/90 text-violet-400 border border-violet-500/40 font-black text-[10px] px-2.5 py-0.5 rounded-full shadow-md backdrop-blur-xs tracking-wider uppercase">
                         SOLD OUT
                       </span>
                     ) : prod.badge ? (
-                      <span className="bg-red-500 text-white font-black text-[10px] px-2.5 py-0.5 rounded-full shadow-sm tracking-wide uppercase">
+                      <span className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-black text-[10px] px-2.5 py-0.5 rounded-full shadow-sm tracking-wide uppercase">
                         {prod.badge}
                       </span>
                     ) : (
-                      <span className="bg-zinc-950/80 text-white font-bold text-[10px] px-2.5 py-0.5 rounded-full backdrop-blur-xs border border-zinc-700">
+                      <span className="bg-black/80 text-white font-bold text-[10px] px-2.5 py-0.5 rounded-full backdrop-blur-xs border border-violet-500/30">
                         COTTON 100%
                       </span>
                     )}
@@ -259,7 +262,7 @@ export default function HomePage() {
                 {/* Card Content */}
                 <div className="p-4 sm:p-5 flex flex-col flex-1 text-center justify-between space-y-3">
                   <div className="space-y-1.5">
-                    <h3 className="text-xs sm:text-sm font-extrabold text-zinc-900 dark:text-zinc-100 line-clamp-2 leading-snug group-hover:text-amber-500 transition-colors">
+                    <h3 className="text-xs sm:text-sm font-extrabold text-zinc-900 dark:text-zinc-100 line-clamp-2 leading-snug group-hover:text-violet-400 transition-colors">
                       {prod.name}
                     </h3>
                     {prod.subtitle && (
@@ -285,7 +288,7 @@ export default function HomePage() {
                   {prod.sizes && prod.sizes.length > 0 && (
                     <div className="flex items-center justify-center gap-1 text-[10px] font-bold text-zinc-400">
                       {prod.sizes.slice(0, 4).map((s) => (
-                        <span key={s} className="px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700">
+                        <span key={s} className="px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200 dark:border-white/10">
                           {s}
                         </span>
                       ))}
@@ -304,7 +307,7 @@ export default function HomePage() {
                     ) : (
                       <Link
                         href={`/products/${prod.id}`}
-                        className="w-full inline-flex items-center justify-center gap-1.5 py-2.5 px-4 rounded-xl bg-zinc-950 hover:bg-black dark:bg-amber-400 dark:hover:bg-amber-300 text-white dark:text-zinc-950 font-black text-xs sm:text-sm shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer"
+                        className="w-full inline-flex items-center justify-center gap-1.5 py-2.5 px-4 rounded-xl bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-black text-xs sm:text-sm shadow-md shadow-violet-600/25 hover:shadow-lg hover:shadow-violet-600/40 transition-all duration-200 cursor-pointer"
                       >
                         <ShoppingBag className="w-3.5 h-3.5" />
                         <span>{t("home", "orderNow")}</span>
@@ -317,25 +320,25 @@ export default function HomePage() {
           </div>
         )}
 
-        {/* ==================== WHY CHOOSE BX.WEAR.DZ ==================== */}
-        <section className="bg-gradient-to-br from-zinc-950 via-zinc-900 to-black text-white rounded-3xl p-6 sm:p-10 border border-zinc-800 shadow-xl space-y-8">
+        {/* ==================== THE BRAND GUARANTEES (L'EXPÉRIENCE BX.WEAR) ==================== */}
+        <section className="bg-gradient-to-br from-[#0c0d17] via-[#08080f] to-[#040407] text-white rounded-3xl p-6 sm:p-10 border border-white/10 shadow-2xl space-y-8">
           <div className="text-center max-w-xl mx-auto space-y-2">
-            <span className="text-xs font-mono font-bold text-amber-400 uppercase tracking-widest block">
-              {lang === "ar" ? "معايير الجودة والضمان" : "Quality Standards"}
+            <span className="text-xs font-mono font-bold text-violet-400 uppercase tracking-widest block">
+              {lang === "ar" ? "معايير الفخامة والضمان" : "Haute Quality Standards"}
             </span>
             <h3 className="text-2xl sm:text-3xl font-black tracking-tight">
-              {lang === "ar" ? "لماذا يفضل الشباب براند bx.wear.dz؟" : "Why Choose bx.wear.dz?"}
+              {lang === "ar" ? "لماذا يفضل الجميع براند bx.wear.dz؟" : "Why Choose bx.wear.dz?"}
             </h3>
             <p className="text-xs text-zinc-400">
               {lang === "ar"
-                ? "نحن لا نبيع الملابس فقط، بل نقدم تجربة ستريت وير كاملة مع حماية وضمان 100% للزبون الجزائري."
+                ? "نحن لا نبيع الملابس فقط، بل نقدم تجربة ستريت وير راقية مع حماية وضمان 100% للزبون الجزائري."
                 : "Premium streetwear experience with 100% customer protection in Algeria."}
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-zinc-900/80 border border-zinc-800 rounded-2xl p-5 space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-amber-400/10 text-amber-400 flex items-center justify-center font-bold">
+            <div className="bg-[#0e0f17]/90 border border-white/10 rounded-2xl p-5 space-y-3 hover:border-violet-500/40 transition">
+              <div className="w-10 h-10 rounded-xl bg-violet-500/15 text-violet-400 flex items-center justify-center font-bold">
                 <Sparkles className="w-5 h-5" />
               </div>
               <h4 className="font-bold text-sm text-white">
@@ -343,13 +346,13 @@ export default function HomePage() {
               </h4>
               <p className="text-xs text-zinc-400 leading-relaxed">
                 {lang === "ar"
-                  ? "أقمشة Heavyweight عالية الكثافة لا تتغير مع الغسيل المتكرر ومريحة في كل فصول السنة."
+                  ? "أقمشة Heavyweight 340 GSM عالية الكثافة لا تتغير مع الغسيل المتكرر ومريحة في كل فصول السنة."
                   : "Durable high-density heavyweight fabrics that maintain their shape."}
               </p>
             </div>
 
-            <div className="bg-zinc-900/80 border border-zinc-800 rounded-2xl p-5 space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-400/10 text-emerald-400 flex items-center justify-center font-bold">
+            <div className="bg-[#0e0f17]/90 border border-white/10 rounded-2xl p-5 space-y-3 hover:border-emerald-500/40 transition">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center font-bold">
                 <ShieldCheck className="w-5 h-5" />
               </div>
               <h4 className="font-bold text-sm text-white">
@@ -362,8 +365,8 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="bg-zinc-900/80 border border-zinc-800 rounded-2xl p-5 space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-blue-400/10 text-blue-400 flex items-center justify-center font-bold">
+            <div className="bg-[#0e0f17]/90 border border-white/10 rounded-2xl p-5 space-y-3 hover:border-violet-500/40 transition">
+              <div className="w-10 h-10 rounded-xl bg-indigo-500/15 text-indigo-400 flex items-center justify-center font-bold">
                 <Truck className="w-5 h-5" />
               </div>
               <h4 className="font-bold text-sm text-white">
@@ -376,8 +379,8 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="bg-zinc-900/80 border border-zinc-800 rounded-2xl p-5 space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-purple-400/10 text-purple-400 flex items-center justify-center font-bold">
+            <div className="bg-[#0e0f17]/90 border border-white/10 rounded-2xl p-5 space-y-3 hover:border-purple-500/40 transition">
+              <div className="w-10 h-10 rounded-xl bg-purple-500/15 text-purple-400 flex items-center justify-center font-bold">
                 <RotateCcw className="w-5 h-5" />
               </div>
               <h4 className="font-bold text-sm text-white">
@@ -392,18 +395,18 @@ export default function HomePage() {
           </div>
 
           {/* Social Proof Bar */}
-          <div className="bg-zinc-950/90 border border-zinc-800/80 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4">
+          <div className="bg-[#08080f] border border-white/10 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <div className="flex text-amber-400">
+              <div className="flex text-violet-400">
                 {[1, 2, 3, 4, 5].map((s) => (
-                  <Star key={s} className="w-4 h-4 fill-amber-400" />
+                  <Star key={s} className="w-4 h-4 fill-violet-400" />
                 ))}
               </div>
               <span className="text-xs font-bold text-white">
                 4.9 / 5.0
               </span>
               <span className="text-xs text-zinc-400">
-                {lang === "ar" ? "(أكثر من 1,500 زبون راضٍ في الجزائر 🇩🇿)" : "(1,500+ happy customers in Algeria)"}
+                {lang === "ar" ? "(أكثر من 1,500 زبون فخور بالماركة في الجزائر 🇩🇿)" : "(1,500+ happy customers in Algeria)"}
               </span>
             </div>
 
@@ -412,7 +415,7 @@ export default function HomePage() {
                 href="https://wa.me/213555000000"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-400 hover:text-emerald-300"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-violet-400 hover:text-violet-300"
               >
                 <MessageCircle className="w-4 h-4" />
                 <span>{lang === "ar" ? "خدمة الزبائن عبر الواتساب" : "WhatsApp Support"}</span>
@@ -422,19 +425,19 @@ export default function HomePage() {
         </section>
       </main>
 
-      {/* ==================== PROFESSIONAL FOOTER ==================== */}
-      <footer className="mt-16 border-t border-zinc-800 bg-zinc-950 py-12 text-zinc-400 text-xs">
+      {/* ==================== HIGH-FASHION FOOTER ==================== */}
+      <footer className="mt-16 border-t border-white/10 bg-[#07070a] py-12 text-zinc-400 text-xs">
         <div className={`max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 text-center ${dir === "rtl" ? "md:text-right" : "md:text-left"}`}>
           {/* Col 1: Brand Info */}
           <div className="space-y-3">
             <div className="font-mono font-black text-xl text-white tracking-widest lowercase">
-              bx<span className="text-amber-400">.wear.dz</span>
+              bx<span className="text-violet-400">.wear.dz</span>
             </div>
             <p className="text-zinc-400 text-[11px] leading-relaxed max-w-sm">
               {t("home", "footerBrandDesc")}
             </p>
             <div className="pt-1 flex items-center justify-center md:justify-start gap-2">
-              <span className="inline-block bg-zinc-900 border border-zinc-800 text-amber-400 px-3 py-1 rounded-full text-[11px] font-mono font-bold">
+              <span className="inline-block bg-[#0e0f17] border border-white/10 text-violet-400 px-3 py-1 rounded-full text-[11px] font-mono font-bold">
                 Instagram: @bx.wear.dz
               </span>
             </div>
@@ -467,7 +470,7 @@ export default function HomePage() {
                 href="https://wa.me/213555000000"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-bold text-xs shadow-md shadow-violet-600/30 transition"
               >
                 <MessageCircle className="w-4 h-4" />
                 <span>{lang === "ar" ? "طلب مساعدة أو استفسار" : "WhatsApp Inquiries"}</span>
@@ -476,7 +479,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className="max-w-6xl mx-auto px-4 mt-8 pt-6 border-t border-zinc-900 text-center text-[11px] text-zinc-500">
+        <div className="max-w-6xl mx-auto px-4 mt-8 pt-6 border-t border-white/5 text-center text-[11px] text-zinc-500">
           <p>{t("home", "footerCopyright")}</p>
         </div>
       </footer>

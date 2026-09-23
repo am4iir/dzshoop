@@ -35,7 +35,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ar" dir="rtl" className={tajawal.variable} suppressHydrationWarning>
-      <body className="font-sans antialiased bg-[#fafafa] dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 min-h-screen selection:bg-amber-400 selection:text-zinc-950 transition-colors duration-200">
+      <body className="font-sans antialiased bg-[#f8fafc] dark:bg-[#07070a] text-zinc-900 dark:text-zinc-100 min-h-screen selection:bg-violet-600 selection:text-white transition-colors duration-200">
         <LanguageProvider>
           <ThemeProvider>
             <CartProvider>

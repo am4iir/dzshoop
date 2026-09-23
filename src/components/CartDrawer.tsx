@@ -22,13 +22,13 @@ export function CartDrawer() {
       />
 
       <div className={`fixed inset-y-0 ${dir === "rtl" ? "left-0" : "right-0"} max-w-full flex`}>
-        <div className={`w-screen max-w-md bg-white dark:bg-zinc-900 shadow-2xl flex flex-col ${dir === "rtl" ? "border-r" : "border-l"} border-zinc-200 dark:border-zinc-800 transition-colors duration-200`}>
+        <div className={`w-screen max-w-md bg-white dark:bg-[#090a10] shadow-2xl flex flex-col ${dir === "rtl" ? "border-r" : "border-l"} border-zinc-200 dark:border-white/10 transition-colors duration-200`}>
           {/* Header */}
-          <div className="p-4 sm:p-6 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between bg-zinc-50 dark:bg-zinc-950">
+          <div className="p-4 sm:p-6 border-b border-zinc-100 dark:border-white/10 flex items-center justify-between bg-zinc-50 dark:bg-[#07070a]">
             <div className="flex items-center gap-2">
-              <ShoppingBag className="w-5 h-5 text-zinc-900 dark:text-white" />
+              <ShoppingBag className="w-5 h-5 text-zinc-900 dark:text-violet-400" />
               <h2 className="text-base font-extrabold text-zinc-900 dark:text-white">{t("cart", "title")}</h2>
-              <span className="bg-zinc-900 dark:bg-amber-400 text-white dark:text-zinc-950 text-xs font-bold px-2 py-0.5 rounded-full">
+              <span className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-md shadow-violet-600/20">
                 {totalItems}
               </span>
             </div>
@@ -53,7 +53,7 @@ export function CartDrawer() {
                 <button
                   type="button"
                   onClick={closeCart}
-                  className="mt-6 px-6 py-2.5 bg-zinc-900 dark:bg-amber-400 text-white dark:text-zinc-950 rounded-xl text-xs font-bold hover:bg-black dark:hover:bg-amber-300 transition cursor-pointer"
+                  className="mt-6 px-6 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-xs font-bold hover:from-violet-500 hover:to-indigo-500 transition cursor-pointer shadow-lg shadow-violet-600/25"
                 >
                   {t("cart", "browse")}
                 </button>
@@ -143,10 +143,10 @@ export function CartDrawer() {
 
           {/* Footer / Checkout Button */}
           {items.length > 0 && (
-            <div className="p-4 sm:p-6 border-t border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-950 space-y-4">
+            <div className="p-4 sm:p-6 border-t border-zinc-100 dark:border-white/10 bg-white dark:bg-[#07070a] space-y-4">
               <div className="flex justify-between items-center text-sm font-black text-zinc-900 dark:text-white">
                 <span>{t("cart", "subtotal")}</span>
-                <span className="text-base text-amber-500 font-extrabold">{formatPrice(totalPrice)}</span>
+                <span className="text-base text-violet-400 font-extrabold">{formatPrice(totalPrice)}</span>
               </div>
 
               <p className="text-[11px] text-zinc-400 text-center">
@@ -156,7 +156,7 @@ export function CartDrawer() {
               <Link
                 href="/checkout"
                 onClick={closeCart}
-                className="w-full bg-zinc-950 dark:bg-amber-400 hover:bg-black dark:hover:bg-amber-300 text-white dark:text-zinc-950 font-extrabold py-3.5 px-4 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 transition shadow-md"
+                className="w-full bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-extrabold py-3.5 px-4 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 transition shadow-lg shadow-violet-600/30"
               >
                 <span>{t("cart", "checkout")}</span>
                 <ArrowRight className={`w-4 h-4 ${dir === "rtl" ? "rotate-180" : ""}`} />
