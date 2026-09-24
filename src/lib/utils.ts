@@ -6,9 +6,6 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatPrice(price: number): string {
-  return new Intl.NumberFormat("ar-DZ", {
-    style: "currency",
-    currency: "DZD",
-    maximumFractionDigits: 0,
-  }).format(price).replace("DZD", "دج");
+  if (typeof price !== "number" || isNaN(price)) return "0 د.ج";
+  return `${price.toLocaleString("en-US")} د.ج`;
 }

@@ -52,16 +52,16 @@ export function Navbar({ searchQuery = "", onSearchChange }: NavbarProps) {
       style={{ top: "36px" }}
       dir={dir}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-[72px] flex items-center justify-between gap-4">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 h-[72px] flex items-center justify-between gap-2 sm:gap-4">
         {/* Left: Brand Logo */}
-        <Link href="/" className="flex items-center gap-3 shrink-0 group">
-          <div className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-md group-hover:scale-105 transition-all duration-300 border ${
+        <Link href="/" className="flex items-center gap-2 sm:gap-3 shrink-0 group">
+          <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center shadow-md group-hover:scale-105 transition-all duration-300 border ${
             isTransparent
               ? "bg-white/10 backdrop-blur-md border-white/20 text-white"
               : "bg-zinc-900 dark:bg-gradient-to-br dark:from-zinc-800 dark:to-black border-zinc-300 dark:border-white/20 text-white"
           }`}>
             <svg
-              className="w-6 h-6 group-hover:text-amber-400 transition-colors"
+              className="w-5 h-5 sm:w-6 sm:h-6 group-hover:text-amber-400 transition-colors"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -79,12 +79,12 @@ export function Navbar({ searchQuery = "", onSearchChange }: NavbarProps) {
           </div>
 
           <div className="flex flex-col">
-            <span className={`font-black text-2xl tracking-wider font-mono uppercase group-hover:text-amber-500 dark:group-hover:text-amber-400 transition-colors ${
+            <span className={`font-black text-xl sm:text-2xl tracking-wider font-mono uppercase group-hover:text-amber-500 dark:group-hover:text-amber-400 transition-colors ${
               isTransparent ? "text-white" : "text-zinc-900 dark:text-white"
             }`}>
               BX.WEAR
             </span>
-            <span className={`text-[9px] tracking-[0.25em] -mt-1 uppercase font-semibold ${
+            <span className={`text-[8px] sm:text-[9px] tracking-[0.2em] sm:tracking-[0.25em] -mt-0.5 sm:-mt-1 uppercase font-semibold ${
               isTransparent ? "text-white/60" : "text-zinc-500 dark:text-zinc-400"
             }`}>
               Official DZ
@@ -118,7 +118,7 @@ export function Navbar({ searchQuery = "", onSearchChange }: NavbarProps) {
         </nav>
 
         {/* Right Actions */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
           {/* Desktop Search */}
           <div className="relative hidden md:block w-48 xl:w-60">
             <input
@@ -148,18 +148,18 @@ export function Navbar({ searchQuery = "", onSearchChange }: NavbarProps) {
           <button
             type="button"
             onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
-            className={`p-2 rounded-full md:hidden transition ${
+            className={`p-1.5 sm:p-2 rounded-full md:hidden transition ${
               isTransparent
                 ? "text-white/80 hover:text-white hover:bg-white/10"
                 : "text-zinc-600 dark:text-zinc-300 hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800"
             }`}
             aria-label="Search"
           >
-            <Search className="w-5 h-5" />
+            <Search className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
 
           {/* Language Switcher */}
-          <div className={`flex items-center rounded-full p-0.5 text-[11px] font-bold border ${
+          <div className={`flex items-center rounded-full p-0.5 text-[10px] sm:text-[11px] font-bold border ${
             isTransparent
               ? "bg-white/10 backdrop-blur-md border-white/20"
               : "bg-zinc-100 dark:bg-[#11121a] border-zinc-200 dark:border-white/10"
@@ -167,7 +167,7 @@ export function Navbar({ searchQuery = "", onSearchChange }: NavbarProps) {
             <button
               type="button"
               onClick={() => setLang("ar")}
-              className={`px-2 py-0.5 rounded-full transition cursor-pointer ${
+              className={`px-1.5 sm:px-2 py-0.5 rounded-full transition cursor-pointer ${
                 lang === "ar"
                   ? isTransparent
                     ? "bg-white text-black font-black shadow-xs"
@@ -182,7 +182,7 @@ export function Navbar({ searchQuery = "", onSearchChange }: NavbarProps) {
             <button
               type="button"
               onClick={() => setLang("en")}
-              className={`px-2 py-0.5 rounded-full transition cursor-pointer ${
+              className={`px-1.5 sm:px-2 py-0.5 rounded-full transition cursor-pointer ${
                 lang === "en"
                   ? isTransparent
                     ? "bg-white text-black font-black shadow-xs"
@@ -200,7 +200,7 @@ export function Navbar({ searchQuery = "", onSearchChange }: NavbarProps) {
           <button
             type="button"
             onClick={toggleTheme}
-            className={`p-2 rounded-full transition cursor-pointer border ${
+            className={`p-1.5 sm:p-2 rounded-full transition cursor-pointer border ${
               isTransparent
                 ? "text-white/80 hover:text-white bg-white/10 border-white/20 hover:bg-white/20"
                 : "text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white bg-zinc-100 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-800"
@@ -208,9 +208,9 @@ export function Navbar({ searchQuery = "", onSearchChange }: NavbarProps) {
             title={theme === "dark" ? "التبديل إلى الأبيض (White)" : "التبديل إلى الأسود (Black)"}
           >
             {theme === "dark" ? (
-              <Sun className="w-4 h-4 text-amber-400" />
+              <Sun className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400" />
             ) : (
-              <Moon className={`w-4 h-4 ${isTransparent ? "text-white" : "text-zinc-700"}`} />
+              <Moon className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isTransparent ? "text-white" : "text-zinc-700"}`} />
             )}
           </button>
 
@@ -218,16 +218,16 @@ export function Navbar({ searchQuery = "", onSearchChange }: NavbarProps) {
           <button
             type="button"
             onClick={openCart}
-            className={`relative p-2.5 rounded-full transition flex items-center justify-center font-bold shadow-md cursor-pointer group ${
+            className={`relative p-2 sm:p-2.5 rounded-full transition flex items-center justify-center font-bold shadow-md cursor-pointer group ${
               isTransparent
                 ? "bg-white text-black hover:bg-white/90"
                 : "bg-zinc-900 text-white dark:bg-white dark:text-black hover:opacity-90"
             }`}
             aria-label="Shopping Cart"
           >
-            <ShoppingBag className="w-4 h-4 group-hover:scale-110 transition" />
+            <ShoppingBag className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:scale-110 transition" />
             {totalItems > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 bg-[#F59E0B] text-black text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center shadow-lg border-2 border-white dark:border-[#07070a] animate-pulse">
+              <span className="absolute -top-1.5 -right-1.5 bg-[#F59E0B] text-black text-[10px] font-black w-4.5 h-4.5 sm:w-5 sm:h-5 rounded-full flex items-center justify-center shadow-lg border-2 border-white dark:border-[#07070a] animate-pulse">
                 {totalItems}
               </span>
             )}
@@ -237,14 +237,14 @@ export function Navbar({ searchQuery = "", onSearchChange }: NavbarProps) {
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className={`p-2 rounded-xl lg:hidden transition ml-1 ${
+            className={`p-1.5 sm:p-2 rounded-xl lg:hidden transition ml-0.5 sm:ml-1 ${
               isTransparent
                 ? "text-white/80 hover:text-white hover:bg-white/10"
                 : "text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800"
             }`}
             aria-label="Toggle Menu"
           >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {mobileMenuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
           </button>
         </div>
       </div>

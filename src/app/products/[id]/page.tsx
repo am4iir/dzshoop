@@ -124,11 +124,11 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#fafafa] text-zinc-900">
+      <div className="min-h-screen bg-[#fafafa] dark:bg-[#07070a] text-zinc-900 dark:text-white">
         <Navbar />
         <div className="max-w-6xl mx-auto px-4 py-20 text-center">
-          <div className="w-10 h-10 border-4 border-zinc-900 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-xs text-zinc-500 font-bold">جاري تحميل تفاصيل المنتج...</p>
+          <div className="w-10 h-10 border-4 border-zinc-900 dark:border-[#F59E0B] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 font-bold">جاري تحميل تفاصيل المنتج...</p>
         </div>
       </div>
     );
@@ -136,11 +136,11 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
   if (!product) {
     return (
-      <div className="min-h-screen bg-[#fafafa] text-zinc-900">
+      <div className="min-h-screen bg-[#fafafa] dark:bg-[#07070a] text-zinc-900 dark:text-white">
         <Navbar />
         <div className="max-w-6xl mx-auto px-4 py-20 text-center">
           <h2 className="text-xl font-bold mb-2">المنتج غير موجود</h2>
-          <Link href="/" className="text-xs text-zinc-500 underline font-bold">
+          <Link href="/" className="text-xs text-[#F59E0B] hover:underline font-bold">
             العودة للرئيسية
           </Link>
         </div>
@@ -269,7 +269,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               <button
                 type="button"
                 onClick={handleCopyOrderId}
-                className="text-[11px] font-bold text-violet-700 dark:text-violet-400 bg-violet-50 dark:bg-violet-950/50 hover:bg-violet-100 dark:hover:bg-violet-900/60 border border-violet-200 dark:border-violet-800 px-2 py-1 rounded-lg transition flex items-center gap-1 cursor-pointer"
+                className="text-[11px] font-bold text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700 px-2 py-1 rounded-lg transition flex items-center gap-1 cursor-pointer"
                 title="نسخ رقم الطلبية"
               >
                 {copiedOrderId ? <Check className="w-3 h-3 text-emerald-600 dark:text-emerald-400" /> : <Copy className="w-3 h-3" />}
@@ -337,8 +337,8 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                       </span>
                     )}
                     {product.inStock === false && (
-                      <span className="bg-black/90 text-violet-400 border border-violet-500/40 font-black text-xs px-3 py-1 rounded-full shadow-sm tracking-widest uppercase">
-                        SOLD OUT
+                      <span className="bg-black/90 text-red-400 border border-red-500/40 font-black text-xs px-3 py-1 rounded-full shadow-sm tracking-widest uppercase">
+                        نفدت الكمية
                       </span>
                     )}
                   </div>
@@ -346,12 +346,12 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
                 {/* Out of stock warning banner */}
                 {product.inStock === false && (
-                  <div className="bg-violet-950/20 border border-violet-500/30 rounded-2xl p-4 text-violet-300 text-xs flex items-center gap-3">
+                  <div className="bg-red-950/20 border border-red-500/30 rounded-2xl p-4 text-red-300 text-xs flex items-center gap-3">
                     <span className="text-2xl">⚠️</span>
                     <div>
-                      <p className="font-extrabold text-sm tracking-wide uppercase">This product is currently SOLD OUT</p>
-                      <p className="text-[11px] text-violet-400/90 mt-0.5">
-                        Orders for this item are temporarily suspended until new stock arrives.
+                      <p className="font-extrabold text-sm tracking-wide uppercase">هذا المنتج غير متوفر حالياً</p>
+                      <p className="text-[11px] text-red-400/90 mt-0.5">
+                        تم تعليق استقبال الطلبات لهذا المنتج مؤقتاً حتى توفر شحنة جديدة.
                       </p>
                     </div>
                   </div>
@@ -372,7 +372,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                       <button
                         type="button"
                         onClick={() => setIsSizeModalOpen(true)}
-                        className="inline-flex items-center gap-1 text-[11px] font-bold text-violet-600 dark:text-violet-400 hover:text-violet-700 bg-violet-50 dark:bg-violet-950/40 hover:bg-violet-100/80 dark:hover:bg-violet-900/50 px-2.5 py-1 rounded-lg border border-violet-200/80 dark:border-violet-800/80 transition cursor-pointer"
+                        className="inline-flex items-center gap-1 text-[11px] font-bold text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 px-2.5 py-1 rounded-lg border border-zinc-200 dark:border-zinc-700 transition cursor-pointer"
                       >
                         <Ruler className="w-3.5 h-3.5" />
                         <span>{t("product", "sizeGuide")} 📏</span>
@@ -386,8 +386,8 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                           onClick={() => setSelectedSize(size)}
                           className={`min-w-[48px] py-2 px-3 text-xs font-bold rounded-xl border transition-all cursor-pointer ${
                             selectedSize === size
-                              ? "border-violet-500 bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md shadow-violet-600/30"
-                              : "border-zinc-200 dark:border-white/10 bg-white dark:bg-[#0c0d14] text-zinc-700 dark:text-zinc-200 hover:border-violet-500/50"
+                              ? "border-[#F59E0B] bg-[#F59E0B] text-black font-black shadow-md shadow-[#F59E0B]/20"
+                              : "border-zinc-200 dark:border-white/10 bg-white dark:bg-[#0c0d14] text-zinc-700 dark:text-zinc-200 hover:border-[#F59E0B]/50"
                           }`}
                         >
                           {size}
@@ -415,8 +415,8 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                           onClick={() => setSelectedColor(color)}
                           className={`py-1.5 px-3 text-xs font-bold rounded-xl border transition-all cursor-pointer ${
                             selectedColor === color
-                              ? "border-violet-500 bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md shadow-violet-600/30"
-                              : "border-zinc-200 dark:border-white/10 bg-white dark:bg-[#0c0d14] text-zinc-700 dark:text-zinc-200 hover:border-violet-500/50"
+                              ? "border-[#F59E0B] bg-[#F59E0B] text-black font-black shadow-md shadow-[#F59E0B]/20"
+                              : "border-zinc-200 dark:border-white/10 bg-white dark:bg-[#0c0d14] text-zinc-700 dark:text-zinc-200 hover:border-[#F59E0B]/50"
                           }`}
                         >
                           {color}
@@ -443,9 +443,9 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                       type="button"
                       onClick={handleBuyNow}
                       disabled={product.inStock === false}
-                      className="flex-1 bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-extrabold py-3.5 px-4 rounded-xl text-xs sm:text-sm transition flex items-center justify-center gap-2 shadow-lg shadow-violet-600/30 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                      className="flex-1 bg-[#F59E0B] hover:bg-amber-400 text-black font-black py-3.5 px-4 rounded-xl text-xs sm:text-sm transition flex items-center justify-center gap-2 shadow-lg shadow-[#F59E0B]/20 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                     >
-                      <span>{product.inStock === false ? "⚠️ SOLD OUT" : t("product", "orderNow")}</span>
+                      <span>{product.inStock === false ? "نفدت الكمية" : t("product", "orderNow")}</span>
                     </button>
                   </div>
                 </div>
@@ -497,7 +497,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                               setCommune("");
                             }
                           }}
-                          className="w-full bg-zinc-50 dark:bg-[#07070a] border border-zinc-200 dark:border-white/10 focus:border-violet-500 focus:bg-white dark:focus:bg-[#07070a] rounded-xl py-3 px-3 text-xs text-zinc-900 dark:text-white outline-none transition cursor-pointer"
+                          className="w-full bg-zinc-50 dark:bg-[#07070a] border border-zinc-200 dark:border-white/10 focus:border-[#F59E0B] focus:bg-white dark:focus:bg-[#07070a] rounded-xl py-3 px-3 text-xs text-zinc-900 dark:text-white outline-none transition cursor-pointer"
                         >
                           {WILAYAS.map((w) => (
                             <option key={w.code} value={w.code} className="bg-white dark:bg-[#07070a] text-zinc-900 dark:text-white">
@@ -511,7 +511,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                         <select
                           value={commune}
                           onChange={(e) => setCommune(e.target.value)}
-                          className="w-full bg-zinc-50 dark:bg-[#07070a] border border-zinc-200 dark:border-white/10 focus:border-violet-500 focus:bg-white dark:focus:bg-[#07070a] rounded-xl py-3 px-3 text-xs text-zinc-900 dark:text-white outline-none transition cursor-pointer"
+                          className="w-full bg-zinc-50 dark:bg-[#07070a] border border-zinc-200 dark:border-white/10 focus:border-[#F59E0B] focus:bg-white dark:focus:bg-[#07070a] rounded-xl py-3 px-3 text-xs text-zinc-900 dark:text-white outline-none transition cursor-pointer"
                         >
                           {currentWilaya.communes.map((c) => (
                             <option key={c} value={c} className="bg-white dark:bg-[#07070a] text-zinc-900 dark:text-white">
@@ -532,7 +532,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                             name="delivery"
                             checked={deliveryType === "home"}
                             onChange={() => setDeliveryType("home")}
-                            className="w-4 h-4 accent-violet-600"
+                            className="w-4 h-4 accent-[#F59E0B]"
                           />
                           <span className="text-xs text-zinc-700 dark:text-zinc-300">{t("product", "deliveryHome")}</span>
                         </label>
@@ -542,7 +542,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                             name="delivery"
                             checked={deliveryType === "desk"}
                             onChange={() => setDeliveryType("desk")}
-                            className="w-4 h-4 accent-violet-600"
+                            className="w-4 h-4 accent-[#F59E0B]"
                           />
                           <span className="text-xs text-zinc-700 dark:text-zinc-300">{t("product", "deliveryDesk")}</span>
                         </label>
@@ -559,9 +559,9 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                         <span>{t("product", "orderSummary")}</span>
                         <span className="font-semibold text-zinc-900 dark:text-zinc-200">{formatPrice(itemsTotal)}</span>
                       </div>
-                      <div className="flex justify-between text-sm font-black text-violet-400 pt-1">
+                      <div className="flex justify-between text-sm font-black text-zinc-950 dark:text-white pt-1">
                         <span>{t("product", "total")}</span>
-                        <span>{formatPrice(grandTotal)}</span>
+                        <span className="font-mono text-base">{formatPrice(grandTotal)}</span>
                       </div>
                     </div>
 
@@ -570,10 +570,10 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                       <button
                         type="submit"
                         disabled={isSubmitting || product.inStock === false}
-                        className="flex-1 bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-black py-3.5 px-6 rounded-xl text-xs sm:text-sm tracking-wide transition shadow-lg shadow-violet-600/30 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                        className="flex-1 bg-[#F59E0B] hover:bg-amber-400 text-black font-black py-3.5 px-6 rounded-xl text-xs sm:text-sm tracking-wide transition shadow-lg shadow-[#F59E0B]/25 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                       >
                         {product.inStock === false
-                          ? "⚠️ SOLD OUT"
+                          ? "نفدت الكمية"
                           : isSubmitting
                           ? t("product", "processing")
                           : t("product", "confirmOrder")}

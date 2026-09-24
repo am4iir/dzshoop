@@ -134,8 +134,8 @@ export default function HomePage() {
 
       {/* ==================== HERO SECTION (min-h: 85vh) ==================== */}
       <section
-        className="relative w-full min-h-[85vh] flex items-center overflow-hidden bg-black text-white pt-[108px]"
-        style={{ minHeight: "85vh", paddingTop: "108px" }}
+        className="relative w-full min-h-[80vh] flex items-center overflow-hidden bg-black text-white pt-[108px]"
+        style={{ minHeight: "80vh", paddingTop: "108px" }}
       >
         {/* Background Image with Ken Burns Slow Zoom */}
         <div
@@ -148,8 +148,8 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-t from-[#fafafa] dark:from-[#07070a] via-black/20 to-black/50 z-10" />
 
         {/* Hero Content Container */}
-        <div className="relative z-20 max-w-7xl mx-auto px-6 sm:px-12 py-12 sm:py-16 w-full">
-          <div className="max-w-2xl lg:max-w-5xl space-y-6">
+        <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 pt-8 sm:pt-12 pb-6 w-full">
+          <div className="max-w-2xl lg:max-w-5xl space-y-5 sm:space-y-6">
             {/* Tag Badge */}
             <div className="anim-fade-1 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-semibold tracking-wider uppercase text-zinc-200">
               <Flame className="w-3.5 h-3.5 text-[#F59E0B]" />
@@ -157,7 +157,7 @@ export default function HomePage() {
             </div>
 
             {/* Main Headline */}
-            <h1 className="anim-fade-2 text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.1]">
+            <h1 className="anim-fade-2 text-3xl sm:text-5xl lg:text-7xl font-black text-white tracking-tight leading-[1.1]">
               {lang === "ar" ? (
                 <>
                   ستريت وير<br />
@@ -172,18 +172,18 @@ export default function HomePage() {
             </h1>
 
             {/* Subtitle — 18-20px desktop, 16px mobile, opacity >= 0.9 */}
-            <p className="anim-fade-3 text-base sm:text-lg lg:text-xl text-white/95 max-w-xl font-normal leading-relaxed">
+            <p className="anim-fade-3 text-sm sm:text-lg lg:text-xl text-white/95 max-w-xl font-normal leading-relaxed">
               {lang === "ar"
                 ? "قطن 100% ثقيل 340 GSM، خياطة متقونة، وتوصيل سريع لباب دارك في 69 ولاية. افحص سلعتك عاد تخلص."
                 : "100% heavyweight cotton 340 GSM, precision tailoring, fast delivery across 69 wilayas. Inspect before you pay."}
             </p>
 
             {/* Pill CTA Buttons with Smooth Scroll */}
-            <div className="anim-fade-4 flex flex-wrap items-center gap-4 pt-2">
+            <div className="anim-fade-4 flex flex-wrap items-center gap-3 sm:gap-4 pt-2">
               <a
                 href="#products"
                 onClick={scrollToProducts}
-                className="inline-flex items-center justify-center px-8 py-3.5 rounded-full bg-white text-black font-black text-sm sm:text-base hover:bg-[#F59E0B] hover:text-black hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(245,158,11,0.35)] transition-all duration-200 shadow-[0_0_25px_rgba(255,255,255,0.2)] cursor-pointer"
+                className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-3.5 rounded-full bg-white text-black font-black text-xs sm:text-sm md:text-base hover:bg-[#F59E0B] hover:text-black hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(245,158,11,0.35)] transition-all duration-200 shadow-[0_0_25px_rgba(255,255,255,0.2)] cursor-pointer"
               >
                 {lang === "ar" ? "أشري درك" : "Shop Now"}
               </a>
@@ -191,7 +191,7 @@ export default function HomePage() {
               <a
                 href="#products"
                 onClick={scrollToProducts}
-                className="inline-flex items-center justify-center px-8 py-3.5 rounded-full bg-transparent border-2 border-white text-white font-black text-sm sm:text-base hover:bg-white/10 hover:border-[#F59E0B] hover:text-[#F59E0B] hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 cursor-pointer"
+                className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-3.5 rounded-full bg-transparent border-2 border-white text-white font-black text-xs sm:text-sm md:text-base hover:bg-white/10 hover:border-[#F59E0B] hover:text-[#F59E0B] hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 cursor-pointer"
               >
                 {lang === "ar" ? "شوف السلعة كاملة" : "Explore Collection"}
               </a>
@@ -199,10 +199,7 @@ export default function HomePage() {
 
             {/* Trust Badges — Desktop: single nowrap row, gap: 20px, font-size: 13px, justify: flex-start. Mobile: 2x2 grid */}
             <div
-              className="anim-fade-5 pt-6 grid grid-cols-2 md:flex md:flex-nowrap md:items-center gap-x-4 md:gap-[20px] gap-y-3.5 text-[13px] text-white w-full justify-start"
-              style={{
-                fontSize: "13px",
-              }}
+              className="anim-fade-5 pt-4 sm:pt-6 grid grid-cols-2 md:flex md:flex-nowrap md:items-center gap-x-2 sm:gap-x-4 md:gap-[20px] gap-y-2.5 sm:gap-y-3.5 text-xs sm:text-[13px] text-white w-full justify-start"
             >
               {/* Badge 1: Delivery */}
               <div
@@ -344,7 +341,7 @@ export default function HomePage() {
           href="#products"
           onClick={scrollToProducts}
           aria-label="Scroll to products"
-          className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-1 group cursor-pointer"
+          className="absolute bottom-2.5 sm:bottom-3 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-1 group cursor-pointer"
         >
           <div className="w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center text-[#F59E0B] group-hover:scale-110 group-hover:border-[#F59E0B] transition-all">
             <svg
@@ -364,7 +361,7 @@ export default function HomePage() {
       </section>
 
       {/* ==================== NEW ARRIVALS (وصل جديد) ==================== */}
-      <section id="products" className="max-w-7xl mx-auto px-4 sm:px-6 pt-16 pb-8 space-y-8 scroll-mt-28">
+      <section id="products" className="max-w-7xl mx-auto px-3 sm:px-6 pt-3 pb-8 space-y-6 sm:space-y-8 scroll-mt-28">
         {/* Section Title with Orange Underline */}
         <div>
           <div className="flex items-center gap-2">
@@ -381,20 +378,20 @@ export default function HomePage() {
 
         {/* 4 Featured Products Grid (2 cols mobile, 4 cols desktop) */}
         {loading ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
             {[1, 2, 3, 4].map((i) => (
               <div key={i} className="animate-pulse bg-zinc-200/80 dark:bg-white/5 rounded-2xl h-80 border border-zinc-200 dark:border-white/10" />
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
             {(products.slice(0, 4)).map((prod) => (
               <div
                 key={prod.id}
-                className="group flex flex-col bg-white dark:bg-[#0e0f17] rounded-2xl border border-zinc-200 dark:border-white/10 overflow-hidden hover:border-zinc-400 dark:hover:border-white/30 hover:shadow-xl transition-all duration-300 relative"
+                className="group flex flex-col bg-white dark:bg-[#0e0f17] rounded-2xl border border-zinc-200 dark:border-white/10 overflow-hidden hover:border-[#F59E0B] hover:-translate-y-1 hover:shadow-xl hover:shadow-[#F59E0B]/10 transition-all duration-300 relative"
               >
                 {/* Product Image */}
-                <div className="relative aspect-[3/4] bg-zinc-100 dark:bg-zinc-900 overflow-hidden">
+                <div className="relative aspect-[4/5] bg-zinc-100 dark:bg-zinc-900 overflow-hidden">
                   <img
                     src={
                       prod.images[0] ||
@@ -431,13 +428,13 @@ export default function HomePage() {
                 </div>
 
                 {/* Card Info */}
-                <div className="p-4 sm:p-5 flex flex-col flex-1 justify-between space-y-3">
+                <div className="p-3.5 sm:p-5 flex flex-col flex-1 justify-between space-y-2.5 sm:space-y-3">
                   <div className="space-y-1">
-                    <h3 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white line-clamp-2 leading-snug group-hover:text-[#F59E0B] transition-colors">
+                    <h3 className="h-5 text-xs sm:text-sm font-bold text-zinc-900 dark:text-white line-clamp-1 truncate group-hover:text-[#F59E0B] transition-colors">
                       {prod.name}
                     </h3>
                     {prod.subtitle && (
-                      <p className="text-[11px] text-zinc-500 dark:text-zinc-400 line-clamp-1">
+                      <p className="h-4 text-[11px] text-zinc-500 dark:text-zinc-400 line-clamp-1 truncate">
                         {prod.subtitle}
                       </p>
                     )}
@@ -460,14 +457,14 @@ export default function HomePage() {
                     {prod.inStock === false ? (
                       <Link
                         href={`/products/${prod.id}`}
-                        className="w-full inline-flex items-center justify-center py-2.5 px-4 rounded-xl bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/10 text-zinc-400 font-bold text-xs uppercase transition"
+                        className="w-full inline-flex items-center justify-center py-2 sm:py-2.5 px-3 sm:px-4 rounded-xl bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/10 text-zinc-400 font-bold text-xs uppercase transition"
                       >
                         خلاصت الكمية
                       </Link>
                     ) : (
                       <Link
                         href={`/products/${prod.id}`}
-                        className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-full bg-zinc-950 text-white hover:bg-[#F59E0B] hover:text-black dark:bg-white dark:text-black dark:hover:bg-[#F59E0B] font-extrabold text-xs sm:text-sm transition-all duration-200 shadow-sm cursor-pointer hover:-translate-y-0.5 hover:shadow-md"
+                        className="w-full inline-flex items-center justify-center gap-1.5 sm:gap-2 py-2 sm:py-2.5 px-3 sm:px-4 rounded-full bg-zinc-950 text-white hover:bg-[#F59E0B] hover:text-black dark:bg-white dark:text-black dark:hover:bg-[#F59E0B] font-extrabold text-xs sm:text-sm transition-all duration-200 shadow-sm cursor-pointer hover:-translate-y-0.5 hover:shadow-md"
                       >
                         <ShoppingBag className="w-3.5 h-3.5" />
                         <span>{lang === "ar" ? "أشري درك" : "Shop Now"}</span>
@@ -482,7 +479,7 @@ export default function HomePage() {
       </section>
 
       {/* ==================== ALL PRODUCTS & CATEGORIES SECTION ==================== */}
-      <section id="featured" className="max-w-7xl mx-auto px-4 sm:px-6 py-12 space-y-8 scroll-mt-28">
+      <section id="featured" className="max-w-7xl mx-auto px-3 sm:px-6 py-10 sm:py-12 space-y-6 sm:space-y-8 scroll-mt-28">
         {/* Section Header with Navigation Arrows */}
         <div className="flex items-center justify-between border-b border-zinc-200 dark:border-white/10 pb-4">
           <div>
@@ -533,7 +530,7 @@ export default function HomePage() {
 
         {/* Filtered Product Cards Grid */}
         {loading ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
             {[1, 2, 3, 4].map((i) => (
               <div key={i} className="animate-pulse bg-zinc-200/80 dark:bg-white/5 rounded-2xl h-96 border border-zinc-200 dark:border-white/10" />
             ))}
@@ -555,15 +552,15 @@ export default function HomePage() {
         ) : (
           <div
             ref={productsScrollRef}
-            className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6"
+            className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6"
           >
             {filtered.map((prod) => (
               <div
                 key={prod.id}
-                className="group flex flex-col bg-white dark:bg-[#0e0f17] rounded-2xl border border-zinc-200 dark:border-white/10 overflow-hidden hover:border-zinc-400 dark:hover:border-white/30 hover:shadow-xl transition-all duration-300 relative"
+                className="group flex flex-col bg-white dark:bg-[#0e0f17] rounded-2xl border border-zinc-200 dark:border-white/10 overflow-hidden hover:border-[#F59E0B] hover:-translate-y-1 hover:shadow-xl hover:shadow-[#F59E0B]/10 transition-all duration-300 relative"
               >
                 {/* Product Image */}
-                <div className="relative aspect-[3/4] bg-zinc-100 dark:bg-zinc-900 overflow-hidden">
+                <div className="relative aspect-[4/5] bg-zinc-100 dark:bg-zinc-900 overflow-hidden">
                   <img
                     src={
                       prod.images[0] ||
@@ -600,13 +597,13 @@ export default function HomePage() {
                 </div>
 
                 {/* Card Info */}
-                <div className="p-4 sm:p-5 flex flex-col flex-1 justify-between space-y-3">
+                <div className="p-3.5 sm:p-5 flex flex-col flex-1 justify-between space-y-2.5 sm:space-y-3">
                   <div className="space-y-1">
-                    <h3 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white line-clamp-2 leading-snug group-hover:text-[#F59E0B] transition-colors">
+                    <h3 className="h-5 text-xs sm:text-sm font-bold text-zinc-900 dark:text-white line-clamp-1 truncate group-hover:text-[#F59E0B] transition-colors">
                       {prod.name}
                     </h3>
                     {prod.subtitle && (
-                      <p className="text-[11px] text-zinc-500 dark:text-zinc-400 line-clamp-1">
+                      <p className="h-4 text-[11px] text-zinc-500 dark:text-zinc-400 line-clamp-1 truncate">
                         {prod.subtitle}
                       </p>
                     )}
@@ -640,17 +637,17 @@ export default function HomePage() {
                     {prod.inStock === false ? (
                       <Link
                         href={`/products/${prod.id}`}
-                        className="w-full inline-flex items-center justify-center py-2.5 px-4 rounded-xl bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/10 text-zinc-400 font-bold text-xs uppercase transition"
+                        className="w-full inline-flex items-center justify-center py-2 sm:py-2.5 px-3 sm:px-4 rounded-xl bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/10 text-zinc-400 font-bold text-xs uppercase transition"
                       >
                         خلاصت الكمية
                       </Link>
                     ) : (
                       <Link
                         href={`/products/${prod.id}`}
-                        className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-full bg-zinc-950 text-white hover:bg-[#F59E0B] hover:text-black dark:bg-white dark:text-black dark:hover:bg-[#F59E0B] font-extrabold text-xs sm:text-sm transition-all duration-200 shadow-sm cursor-pointer hover:-translate-y-0.5 hover:shadow-md"
+                        className="w-full inline-flex items-center justify-center gap-1.5 sm:gap-2 py-2 sm:py-2.5 px-3 sm:px-4 rounded-full bg-zinc-950 text-white hover:bg-[#F59E0B] hover:text-black dark:bg-white dark:text-black dark:hover:bg-[#F59E0B] font-extrabold text-xs sm:text-sm transition-all duration-200 shadow-sm cursor-pointer hover:-translate-y-0.5 hover:shadow-md"
                       >
                         <ShoppingBag className="w-3.5 h-3.5" />
-                        <span>{lang === "ar" ? "أشري درك" : "Order Now"}</span>
+                        <span>{lang === "ar" ? "أشري درك" : "Shop Now"}</span>
                       </Link>
                     )}
                   </div>
@@ -787,7 +784,7 @@ export default function HomePage() {
 
       {/* ==================== MOBILE STICKY BOTTOM BAR ==================== */}
       <div
-        className={`fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#07070a]/95 backdrop-blur-xl border-t border-zinc-200 dark:border-white/10 px-4 py-3 sm:hidden shadow-[0_-4px_20px_rgba(0,0,0,0.15)] transition-all duration-300 ${
+        className={`fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#07070a]/95 backdrop-blur-xl border-t border-zinc-200 dark:border-white/10 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:hidden shadow-[0_-4px_20px_rgba(0,0,0,0.15)] transition-all duration-300 ${
           showStickyBar ? "translate-y-0 opacity-100" : "translate-y-full opacity-0 pointer-events-none"
         }`}
       >

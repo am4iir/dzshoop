@@ -196,7 +196,7 @@ export default function CheckoutPage() {
               <button
                 type="button"
                 onClick={handleCopyOrderId}
-                className="text-[11px] font-bold text-violet-700 dark:text-violet-400 bg-violet-50 dark:bg-violet-950/50 hover:bg-violet-100 dark:hover:bg-violet-900/60 border border-violet-200 dark:border-violet-800 px-2 py-1 rounded-lg transition flex items-center gap-1 cursor-pointer"
+                className="text-[11px] font-bold text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700 px-2 py-1 rounded-lg transition flex items-center gap-1 cursor-pointer"
                 title="نسخ رقم الطلبية"
               >
                 {copiedOrderId ? <Check className="w-3 h-3 text-emerald-600 dark:text-emerald-400" /> : <Copy className="w-3 h-3" />}
@@ -222,7 +222,7 @@ export default function CheckoutPage() {
               </div>
               <div className="flex justify-between pt-2 border-t border-zinc-200 dark:border-white/10 font-extrabold text-sm text-zinc-900 dark:text-white">
                 <span>{t("checkout", "total")}:</span>
-                <span className="text-violet-400">{formatPrice(grandTotal)}</span>
+                <span className="text-zinc-950 dark:text-white font-mono font-black">{formatPrice(grandTotal)}</span>
               </div>
             </div>
 
@@ -245,7 +245,7 @@ export default function CheckoutPage() {
             <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-6">{t("checkout", "cartEmptyDesc")}</p>
             <Link
               href="/"
-              className="inline-flex items-center justify-center bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold px-6 py-3 rounded-xl text-xs hover:from-violet-500 hover:to-indigo-500 transition shadow-lg shadow-violet-600/30"
+              className="inline-flex items-center justify-center bg-zinc-950 text-white dark:bg-white dark:text-black hover:bg-[#F59E0B] dark:hover:bg-[#F59E0B] hover:text-black font-bold px-6 py-3 rounded-xl text-xs transition shadow-md"
             >
               {t("checkout", "backToStore")}
             </Link>
@@ -267,7 +267,7 @@ export default function CheckoutPage() {
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     placeholder={t("checkout", "fullName")}
-                    className="w-full bg-zinc-50 dark:bg-[#07070a] border border-zinc-200 dark:border-white/10 focus:border-violet-500 focus:bg-white dark:focus:bg-[#07070a] rounded-xl py-3 px-4 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 outline-none transition"
+                    className="w-full bg-zinc-50 dark:bg-[#07070a] border border-zinc-200 dark:border-white/10 focus:border-[#F59E0B] focus:bg-white dark:focus:bg-[#07070a] rounded-xl py-3 px-4 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 outline-none transition"
                   />
                 </div>
 
@@ -281,7 +281,7 @@ export default function CheckoutPage() {
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="05 / 06 / 07 XX XX XX XX"
-                    className={`w-full bg-zinc-50 dark:bg-[#07070a] border border-zinc-200 dark:border-white/10 focus:border-violet-500 focus:bg-white dark:focus:bg-[#07070a] rounded-xl py-3 px-4 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 outline-none transition ${dir === "rtl" ? "text-right" : "text-left"} dir-ltr`}
+                    className={`w-full bg-zinc-50 dark:bg-[#07070a] border border-zinc-200 dark:border-white/10 focus:border-[#F59E0B] focus:bg-white dark:focus:bg-[#07070a] rounded-xl py-3 px-4 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 outline-none transition ${dir === "rtl" ? "text-right" : "text-left"} dir-ltr`}
                   />
                 </div>
 
@@ -300,7 +300,7 @@ export default function CheckoutPage() {
                           setCommune(w.communes[0]);
                         }
                       }}
-                      className="w-full bg-zinc-50 dark:bg-[#07070a] border border-zinc-200 dark:border-white/10 focus:border-violet-500 focus:bg-white dark:focus:bg-[#07070a] rounded-xl py-3 px-3 text-xs text-zinc-900 dark:text-white outline-none transition cursor-pointer"
+                      className="w-full bg-zinc-50 dark:bg-[#07070a] border border-zinc-200 dark:border-white/10 focus:border-[#F59E0B] focus:bg-white dark:focus:bg-[#07070a] rounded-xl py-3 px-3 text-xs text-zinc-900 dark:text-white outline-none transition cursor-pointer"
                     >
                       {WILAYAS.map((w) => (
                         <option key={w.code} value={w.code} className="bg-white dark:bg-[#07070a] text-zinc-900 dark:text-white">
@@ -315,7 +315,7 @@ export default function CheckoutPage() {
                     <select
                       value={commune}
                       onChange={(e) => setCommune(e.target.value)}
-                      className="w-full bg-zinc-50 dark:bg-[#07070a] border border-zinc-200 dark:border-white/10 focus:border-violet-500 focus:bg-white dark:focus:bg-[#07070a] rounded-xl py-3 px-3 text-xs text-zinc-900 dark:text-white outline-none transition cursor-pointer"
+                      className="w-full bg-zinc-50 dark:bg-[#07070a] border border-zinc-200 dark:border-white/10 focus:border-[#F59E0B] focus:bg-white dark:focus:bg-[#07070a] rounded-xl py-3 px-3 text-xs text-zinc-900 dark:text-white outline-none transition cursor-pointer"
                     >
                       {currentWilaya.communes.map((c) => (
                         <option key={c} value={c} className="bg-white dark:bg-[#07070a] text-zinc-900 dark:text-white">
@@ -335,8 +335,8 @@ export default function CheckoutPage() {
                       onClick={() => setDeliveryType("home")}
                       className={`p-3 rounded-xl border ${dir === "rtl" ? "text-right" : "text-left"} transition-all cursor-pointer ${
                         deliveryType === "home"
-                          ? "border-violet-500 bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md shadow-violet-600/30"
-                          : "border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#07070a] text-zinc-700 dark:text-zinc-300 hover:border-violet-500/40"
+                          ? "border-[#F59E0B] bg-[#F59E0B] text-black font-black shadow-md shadow-[#F59E0B]/20"
+                          : "border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#07070a] text-zinc-700 dark:text-zinc-300 hover:border-[#F59E0B]/40"
                       }`}
                     >
                       <span className="text-xs font-bold block">{t("checkout", "deliveryHome")}</span>
@@ -350,8 +350,8 @@ export default function CheckoutPage() {
                       onClick={() => setDeliveryType("desk")}
                       className={`p-3 rounded-xl border ${dir === "rtl" ? "text-right" : "text-left"} transition-all cursor-pointer ${
                         deliveryType === "desk"
-                          ? "border-violet-500 bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md shadow-violet-600/30"
-                          : "border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#07070a] text-zinc-700 dark:text-zinc-300 hover:border-violet-500/40"
+                          ? "border-[#F59E0B] bg-[#F59E0B] text-black font-black shadow-md shadow-[#F59E0B]/20"
+                          : "border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#07070a] text-zinc-700 dark:text-zinc-300 hover:border-[#F59E0B]/40"
                       }`}
                     >
                       <span className="text-xs font-bold block">{t("checkout", "deliveryDesk")}</span>
@@ -365,7 +365,7 @@ export default function CheckoutPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-extrabold py-4 px-6 rounded-xl text-sm transition shadow-lg shadow-violet-600/30 mt-6 disabled:opacity-50 cursor-pointer"
+                  className="w-full bg-[#F59E0B] hover:bg-amber-400 text-black font-black py-4 px-6 rounded-xl text-sm transition shadow-lg shadow-[#F59E0B]/25 mt-6 disabled:opacity-50 cursor-pointer"
                 >
                   {isSubmitting ? t("checkout", "processing") : t("checkout", "confirmOrder")}
                 </button>
@@ -408,13 +408,13 @@ export default function CheckoutPage() {
                       placeholder={t("checkout", "promoCode")}
                       value={promoInput}
                       onChange={(e) => setPromoInput(e.target.value)}
-                      className={`w-full bg-zinc-50 dark:bg-[#07070a] border border-zinc-200 dark:border-white/10 rounded-xl py-2 px-3 ${dir === "rtl" ? "pr-8" : "pl-8"} text-xs outline-none focus:border-violet-500 dark:focus:border-violet-500 text-zinc-900 dark:text-white uppercase font-mono`}
+                      className={`w-full bg-zinc-50 dark:bg-[#07070a] border border-zinc-200 dark:border-white/10 rounded-xl py-2 px-3 ${dir === "rtl" ? "pr-8" : "pl-8"} text-xs outline-none focus:border-[#F59E0B] dark:focus:border-[#F59E0B] text-zinc-900 dark:text-white uppercase font-mono`}
                     />
                     <Tag className={`w-3.5 h-3.5 text-zinc-400 absolute ${dir === "rtl" ? "right-2.5" : "left-2.5"} top-2.5 pointer-events-none`} />
                   </div>
                   <button
                     type="submit"
-                    className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white px-4 py-2 rounded-xl text-xs font-bold transition shadow-sm cursor-pointer"
+                    className="bg-zinc-950 hover:bg-[#F59E0B] hover:text-black dark:bg-white dark:text-black dark:hover:bg-[#F59E0B] text-white px-4 py-2 rounded-xl text-xs font-bold transition shadow-sm cursor-pointer"
                   >
                     {t("checkout", "applyPromo")}
                   </button>
