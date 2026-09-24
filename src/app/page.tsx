@@ -113,7 +113,11 @@ export default function HomePage() {
       `}</style>
 
       {/* ==================== HERO SECTION ==================== */}
-      <section className="relative w-full min-h-[90vh] sm:min-h-[94vh] flex items-center overflow-hidden bg-black text-white pt-18">
+      {/* padding-top: 108px (36px marquee + 72px navbar) */}
+      <section
+        className="relative w-full min-h-[92vh] sm:min-h-[96vh] flex items-center overflow-hidden bg-black text-white pt-[108px]"
+        style={{ paddingTop: "108px" }}
+      >
         {/* Background Image with Ken Burns Slow Zoom */}
         <div
           className="absolute inset-0 bg-cover bg-center anim-kenburns origin-center"
@@ -125,7 +129,7 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-t from-[#fafafa] dark:from-[#07070a] via-black/20 to-black/50 z-10" />
 
         {/* Hero Content Container */}
-        <div className="relative z-20 max-w-7xl mx-auto px-6 sm:px-12 py-20 w-full">
+        <div className="relative z-20 max-w-7xl mx-auto px-6 sm:px-12 py-16 sm:py-20 w-full">
           <div className="max-w-2xl space-y-6">
             {/* Tag Badge */}
             <div className="anim-fade-1 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-semibold tracking-wider uppercase text-zinc-200">
@@ -172,22 +176,99 @@ export default function HomePage() {
               </a>
             </div>
 
-            {/* Trust Badges — Clean SVGs, 14-15px (text-sm/15px), fully opaque */}
-            <div className="anim-fade-5 pt-6 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm sm:text-[15px] text-white font-medium">
-              <div className="flex items-center gap-2">
-                <svg className="w-4.5 h-4.5 text-[#F59E0B] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 18H3a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h10v11" /><path d="M14 6h4l4 4v7a1 1 0 0 1-1 1h-2" /><circle cx="7" cy="18" r="2" /><circle cx="17" cy="18" r="2" /></svg>
+            {/* Trust Badges — Explicit 20px SVG icons, inline-flex row, gap: 8px, text: 14px, white, nowrap desktop */}
+            <div className="anim-fade-5 pt-8 flex flex-wrap items-center gap-x-6 gap-y-3.5 max-w-2xl">
+              {/* Badge 1: Delivery */}
+              <div
+                className="inline-flex items-center gap-2 text-[14px] text-white font-medium whitespace-normal sm:whitespace-nowrap"
+                style={{ display: "inline-flex", flexDirection: "row", gap: "8px", alignItems: "center" }}
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="w-5 h-5 shrink-0 text-[#F59E0B]"
+                  style={{ width: "20px", height: "20px", minWidth: "20px", minHeight: "20px", maxWidth: "20px", maxHeight: "20px", flexShrink: 0 }}
+                >
+                  <path d="M5 18H3a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h10v11" />
+                  <path d="M14 6h4l4 4v7a1 1 0 0 1-1 1h-2" />
+                  <circle cx="7" cy="18" r="2" />
+                  <circle cx="17" cy="18" r="2" />
+                </svg>
                 <span>{lang === "ar" ? "توصيل سريع لـ 69 ولاية" : "Fast delivery to 69 wilayas"}</span>
               </div>
-              <div className="flex items-center gap-2">
-                <svg className="w-4.5 h-4.5 text-[#F59E0B] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 7L12 3 4 7v10l8 4 8-4V7z" /><path d="M9 12l2 2 4-4" /></svg>
+
+              {/* Badge 2: Cotton */}
+              <div
+                className="inline-flex items-center gap-2 text-[14px] text-white font-medium whitespace-normal sm:whitespace-nowrap"
+                style={{ display: "inline-flex", flexDirection: "row", gap: "8px", alignItems: "center" }}
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="w-5 h-5 shrink-0 text-[#F59E0B]"
+                  style={{ width: "20px", height: "20px", minWidth: "20px", minHeight: "20px", maxWidth: "20px", maxHeight: "20px", flexShrink: 0 }}
+                >
+                  <path d="M20 7L12 3 4 7v10l8 4 8-4V7z" />
+                  <path d="M9 12l2 2 4-4" />
+                </svg>
                 <span>{lang === "ar" ? "قطن 100% ثقيل 340 GSM" : "100% cotton 340 GSM"}</span>
               </div>
-              <div className="flex items-center gap-2">
-                <svg className="w-4.5 h-4.5 text-[#F59E0B] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" /><circle cx="12" cy="12" r="3" /></svg>
+
+              {/* Badge 3: Inspect */}
+              <div
+                className="inline-flex items-center gap-2 text-[14px] text-white font-medium whitespace-normal sm:whitespace-nowrap"
+                style={{ display: "inline-flex", flexDirection: "row", gap: "8px", alignItems: "center" }}
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="w-5 h-5 shrink-0 text-[#F59E0B]"
+                  style={{ width: "20px", height: "20px", minWidth: "20px", minHeight: "20px", maxWidth: "20px", maxHeight: "20px", flexShrink: 0 }}
+                >
+                  <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
                 <span>{lang === "ar" ? "افحص قبل ما تخلص" : "Inspect before paying"}</span>
               </div>
-              <div className="flex items-center gap-2">
-                <svg className="w-4.5 h-4.5 text-[#F59E0B] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 4 23 10 17 10" /><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" /></svg>
+
+              {/* Badge 4: Exchange */}
+              <div
+                className="inline-flex items-center gap-2 text-[14px] text-white font-medium whitespace-normal sm:whitespace-nowrap"
+                style={{ display: "inline-flex", flexDirection: "row", gap: "8px", alignItems: "center" }}
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="w-5 h-5 shrink-0 text-[#F59E0B]"
+                  style={{ width: "20px", height: "20px", minWidth: "20px", minHeight: "20px", maxWidth: "20px", maxHeight: "20px", flexShrink: 0 }}
+                >
+                  <polyline points="23 4 23 10 17 10" />
+                  <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+                </svg>
                 <span>{lang === "ar" ? "التبديل ساهل وفوري" : "Easy exchange"}</span>
               </div>
             </div>
