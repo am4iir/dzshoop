@@ -35,7 +35,25 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ar" dir="rtl" className={tajawal.variable} suppressHydrationWarning>
-      <body className="font-sans antialiased bg-[#f8fafc] dark:bg-[#07070a] text-zinc-900 dark:text-zinc-100 min-h-screen selection:bg-violet-600 selection:text-white transition-colors duration-200">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                var t = localStorage.getItem('axb_theme');
+                if (t === 'light') {
+                  document.documentElement.classList.remove('dark');
+                } else {
+                  document.documentElement.classList.add('dark');
+                }
+              } catch (e) {
+                document.documentElement.classList.add('dark');
+              }
+            `,
+          }}
+        />
+      </head>
+      <body className="font-sans antialiased bg-[#fafafa] dark:bg-[#07070a] text-zinc-900 dark:text-zinc-100 min-h-screen selection:bg-amber-400 selection:text-black transition-colors duration-200">
         <LanguageProvider>
           <ThemeProvider>
             <CartProvider>

@@ -10,37 +10,42 @@ interface ThemeContextType {
 }
 
 const ThemeContext = createContext<ThemeContextType>({
-  theme: "light",
+  theme: "dark",
   toggleTheme: () => {},
 });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("light");
-  const [mounted, setMounted] = useState(false);
+  const [theme, setTheme] = useState<Theme>("dark");
 
   useEffect(() => {
-    setMounted(true);
-    const saved = localStorage.getItem("axb_theme") as Theme | null;
-    if (saved === "dark" || saved === "light") {
-      setTheme(saved);
-      if (saved === "dark") {
-        document.documentElement.classList.add("dark");
+    try {
+      const saved = localStorage.getItem("axb_theme") as Theme | null;
+      if (saved === "dark" || saved === "light") {
+        setTheme(saved);
+        if (saved === "dark") {
+          document.documentElement.classList.add("dark");
+        } else {
+          document.documentElement.classList.remove("dark");
+        }
       } else {
-        document.documentElement.classList.remove("dark");
-      }
-    } else {
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      if (prefersDark) {
+        // Default to dark for streetwear aesthetic
         setTheme("dark");
         document.documentElement.classList.add("dark");
+        localStorage.setItem("axb_theme", "dark");
       }
+    } catch (e) {
+      // In case localStorage is blocked
+      document.documentElement.classList.add("dark");
     }
   }, []);
 
   const toggleTheme = () => {
-    const nextTheme = theme === "light" ? "dark" : "light";
+    const nextTheme = theme === "dark" ? "light" : "dark";
     setTheme(nextTheme);
-    localStorage.setItem("axb_theme", nextTheme);
+    try {
+      localStorage.setItem("axb_theme", nextTheme);
+    } catch (e) {}
+
     if (nextTheme === "dark") {
       document.documentElement.classList.add("dark");
     } else {
