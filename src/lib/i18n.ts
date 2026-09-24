@@ -6,22 +6,19 @@ export const translations = {
   // ===== ANNOUNCEMENT BAR =====
   announcement: {
     ar: [
-      "🚚 توصيل سريع لـ 69 ولاية",
-      "💰 الدفع عند الاستلام",
-      "📦 معاينة الطرد قبل الدفع",
-      "✅ ضمان الجودة والإرجاع",
+      "الدفع عند الاستلام",
+      "توصيل لـ 69 ولاية",
+      "معاينة قبل الدفع",
     ],
     en: [
-      "🚚 Fast delivery to 69 wilayas",
-      "💰 Cash on delivery",
-      "📦 Inspect parcel before payment",
-      "✅ Quality guarantee & returns",
+      "Cash on delivery",
+      "Delivery to 69 wilayas",
+      "Inspect before payment",
     ],
     fr: [
-      "🚚 Livraison rapide vers 69 wilayas",
-      "💰 Paiement à la livraison",
-      "📦 Inspection du colis avant paiement",
-      "✅ Garantie qualité et retour",
+      "Paiement à la livraison",
+      "Livraison vers 69 wilayas",
+      "Inspection avant paiement",
     ],
   },
 

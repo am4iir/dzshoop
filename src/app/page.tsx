@@ -7,14 +7,10 @@ import { useLanguage } from "@/components/LanguageContext";
 import { Product } from "@/lib/db";
 import { formatPrice } from "@/lib/utils";
 import {
-  Truck,
-  ShieldCheck,
-  RotateCcw,
-  Package,
   ShoppingBag,
   MessageCircle,
-  Gem,
   Flame,
+  Package,
   ChevronRight,
   ChevronLeft,
 } from "lucide-react";
@@ -88,83 +84,111 @@ export default function HomePage() {
     <div className="min-h-screen bg-[#fafafa] dark:bg-[#07070a] text-zinc-900 dark:text-zinc-100 transition-colors duration-200" dir={dir}>
       <Navbar searchQuery={search} onSearchChange={setSearch} />
 
-      {/* ==================== CINEMATIC HERO SECTION ==================== */}
-      <section className="relative w-full min-h-[85vh] sm:min-h-[90vh] flex items-center overflow-hidden bg-black text-white">
-        {/* Background Image with Cinematic Figure & Sunset */}
+      {/* ===== GLOBAL KEYFRAMES & UTILITIES ===== */}
+      <style>{`
+        @keyframes kenburns {
+          0% { transform: scale(1); }
+          100% { transform: scale(1.08); }
+        }
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        @media (prefers-reduced-motion: no-preference) {
+          .anim-kenburns {
+            animation: kenburns 22s ease-in-out infinite alternate;
+          }
+          .anim-fade-1 { animation: fadeInUp 0.6s ease-out 0.1s both; }
+          .anim-fade-2 { animation: fadeInUp 0.6s ease-out 0.2s both; }
+          .anim-fade-3 { animation: fadeInUp 0.6s ease-out 0.3s both; }
+          .anim-fade-4 { animation: fadeInUp 0.6s ease-out 0.4s both; }
+          .anim-fade-5 { animation: fadeInUp 0.6s ease-out 0.5s both; }
+        }
+      `}</style>
+
+      {/* ==================== HERO SECTION ==================== */}
+      <section className="relative w-full min-h-[90vh] sm:min-h-[94vh] flex items-center overflow-hidden bg-black text-white pt-18">
+        {/* Background Image with Ken Burns Slow Zoom */}
         <div
-          className="absolute inset-0 bg-cover bg-center sm:bg-[center_top] no-repeat scale-105 transform duration-1000"
-          style={{ backgroundImage: "url('/hero-cinematic.jpg')" }}
+          className="absolute inset-0 bg-cover bg-center anim-kenburns origin-center"
+          style={{ backgroundImage: "url('/hero-urban.jpg')" }}
         />
 
-        {/* Ambient Dark Gradient Overlays for High Text Readability */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/75 to-black/30 lg:to-transparent z-10" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#fafafa] dark:from-[#07070a] via-transparent to-black/50 z-10" />
+        {/* Ambient Dark Overlay Gradients */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/60 to-black/30 lg:to-transparent z-10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#fafafa] dark:from-[#07070a] via-black/20 to-black/50 z-10" />
 
         {/* Hero Content Container */}
         <div className="relative z-20 max-w-7xl mx-auto px-6 sm:px-12 py-20 w-full">
           <div className="max-w-2xl space-y-6">
             {/* Tag Badge */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-semibold tracking-wider uppercase text-zinc-200">
-              <Flame className="w-3.5 h-3.5 text-amber-400" />
+            <div className="anim-fade-1 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-semibold tracking-wider uppercase text-zinc-200">
+              <Flame className="w-3.5 h-3.5 text-[#F59E0B]" />
               <span>{lang === "ar" ? "سلعة جديدة • دروب 2026" : "New Drop 2026"}</span>
             </div>
 
-            {/* Main Headline (Direct & Natural, Matching Reference) */}
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.1]">
+            {/* Main Headline */}
+            <h1 className="anim-fade-2 text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.1]">
               {lang === "ar" ? (
                 <>
-                  اللبسة لي توقف عليك <br />
-                  <span className="text-white">ستريت وير أصلي</span>
+                  ستريت وير<br />
+                  <span className="text-[#F59E0B]">جزائري أصلي</span>
                 </>
               ) : (
                 <>
-                  Adventure Begins With <br />
-                  <span className="text-white">Every Purchase</span>
+                  Authentic Algerian<br />
+                  <span className="text-[#F59E0B]">Streetwear</span>
                 </>
               )}
             </h1>
 
-            {/* Subtitle - Real Human Algerian Tone */}
-            <p className="text-sm sm:text-base text-zinc-300 max-w-xl font-normal leading-relaxed">
+            {/* Subtitle — 18-20px desktop, 16px mobile, opacity >= 0.9 */}
+            <p className="anim-fade-3 text-base sm:text-lg lg:text-xl text-white/95 max-w-xl font-normal leading-relaxed">
               {lang === "ar"
-                ? "سلعة نقية ومخدومة بالشان. قطن 100% ثقيل 340 GSM، خياطة متقونة، وتوصيل سريع حتى لباب دارك في 69 ولاية. حل كوليك، أفحص سلعتك وتأكد بعينك عاد تخلص."
-                : "Real heavyweight streetwear. 100% pure thick cotton (340 GSM), nationwide fast shipping across 69 wilayas, with full parcel inspection before payment."}
+                ? "قطن 100% ثقيل 340 GSM، خياطة متقونة، وتوصيل سريع لباب دارك في 69 ولاية. افحص سلعتك عاد تخلص."
+                : "100% heavyweight cotton 340 GSM, precision tailoring, fast delivery across 69 wilayas. Inspect before you pay."}
             </p>
 
-            {/* Pill CTA Buttons */}
-            <div className="flex flex-wrap items-center gap-4 pt-4">
+            {/* Pill CTA Buttons with Smooth Hover Effects */}
+            <div className="anim-fade-4 flex flex-wrap items-center gap-4 pt-2">
               <a
                 href="#featured"
-                className="inline-flex items-center justify-center px-8 py-3.5 rounded-full bg-white text-black font-black text-sm sm:text-base hover:bg-zinc-200 hover:scale-105 transition-all duration-200 shadow-[0_0_25px_rgba(255,255,255,0.3)] cursor-pointer"
+                className="inline-flex items-center justify-center px-8 py-3.5 rounded-full bg-white text-black font-black text-sm sm:text-base hover:bg-[#F59E0B] hover:text-black hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(245,158,11,0.35)] transition-all duration-200 shadow-[0_0_25px_rgba(255,255,255,0.2)] cursor-pointer"
               >
                 {lang === "ar" ? "أشري درك" : "Shop Now"}
               </a>
 
               <a
                 href="#categories"
-                className="inline-flex items-center justify-center px-8 py-3.5 rounded-full bg-transparent border-2 border-white text-white font-black text-sm sm:text-base hover:bg-white/10 hover:border-white transition-all duration-200 cursor-pointer"
+                className="inline-flex items-center justify-center px-8 py-3.5 rounded-full bg-transparent border-2 border-white text-white font-black text-sm sm:text-base hover:bg-white/10 hover:border-[#F59E0B] hover:text-[#F59E0B] hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 cursor-pointer"
               >
                 {lang === "ar" ? "شوف السلعة كاملة" : "Explore Collection"}
               </a>
             </div>
 
-            {/* Micro Highlights - Strictly 69 Wilayas */}
-            <div className="pt-8 flex flex-wrap items-center gap-6 text-xs text-zinc-300 font-medium">
+            {/* Trust Badges — Clean SVGs, 14-15px (text-sm/15px), fully opaque */}
+            <div className="anim-fade-5 pt-6 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm sm:text-[15px] text-white font-medium">
               <div className="flex items-center gap-2">
-                <Truck className="w-4 h-4 text-white" />
-                <span>{lang === "ar" ? "توصيل سريع لـ 69 ولاية" : "69 Wilayas Delivery"}</span>
+                <svg className="w-4.5 h-4.5 text-[#F59E0B] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 18H3a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h10v11" /><path d="M14 6h4l4 4v7a1 1 0 0 1-1 1h-2" /><circle cx="7" cy="18" r="2" /><circle cx="17" cy="18" r="2" /></svg>
+                <span>{lang === "ar" ? "توصيل سريع لـ 69 ولاية" : "Fast delivery to 69 wilayas"}</span>
               </div>
               <div className="flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                <span>{lang === "ar" ? "افحص قبل ما تخلص" : "Inspect Before Paying"}</span>
+                <svg className="w-4.5 h-4.5 text-[#F59E0B] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 7L12 3 4 7v10l8 4 8-4V7z" /><path d="M9 12l2 2 4-4" /></svg>
+                <span>{lang === "ar" ? "قطن 100% ثقيل 340 GSM" : "100% cotton 340 GSM"}</span>
               </div>
               <div className="flex items-center gap-2">
-                <Gem className="w-4 h-4 text-amber-400" />
-                <span>{lang === "ar" ? "قطن 100% ثقيل 340 GSM" : "100% Heavy Cotton"}</span>
+                <svg className="w-4.5 h-4.5 text-[#F59E0B] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" /><circle cx="12" cy="12" r="3" /></svg>
+                <span>{lang === "ar" ? "افحص قبل ما تخلص" : "Inspect before paying"}</span>
               </div>
               <div className="flex items-center gap-2">
-                <RotateCcw className="w-4 h-4 text-white" />
-                <span>{lang === "ar" ? "التبديل ساهل وفوري" : "Easy Exchange"}</span>
+                <svg className="w-4.5 h-4.5 text-[#F59E0B] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 4 23 10 17 10" /><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" /></svg>
+                <span>{lang === "ar" ? "التبديل ساهل وفوري" : "Easy exchange"}</span>
               </div>
             </div>
           </div>
@@ -292,7 +316,7 @@ export default function HomePage() {
                 {/* Card Info */}
                 <div className="p-4 sm:p-5 flex flex-col flex-1 justify-between space-y-3">
                   <div className="space-y-1">
-                    <h3 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white line-clamp-2 leading-snug group-hover:text-amber-500 dark:group-hover:text-amber-400 transition-colors">
+                    <h3 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white line-clamp-2 leading-snug group-hover:text-[#F59E0B] transition-colors">
                       {prod.name}
                     </h3>
                     {prod.subtitle && (
@@ -337,7 +361,7 @@ export default function HomePage() {
                     ) : (
                       <Link
                         href={`/products/${prod.id}`}
-                        className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-full bg-zinc-950 text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200 font-extrabold text-xs sm:text-sm transition shadow-sm cursor-pointer"
+                        className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-full bg-zinc-950 text-white hover:bg-[#F59E0B] hover:text-black dark:bg-white dark:text-black dark:hover:bg-[#F59E0B] font-extrabold text-xs sm:text-sm transition-all duration-200 shadow-sm cursor-pointer hover:-translate-y-0.5 hover:shadow-md"
                       >
                         <ShoppingBag className="w-3.5 h-3.5" />
                         <span>{lang === "ar" ? "كوموندي درك" : "Order Now"}</span>
@@ -355,7 +379,7 @@ export default function HomePage() {
       <section id="about" className="max-w-7xl mx-auto px-4 sm:px-6 py-16 border-t border-zinc-200 dark:border-white/10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
-            <span className="text-xs font-mono font-bold text-amber-500 dark:text-amber-400 uppercase tracking-widest block">
+            <span className="text-xs font-mono font-bold text-[#F59E0B] uppercase tracking-widest block">
               {lang === "ar" ? "علاش درنا bx.wear.dz؟" : "Brand Philosophy"}
             </span>
             <h3 className="text-3xl sm:text-4xl font-black text-zinc-900 dark:text-white tracking-tight">
@@ -388,7 +412,7 @@ export default function HomePage() {
           {/* Visual Showcase Card */}
           <div className="relative rounded-3xl overflow-hidden border border-zinc-200 dark:border-white/10 shadow-xl aspect-[4/3] bg-zinc-900">
             <img
-              src="/hero-cinematic.jpg"
+              src="/hero-urban.jpg"
               alt="Brand Vision"
               className="w-full h-full object-cover"
             />
@@ -410,7 +434,7 @@ export default function HomePage() {
           {/* Col 1 */}
           <div className="space-y-3">
             <div className="font-mono font-black text-xl text-zinc-900 dark:text-white tracking-widest uppercase">
-              BX.WEAR<span className="text-amber-500 dark:text-amber-400">.DZ</span>
+              BX.WEAR<span className="text-[#F59E0B]">.DZ</span>
             </div>
             <p className="text-zinc-600 dark:text-zinc-400 text-xs leading-relaxed max-w-sm">
               {lang === "ar"
@@ -431,17 +455,17 @@ export default function HomePage() {
             </h5>
             <ul className="space-y-2 text-xs">
               <li>
-                <Link href="/" className="hover:text-black dark:hover:text-white transition">
+                <Link href="/" className="hover:text-[#F59E0B] transition">
                   {lang === "ar" ? "الرئيسية" : "Home"}
                 </Link>
               </li>
               <li>
-                <Link href="/checkout" className="hover:text-black dark:hover:text-white transition">
+                <Link href="/checkout" className="hover:text-[#F59E0B] transition">
                   {lang === "ar" ? "سلة المشتريات" : "Cart"}
                 </Link>
               </li>
               <li>
-                <Link href="/terms" className="hover:text-black dark:hover:text-white transition">
+                <Link href="/terms" className="hover:text-[#F59E0B] transition">
                   {lang === "ar" ? "شروط الخدمة والضمان" : "Terms & Guarantees"}
                 </Link>
               </li>
@@ -462,7 +486,7 @@ export default function HomePage() {
               href="https://wa.me/213555000000"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-zinc-900 text-white dark:bg-white dark:text-black font-extrabold text-xs shadow-md hover:opacity-90 transition"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-zinc-900 text-white dark:bg-white dark:text-black font-extrabold text-xs shadow-md hover:bg-[#F59E0B] hover:text-black transition-all duration-200 hover:-translate-y-0.5"
             >
               <MessageCircle className="w-4 h-4" />
               <span>{lang === "ar" ? "تواصل معنا عبر الواتساب" : "Contact via WhatsApp"}</span>
