@@ -149,7 +149,7 @@ export default function HomePage() {
 
         {/* Hero Content Container */}
         <div className="relative z-20 max-w-7xl mx-auto px-6 sm:px-12 py-12 sm:py-16 w-full">
-          <div className="max-w-2xl space-y-6">
+          <div className="max-w-2xl lg:max-w-5xl space-y-6">
             {/* Tag Badge */}
             <div className="anim-fade-1 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-semibold tracking-wider uppercase text-zinc-200">
               <Flame className="w-3.5 h-3.5 text-[#F59E0B]" />
@@ -197,12 +197,24 @@ export default function HomePage() {
               </a>
             </div>
 
-            {/* Trust Badges — Explicit 20px SVG icons, inline-flex row, gap: 8px, text: 14px, white */}
-            <div className="anim-fade-5 pt-6 flex flex-wrap items-center gap-x-6 gap-y-3.5 max-w-2xl">
+            {/* Trust Badges — Desktop: single nowrap row, gap: 20px, font-size: 13px, justify: flex-start. Mobile: 2x2 grid */}
+            <div
+              className="anim-fade-5 pt-6 grid grid-cols-2 md:flex md:flex-nowrap md:items-center gap-x-4 md:gap-[20px] gap-y-3.5 text-[13px] text-white w-full justify-start"
+              style={{
+                fontSize: "13px",
+              }}
+            >
               {/* Badge 1: Delivery */}
               <div
-                className="inline-flex items-center gap-2 text-[14px] text-white font-medium whitespace-normal sm:whitespace-nowrap"
-                style={{ display: "inline-flex", flexDirection: "row", gap: "8px", alignItems: "center" }}
+                className="flex items-center gap-2 text-[13px] text-white font-medium whitespace-nowrap shrink-0"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  whiteSpace: "nowrap",
+                  fontSize: "13px",
+                  color: "#ffffff",
+                }}
               >
                 <svg
                   width="20"
@@ -221,13 +233,20 @@ export default function HomePage() {
                   <circle cx="7" cy="18" r="2" />
                   <circle cx="17" cy="18" r="2" />
                 </svg>
-                <span>{lang === "ar" ? "توصيل سريع لـ 69 ولاية" : "Fast delivery to 69 wilayas"}</span>
+                <span className="text-[13px] text-white whitespace-nowrap">{lang === "ar" ? "توصيل سريع لـ 69 ولاية" : "Fast delivery to 69 wilayas"}</span>
               </div>
 
               {/* Badge 2: Cotton */}
               <div
-                className="inline-flex items-center gap-2 text-[14px] text-white font-medium whitespace-normal sm:whitespace-nowrap"
-                style={{ display: "inline-flex", flexDirection: "row", gap: "8px", alignItems: "center" }}
+                className="flex items-center gap-2 text-[13px] text-white font-medium whitespace-nowrap shrink-0"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  whiteSpace: "nowrap",
+                  fontSize: "13px",
+                  color: "#ffffff",
+                }}
               >
                 <svg
                   width="20"
@@ -244,13 +263,20 @@ export default function HomePage() {
                   <path d="M20 7L12 3 4 7v10l8 4 8-4V7z" />
                   <path d="M9 12l2 2 4-4" />
                 </svg>
-                <span>{lang === "ar" ? "قطن 100% ثقيل 340 GSM" : "100% cotton 340 GSM"}</span>
+                <span className="text-[13px] text-white whitespace-nowrap">{lang === "ar" ? "قطن 100% ثقيل 340 GSM" : "100% cotton 340 GSM"}</span>
               </div>
 
               {/* Badge 3: Inspect */}
               <div
-                className="inline-flex items-center gap-2 text-[14px] text-white font-medium whitespace-normal sm:whitespace-nowrap"
-                style={{ display: "inline-flex", flexDirection: "row", gap: "8px", alignItems: "center" }}
+                className="flex items-center gap-2 text-[13px] text-white font-medium whitespace-nowrap shrink-0"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  whiteSpace: "nowrap",
+                  fontSize: "13px",
+                  color: "#ffffff",
+                }}
               >
                 <svg
                   width="20"
@@ -267,13 +293,20 @@ export default function HomePage() {
                   <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" />
                   <circle cx="12" cy="12" r="3" />
                 </svg>
-                <span>{lang === "ar" ? "افحص قبل ما تخلص" : "Inspect before paying"}</span>
+                <span className="text-[13px] text-white whitespace-nowrap">{lang === "ar" ? "افحص قبل ما تخلص" : "Inspect before paying"}</span>
               </div>
 
               {/* Badge 4: Exchange */}
               <div
-                className="inline-flex items-center gap-2 text-[14px] text-white font-medium whitespace-normal sm:whitespace-nowrap"
-                style={{ display: "inline-flex", flexDirection: "row", gap: "8px", alignItems: "center" }}
+                className="flex items-center gap-2 text-[13px] text-white font-medium whitespace-nowrap shrink-0"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  whiteSpace: "nowrap",
+                  fontSize: "13px",
+                  color: "#ffffff",
+                }}
               >
                 <svg
                   width="20"
@@ -290,7 +323,7 @@ export default function HomePage() {
                   <polyline points="23 4 23 10 17 10" />
                   <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
                 </svg>
-                <span>{lang === "ar" ? "التبديل ساهل وفوري" : "Easy exchange"}</span>
+                <span className="text-[13px] text-white whitespace-nowrap">{lang === "ar" ? "التبديل ساهل وفوري" : "Easy exchange"}</span>
               </div>
             </div>
 
