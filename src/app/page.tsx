@@ -15,8 +15,11 @@ import {
   ChevronLeft,
 } from "lucide-react";
 
-// Easily editable social proof count
+// ── Easily editable social proof count ──────────────────────────────────────
 const DELIVERED_ORDERS_COUNT = "+500";
+
+// ── Joggers product IDs (pinned first in new arrivals) ──────────────────────
+const JOGGERS_IDS = ["joggers-grey", "joggers-black"];
 
 export default function HomePage() {
   const { dir, lang } = useLanguage();
@@ -29,10 +32,11 @@ export default function HomePage() {
 
   const categories = useMemo(
     () => [
-      { id: "all", label: lang === "ar" ? "كل السلعة" : "All Products" },
-      { id: "t-shirt", label: lang === "ar" ? "تريكوات (T-Shirts)" : "T-Shirts" },
-      { id: "pants", label: lang === "ar" ? "سراول وكارغو" : "Jeans & Cargos" },
-      { id: "ensemble", label: lang === "ar" ? "هوديز وأطقم" : "Hoodies" },
+      { id: "all",      label: lang === "ar" ? "كل السلعة"           : "All Products"     },
+      { id: "jogger",   label: lang === "ar" ? "جوقرز واسعين"        : "Wide-leg Joggers" },
+      { id: "t-shirt",  label: lang === "ar" ? "تريكوات (T-Shirts)"   : "T-Shirts"         },
+      { id: "pants",    label: lang === "ar" ? "سراول وكارغو"        : "Jeans & Cargos"   },
+      { id: "ensemble", label: lang === "ar" ? "هوديز وأطقم"         : "Hoodies"          },
     ],
     [lang]
   );
@@ -51,11 +55,8 @@ export default function HomePage() {
         if (isMounted) setLoading(false);
       });
 
-    const handleScroll = () => {
-      setShowStickyBar(window.scrollY > 400);
-    };
+    const handleScroll = () => setShowStickyBar(window.scrollY > 400);
     window.addEventListener("scroll", handleScroll, { passive: true });
-
     return () => {
       isMounted = false;
       window.removeEventListener("scroll", handleScroll);
@@ -65,8 +66,8 @@ export default function HomePage() {
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return products.filter((p) => {
-      const nameMatch = p.name?.toLowerCase().includes(q) || false;
-      const subMatch = p.subtitle?.toLowerCase().includes(q) || false;
+      const nameMatch  = p.name?.toLowerCase().includes(q)     || false;
+      const subMatch   = p.subtitle?.toLowerCase().includes(q) || false;
       const matchesSearch = !q || nameMatch || subMatch;
 
       if (selectedCategory === "all") return matchesSearch;
@@ -82,9 +83,8 @@ export default function HomePage() {
 
   const scrollProducts = (direction: "left" | "right") => {
     if (productsScrollRef.current) {
-      const scrollAmount = 350;
       productsScrollRef.current.scrollBy({
-        left: direction === "left" ? -scrollAmount : scrollAmount,
+        left: direction === "left" ? -350 : 350,
         behavior: "smooth",
       });
     }
@@ -95,238 +95,256 @@ export default function HomePage() {
     document.getElementById("products")?.scrollIntoView({ behavior: "smooth" });
   };
 
+  // Pin joggers products first in the new-arrivals grid
+  const newArrivalsProducts = useMemo(() => {
+    const joggers = products.filter((p) => JOGGERS_IDS.includes(p.id));
+    const others  = products.filter((p) => !JOGGERS_IDS.includes(p.id));
+    return [...joggers, ...others].slice(0, 4);
+  }, [products]);
+
   return (
-    <div className="min-h-screen bg-[#fafafa] dark:bg-[#07070a] text-zinc-900 dark:text-zinc-100 transition-colors duration-200" dir={dir}>
+    <div
+      className="min-h-screen bg-[#fafafa] dark:bg-[#07070a] text-zinc-900 dark:text-zinc-100 transition-colors duration-200"
+      dir={dir}
+    >
       <Navbar searchQuery={search} onSearchChange={setSearch} />
 
-      {/* ===== GLOBAL KEYFRAMES & UTILITIES ===== */}
+      {/* ===== GLOBAL KEYFRAMES & STYLES ===== */}
       <style>{`
-        @keyframes kenburns {
-          0% { transform: scale(1); }
-          100% { transform: scale(1.08); }
+        @keyframes heroImageFloat {
+          0%   { transform: translateY(0px); }
+          100% { transform: translateY(-8px); }
         }
         @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          from { opacity: 0; transform: translateY(20px); }
+          to   { opacity: 1; transform: translateY(0);    }
+        }
+        @keyframes fadeInLeft {
+          from { opacity: 0; transform: translateX(-28px); }
+          to   { opacity: 1; transform: translateX(0);     }
+        }
+        @keyframes wordmarkDrift {
+          from { transform: translateX(-2%); }
+          to   { transform: translateX(2%);  }
         }
         @keyframes gentleBounce {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(6px); }
+          0%, 100% { transform: translateY(0);  }
+          50%       { transform: translateY(6px); }
         }
         @media (prefers-reduced-motion: no-preference) {
-          .anim-kenburns {
-            animation: kenburns 22s ease-in-out infinite alternate;
+          .anim-float-hero {
+            animation: heroImageFloat 6s ease-in-out infinite alternate;
           }
-          .anim-fade-1 { animation: fadeInUp 0.6s ease-out 0.1s both; }
-          .anim-fade-2 { animation: fadeInUp 0.6s ease-out 0.2s both; }
-          .anim-fade-3 { animation: fadeInUp 0.6s ease-out 0.3s both; }
-          .anim-fade-4 { animation: fadeInUp 0.6s ease-out 0.4s both; }
-          .anim-fade-5 { animation: fadeInUp 0.6s ease-out 0.5s both; }
+          .anim-fade-in-left {
+            animation: fadeInLeft 0.6s ease-out 0.15s both;
+          }
+          .anim-fade-1 { animation: fadeInUp 0.6s ease-out 0.10s both; }
+          .anim-fade-2 { animation: fadeInUp 0.6s ease-out 0.20s both; }
+          .anim-fade-3 { animation: fadeInUp 0.6s ease-out 0.30s both; }
+          .anim-fade-4 { animation: fadeInUp 0.6s ease-out 0.40s both; }
+          .anim-fade-5 { animation: fadeInUp 0.6s ease-out 0.50s both; }
+          .anim-fade-6 { animation: fadeInUp 0.6s ease-out 0.60s both; }
+          .anim-wordmark {
+            animation: wordmarkDrift 20s ease-in-out infinite alternate;
+          }
           .anim-bounce-gentle { animation: gentleBounce 2s ease-in-out infinite; }
+        }
+        /* Wordmark outline styling */
+        .hero-wordmark {
+          display: inline-block;
+          direction: ltr;
+          unicode-bidi: isolate;
+          font-weight: 900;
+          letter-spacing: -0.04em;
+          white-space: nowrap;
+          line-height: 1;
+          pointer-events: none;
+          user-select: none;
+          color: transparent;
+          -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.05);
+          font-size: clamp(48px, 20vw, 90px);
+        }
+        @media (min-width: 1024px) {
+          .hero-wordmark {
+            font-size: clamp(80px, 18vw, 320px);
+            -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.08);
+          }
+        }
+        :root:not(.dark) .hero-wordmark {
+          -webkit-text-stroke: 1.5px rgba(0, 0, 0, 0.06);
+        }
+        /* Desktop mask: linear-gradient(to right, transparent 0%, black 25%, black 85%, transparent 100%) plus bottom fade */
+        .hero-img-mask {
+          -webkit-mask-image:
+            linear-gradient(to right, transparent 0%, black 25%, black 85%, transparent 100%),
+            linear-gradient(to top, transparent 0%, black 15%, black 100%);
+          -webkit-mask-composite: source-in;
+          mask-image:
+            linear-gradient(to right, transparent 0%, black 25%, black 85%, transparent 100%),
+            linear-gradient(to top, transparent 0%, black 15%, black 100%);
+          mask-composite: intersect;
+        }
+        /* Mobile: image fades at bottom */
+        .hero-img-mobile-mask {
+          -webkit-mask-image: linear-gradient(to bottom, black 65%, transparent 100%);
+          mask-image: linear-gradient(to bottom, black 65%, transparent 100%);
         }
       `}</style>
 
-      {/* ==================== HERO SECTION (min-h: 85vh) ==================== */}
+      {/* ==================== HERO SECTION (SPLIT LAYOUT) ==================== */}
       <section
-        className="relative w-full min-h-[80vh] flex items-center overflow-hidden bg-black text-white pt-[108px]"
-        style={{ minHeight: "80vh", paddingTop: "108px" }}
+        className="relative w-full min-h-[80vh] overflow-hidden text-white"
+        style={{
+          background: "linear-gradient(135deg, #141414 0%, #1c1a17 100%)",
+          minHeight: "80vh",
+          paddingTop: "108px",
+        }}
+        aria-label="Hero"
       >
-        {/* Background Image with Ken Burns Slow Zoom */}
+        {/* Subtle warm radial glow on dark charcoal background */}
         <div
-          className="absolute inset-0 bg-cover bg-center anim-kenburns origin-center"
-          style={{ backgroundImage: "url('/hero-urban.jpg')" }}
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(circle 900px at 45% 55%, rgba(245, 158, 11, 0.08) 0%, transparent 70%)",
+          }}
         />
 
-        {/* Ambient Dark Overlay Gradients */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/60 to-black/30 lg:to-transparent z-10" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#fafafa] dark:from-[#07070a] via-black/20 to-black/50 z-10" />
+        {/* PART 4: Background wordmark — bx.wear.dz behind all content */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-x-0 bottom-[8%] flex justify-center pointer-events-none select-none overflow-hidden z-[1]"
+        >
+          <span className="anim-wordmark hero-wordmark font-black">
+            bx.wear.dz
+          </span>
+        </div>
 
-        {/* Hero Content Container */}
-        <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 pt-8 sm:pt-12 pb-6 w-full">
-          <div className="max-w-2xl lg:max-w-5xl space-y-5 sm:space-y-6">
+        {/* ── DESKTOP SPLIT LAYOUT (min-width: 1024px) ────────────────────── */}
+        {/* In RTL: Right column is START (text block), Left column is END (models photo) */}
+        <div
+          className="hidden lg:grid relative z-10 max-w-[1400px] mx-auto px-8 xl:px-12 gap-10 items-center w-full"
+          style={{
+            gridTemplateColumns: "1fr 1fr",
+            minHeight: "calc(80vh - 108px)",
+          }}
+        >
+          {/* RIGHT column in RTL (Start): Text Block, vertically centered, right-aligned */}
+          <div
+            className={`flex flex-col justify-center space-y-5 py-8 ${
+              dir === "rtl" ? "text-right items-end" : "text-left items-start"
+            }`}
+          >
             {/* Tag Badge */}
             <div className="anim-fade-1 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-semibold tracking-wider uppercase text-zinc-200">
               <Flame className="w-3.5 h-3.5 text-[#F59E0B]" />
               <span>{lang === "ar" ? "سلعة جديدة • دروب 2026" : "New Drop 2026"}</span>
             </div>
 
-            {/* Main Headline */}
-            <h1 className="anim-fade-2 text-3xl sm:text-5xl lg:text-7xl font-black text-white tracking-tight leading-[1.1]">
+            {/* PART 3: Main Title */}
+            <h1
+              className="anim-fade-2 font-black text-white leading-[1.1] tracking-tight"
+              style={{
+                fontSize: "clamp(2.4rem, 4.6vw, 4.2rem)",
+                textShadow: "0 2px 20px rgba(0,0,0,0.5)",
+              }}
+            >
               {lang === "ar" ? (
                 <>
-                  ستريت وير<br />
+                  جوقرز ستريت وير<br />
                   <span className="text-[#F59E0B]">جزائري أصلي</span>
                 </>
               ) : (
                 <>
-                  Authentic Algerian<br />
-                  <span className="text-[#F59E0B]">Streetwear</span>
+                  Algerian Streetwear<br />
+                  <span className="text-[#F59E0B]">Wide-Leg Joggers</span>
                 </>
               )}
             </h1>
 
-            {/* Subtitle — 18-20px desktop, 16px mobile, opacity >= 0.9 */}
-            <p className="anim-fade-3 text-sm sm:text-lg lg:text-xl text-white/95 max-w-xl font-normal leading-relaxed">
+            {/* PART 3: Subtitle */}
+            <p
+              className="anim-fade-3 text-white/90 max-w-lg font-normal leading-relaxed"
+              style={{
+                fontSize: "clamp(0.95rem, 1.25vw, 1.15rem)",
+                textShadow: "0 2px 20px rgba(0,0,0,0.5)",
+              }}
+            >
               {lang === "ar"
-                ? "قطن 100% ثقيل 340 GSM، خياطة متقونة، وتوصيل سريع لباب دارك في 69 ولاية. افحص سلعتك عاد تخلص."
-                : "100% heavyweight cotton 340 GSM, precision tailoring, fast delivery across 69 wilayas. Inspect before you pay."}
+                ? "جوقرز واسعين بقصة عصرية، قطن ثقيل 340 GSM، خياطة متقونة. توصيل سريع لباب دارك في 69 ولاية، افحص سلعتك عاد تخلص."
+                : "Wide-leg fit with a modern cut. Heavyweight 340 GSM cotton, precision tailoring. Fast delivery to your door across 69 wilayas — inspect before you pay."}
             </p>
 
-            {/* Pill CTA Buttons with Smooth Scroll */}
-            <div className="anim-fade-4 flex flex-wrap items-center gap-3 sm:gap-4 pt-2">
-              <a
-                href="#products"
-                onClick={scrollToProducts}
-                className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-3.5 rounded-full bg-white text-black font-black text-xs sm:text-sm md:text-base hover:bg-[#F59E0B] hover:text-black hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(245,158,11,0.35)] transition-all duration-200 shadow-[0_0_25px_rgba(255,255,255,0.2)] cursor-pointer"
+            {/* PART 3: Buttons */}
+            <div className="anim-fade-4 flex flex-wrap items-center gap-3.5 pt-1">
+              <Link
+                href="/products/joggers-grey"
+                className="inline-flex items-center justify-center px-8 py-3.5 rounded-full bg-white text-black font-black text-sm hover:bg-[#F59E0B] hover:text-black hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(245,158,11,0.40)] transition-all duration-200 shadow-[0_0_25px_rgba(255,255,255,0.18)] cursor-pointer"
               >
                 {lang === "ar" ? "أشري درك" : "Shop Now"}
-              </a>
-
+              </Link>
               <a
                 href="#products"
                 onClick={scrollToProducts}
-                className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-3.5 rounded-full bg-transparent border-2 border-white text-white font-black text-xs sm:text-sm md:text-base hover:bg-white/10 hover:border-[#F59E0B] hover:text-[#F59E0B] hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 cursor-pointer"
+                className="inline-flex items-center justify-center px-8 py-3.5 rounded-full bg-transparent border-2 border-white text-white font-black text-sm hover:bg-white/10 hover:border-[#F59E0B] hover:text-[#F59E0B] hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
               >
                 {lang === "ar" ? "شوف السلعة كاملة" : "Explore Collection"}
               </a>
             </div>
 
-            {/* Trust Badges — Desktop: single nowrap row, gap: 20px, font-size: 13px, justify: flex-start. Mobile: 2x2 grid */}
-            <div
-              className="anim-fade-5 pt-4 sm:pt-6 grid grid-cols-2 md:flex md:flex-nowrap md:items-center gap-x-2 sm:gap-x-4 md:gap-[20px] gap-y-2.5 sm:gap-y-3.5 text-xs sm:text-[13px] text-white w-full justify-start"
-            >
-              {/* Badge 1: Delivery */}
-              <div
-                className="flex items-center gap-2 text-[13px] text-white font-medium whitespace-nowrap shrink-0"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  whiteSpace: "nowrap",
-                  fontSize: "13px",
-                  color: "#ffffff",
-                }}
-              >
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="w-5 h-5 shrink-0 text-[#F59E0B]"
-                  style={{ width: "20px", height: "20px", minWidth: "20px", minHeight: "20px", maxWidth: "20px", maxHeight: "20px", flexShrink: 0 }}
+            {/* 4 Trust Badges in ONE ROW under the buttons on desktop */}
+            <div className="anim-fade-5 flex flex-nowrap items-center gap-5 pt-3 w-full">
+              {[
+                {
+                  label: lang === "ar" ? "توصيل سريع لـ 69 ولاية" : "Fast delivery to 69 wilayas",
+                  icon: (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M5 18H3a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h10v11" />
+                      <path d="M14 6h4l4 4v7a1 1 0 0 1-1 1h-2" />
+                      <circle cx="7" cy="18" r="2" /><circle cx="17" cy="18" r="2" />
+                    </svg>
+                  ),
+                },
+                {
+                  label: lang === "ar" ? "قطن 100% ثقيل 340 GSM" : "100% cotton 340 GSM",
+                  icon: (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M20 7L12 3 4 7v10l8 4 8-4V7z" /><path d="M9 12l2 2 4-4" />
+                    </svg>
+                  ),
+                },
+                {
+                  label: lang === "ar" ? "افحص قبل ما تخلص" : "Inspect before paying",
+                  icon: (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" /><circle cx="12" cy="12" r="3" />
+                    </svg>
+                  ),
+                },
+                {
+                  label: lang === "ar" ? "التبديل ساهل وفوري" : "Easy exchange",
+                  icon: (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="23 4 23 10 17 10" /><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+                    </svg>
+                  ),
+                },
+              ].map((badge) => (
+                <div
+                  key={badge.label}
+                  className="inline-flex items-center gap-2 text-[13px] text-white font-medium whitespace-nowrap shrink-0"
                 >
-                  <path d="M5 18H3a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h10v11" />
-                  <path d="M14 6h4l4 4v7a1 1 0 0 1-1 1h-2" />
-                  <circle cx="7" cy="18" r="2" />
-                  <circle cx="17" cy="18" r="2" />
-                </svg>
-                <span className="text-[13px] text-white whitespace-nowrap">{lang === "ar" ? "توصيل سريع لـ 69 ولاية" : "Fast delivery to 69 wilayas"}</span>
-              </div>
-
-              {/* Badge 2: Cotton */}
-              <div
-                className="flex items-center gap-2 text-[13px] text-white font-medium whitespace-nowrap shrink-0"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  whiteSpace: "nowrap",
-                  fontSize: "13px",
-                  color: "#ffffff",
-                }}
-              >
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="w-5 h-5 shrink-0 text-[#F59E0B]"
-                  style={{ width: "20px", height: "20px", minWidth: "20px", minHeight: "20px", maxWidth: "20px", maxHeight: "20px", flexShrink: 0 }}
-                >
-                  <path d="M20 7L12 3 4 7v10l8 4 8-4V7z" />
-                  <path d="M9 12l2 2 4-4" />
-                </svg>
-                <span className="text-[13px] text-white whitespace-nowrap">{lang === "ar" ? "قطن 100% ثقيل 340 GSM" : "100% cotton 340 GSM"}</span>
-              </div>
-
-              {/* Badge 3: Inspect */}
-              <div
-                className="flex items-center gap-2 text-[13px] text-white font-medium whitespace-nowrap shrink-0"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  whiteSpace: "nowrap",
-                  fontSize: "13px",
-                  color: "#ffffff",
-                }}
-              >
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="w-5 h-5 shrink-0 text-[#F59E0B]"
-                  style={{ width: "20px", height: "20px", minWidth: "20px", minHeight: "20px", maxWidth: "20px", maxHeight: "20px", flexShrink: 0 }}
-                >
-                  <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" />
-                  <circle cx="12" cy="12" r="3" />
-                </svg>
-                <span className="text-[13px] text-white whitespace-nowrap">{lang === "ar" ? "افحص قبل ما تخلص" : "Inspect before paying"}</span>
-              </div>
-
-              {/* Badge 4: Exchange */}
-              <div
-                className="flex items-center gap-2 text-[13px] text-white font-medium whitespace-nowrap shrink-0"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  whiteSpace: "nowrap",
-                  fontSize: "13px",
-                  color: "#ffffff",
-                }}
-              >
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="w-5 h-5 shrink-0 text-[#F59E0B]"
-                  style={{ width: "20px", height: "20px", minWidth: "20px", minHeight: "20px", maxWidth: "20px", maxHeight: "20px", flexShrink: 0 }}
-                >
-                  <polyline points="23 4 23 10 17 10" />
-                  <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
-                </svg>
-                <span className="text-[13px] text-white whitespace-nowrap">{lang === "ar" ? "التبديل ساهل وفوري" : "Easy exchange"}</span>
-              </div>
+                  <span className="w-5 h-5 shrink-0 text-[#F59E0B]">
+                    {badge.icon}
+                  </span>
+                  <span>{badge.label}</span>
+                </div>
+              ))}
             </div>
 
-            {/* Social Proof Line (Easily editable count) */}
-            <div className="anim-fade-5 pt-1 flex items-center gap-2 text-xs sm:text-sm text-zinc-200/90 font-semibold">
-              <span className="text-amber-400 text-sm">⭐</span>
+            {/* Social-proof line */}
+            <div className="anim-fade-6 flex items-center gap-2 text-xs sm:text-sm text-zinc-200/90 font-semibold pt-1">
+              <span className="text-amber-400">⭐</span>
               <span>
                 {lang === "ar"
                   ? `${DELIVERED_ORDERS_COUNT} طلبية مسلّمة في كل الجزائر`
@@ -334,14 +352,175 @@ export default function HomePage() {
               </span>
             </div>
           </div>
+
+          {/* LEFT column in RTL (End): The two-models photo */}
+          <div
+            className="flex items-end justify-center h-full relative"
+            style={{ minHeight: "calc(80vh - 120px)" }}
+          >
+            {/* Soft warm orange glow (rgba(245,158,11,0.18), blur 120px) behind the models */}
+            <div
+              className="absolute pointer-events-none"
+              style={{
+                width: "420px",
+                height: "420px",
+                borderRadius: "50%",
+                background: "rgba(245, 158, 11, 0.18)",
+                filter: "blur(120px)",
+                bottom: "10%",
+                left: "50%",
+                transform: "translateX(-50%)",
+              }}
+            />
+
+            {/* Model photo with fade mask, float effect, and high fetch priority */}
+            <img
+              src="/images/joggers-hero-cutout.webp"
+              alt="جوقرز واسعين رمادي وأسود - BX.WEAR OFFICIAL DZ"
+              fetchPriority="high"
+              decoding="async"
+              className="anim-float-hero anim-fade-in-left hero-img-mask relative z-10 w-full object-contain object-bottom select-none"
+              style={{
+                maxHeight: "90%",
+                height: "calc(80vh - 90px)",
+              }}
+            />
+          </div>
         </div>
 
-        {/* Animated Scroll Down Arrow */}
+        {/* ── MOBILE LAYOUT (below 1024px) ────────────────────────────────── */}
+        <div
+          className="lg:hidden relative z-10 flex flex-col w-full"
+          style={{ minHeight: "calc(80vh - 108px)" }}
+        >
+          {/* Mobile Image on top (max-height 45vh, faded at bottom) */}
+          <div
+            className="relative w-full overflow-hidden flex items-end justify-center"
+            style={{ maxHeight: "45vh" }}
+          >
+            {/* Warm orange glow */}
+            <div
+              className="absolute inset-0 pointer-events-none z-[1]"
+              style={{
+                background:
+                  "radial-gradient(ellipse 70% 50% at 50% 60%, rgba(245,158,11,0.18) 0%, transparent 70%)",
+                filter: "blur(50px)",
+              }}
+            />
+            <img
+              src="/images/joggers-hero-cutout.webp"
+              alt="جوقرز واسعين رمادي وأسود"
+              fetchPriority="high"
+              decoding="async"
+              className="hero-img-mobile-mask anim-float-hero w-full object-contain object-bottom relative z-[5]"
+              style={{ maxHeight: "45vh" }}
+            />
+          </div>
+
+          {/* Centered Text below */}
+          <div className="flex-1 flex flex-col items-center text-center px-4 pt-4 pb-6 space-y-3.5">
+            {/* Tag Badge */}
+            <div className="anim-fade-1 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-[11px] font-semibold tracking-wider uppercase text-zinc-200">
+              <Flame className="w-3 h-3 text-[#F59E0B]" />
+              <span>{lang === "ar" ? "سلعة جديدة • 2026" : "New Drop 2026"}</span>
+            </div>
+
+            {/* Title */}
+            <h1
+              className="anim-fade-2 font-black text-white leading-[1.1] tracking-tight"
+              style={{
+                fontSize: "clamp(1.85rem, 8vw, 2.6rem)",
+                textShadow: "0 2px 20px rgba(0,0,0,0.5)",
+              }}
+            >
+              {lang === "ar" ? (
+                <>
+                  جوقرز ستريت وير<br />
+                  <span className="text-[#F59E0B]">جزائري أصلي</span>
+                </>
+              ) : (
+                <>
+                  Algerian Streetwear<br />
+                  <span className="text-[#F59E0B]">Wide-Leg Joggers</span>
+                </>
+              )}
+            </h1>
+
+            {/* Subtitle */}
+            <p
+              className="anim-fade-3 text-xs sm:text-sm text-white/90 max-w-sm leading-relaxed"
+              style={{ textShadow: "0 2px 20px rgba(0,0,0,0.5)" }}
+            >
+              {lang === "ar"
+                ? "جوقرز واسعين بقصة عصرية، قطن ثقيل 340 GSM، خياطة متقونة. توصيل سريع لباب دارك في 69 ولاية، افحص سلعتك عاد تخلص."
+                : "Wide-leg fit, 340 GSM cotton, precision tailoring. Fast delivery across 69 wilayas, inspect before you pay."}
+            </p>
+
+            {/* Buttons side by side */}
+            <div className="anim-fade-4 flex items-center gap-3 pt-1 justify-center">
+              <Link
+                href="/products/joggers-grey"
+                className="inline-flex items-center justify-center px-6 py-2.5 rounded-full bg-white text-black font-black text-xs sm:text-sm hover:bg-[#F59E0B] transition-all duration-200 shadow-md cursor-pointer"
+              >
+                {lang === "ar" ? "أشري درك" : "Shop Now"}
+              </Link>
+              <a
+                href="#products"
+                onClick={scrollToProducts}
+                className="inline-flex items-center justify-center px-6 py-2.5 rounded-full bg-transparent border-2 border-white text-white font-black text-xs sm:text-sm hover:bg-white/10 transition-all duration-200 cursor-pointer"
+              >
+                {lang === "ar" ? "شوف السلعة" : "Explore"}
+              </a>
+            </div>
+
+            {/* Trust Badges: 2x2 grid on mobile with clean SVG icons */}
+            <div className="anim-fade-5 grid grid-cols-2 gap-2.5 text-[11px] sm:text-xs text-white font-medium w-full max-w-sm mx-auto pt-1">
+              <div className="flex items-center gap-1.5 justify-center">
+                <svg className="w-3.5 h-3.5 shrink-0 text-[#F59E0B]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 18H3a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h10v11" />
+                  <path d="M14 6h4l4 4v7a1 1 0 0 1-1 1h-2" />
+                  <circle cx="7" cy="18" r="2" /><circle cx="17" cy="18" r="2" />
+                </svg>
+                <span className="whitespace-nowrap">{lang === "ar" ? "توصيل لـ 69 ولاية" : "69 wilayas"}</span>
+              </div>
+              <div className="flex items-center gap-1.5 justify-center">
+                <svg className="w-3.5 h-3.5 shrink-0 text-[#F59E0B]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 7L12 3 4 7v10l8 4 8-4V7z" /><path d="M9 12l2 2 4-4" />
+                </svg>
+                <span className="whitespace-nowrap">{lang === "ar" ? "قطن 340 GSM" : "340 GSM"}</span>
+              </div>
+              <div className="flex items-center gap-1.5 justify-center">
+                <svg className="w-3.5 h-3.5 shrink-0 text-[#F59E0B]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" /><circle cx="12" cy="12" r="3" />
+                </svg>
+                <span className="whitespace-nowrap">{lang === "ar" ? "افحص قبل ما تخلص" : "Inspect first"}</span>
+              </div>
+              <div className="flex items-center gap-1.5 justify-center">
+                <svg className="w-3.5 h-3.5 shrink-0 text-[#F59E0B]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="23 4 23 10 17 10" /><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+                </svg>
+                <span className="whitespace-nowrap">{lang === "ar" ? "التبديل ساهل" : "Easy exchange"}</span>
+              </div>
+            </div>
+
+            {/* Social proof */}
+            <div className="anim-fade-6 flex items-center gap-1.5 text-[11px] sm:text-xs text-zinc-200/90 font-semibold">
+              <span className="text-amber-400">⭐</span>
+              <span>
+                {lang === "ar"
+                  ? `${DELIVERED_ORDERS_COUNT} طلبية مسلّمة في الجزائر`
+                  : `${DELIVERED_ORDERS_COUNT} orders delivered`}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Scroll-down arrow */}
         <a
           href="#products"
           onClick={scrollToProducts}
           aria-label="Scroll to products"
-          className="absolute bottom-2.5 sm:bottom-3 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-1 group cursor-pointer"
+          className="absolute bottom-2.5 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-1 group cursor-pointer"
         >
           <div className="w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center text-[#F59E0B] group-hover:scale-110 group-hover:border-[#F59E0B] transition-all">
             <svg
@@ -361,8 +540,11 @@ export default function HomePage() {
       </section>
 
       {/* ==================== NEW ARRIVALS (وصل جديد) ==================== */}
-      <section id="products" className="max-w-7xl mx-auto px-3 sm:px-6 pt-3 pb-8 space-y-6 sm:space-y-8 scroll-mt-28">
-        {/* Section Title with Orange Underline */}
+      <section
+        id="products"
+        className="max-w-7xl mx-auto px-3 sm:px-6 pt-3 pb-8 space-y-6 sm:space-y-8 scroll-mt-28"
+      >
+        {/* Section Title */}
         <div>
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-[#F59E0B] animate-pulse" />
@@ -372,7 +554,9 @@ export default function HomePage() {
           </div>
           <div className="w-16 h-1 bg-[#F59E0B] rounded-full mt-2" />
           <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mt-2">
-            {lang === "ar" ? "أحدث ما دخل المخزن من تشكيلة 2026 — كميات محدودة" : "Latest drop for 2026 collection — limited stock"}
+            {lang === "ar"
+              ? "أحدث ما دخل المخزن من تشكيلة 2026 — كميات محدودة"
+              : "Latest drop for 2026 collection — limited stock"}
           </p>
         </div>
 
@@ -380,17 +564,20 @@ export default function HomePage() {
         {loading ? (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="animate-pulse bg-zinc-200/80 dark:bg-white/5 rounded-2xl h-80 border border-zinc-200 dark:border-white/10" />
+              <div
+                key={i}
+                className="animate-pulse bg-zinc-200/80 dark:bg-white/5 rounded-2xl h-80 border border-zinc-200 dark:border-white/10"
+              />
             ))}
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
-            {(products.slice(0, 4)).map((prod) => (
+            {newArrivalsProducts.map((prod) => (
               <div
                 key={prod.id}
                 className="group flex flex-col bg-white dark:bg-[#0e0f17] rounded-2xl border border-zinc-200 dark:border-white/10 overflow-hidden hover:border-[#F59E0B] hover:-translate-y-1 hover:shadow-xl hover:shadow-[#F59E0B]/10 transition-all duration-300 relative"
               >
-                {/* Product Image */}
+                {/* Flat-lay Card Image */}
                 <div className="relative aspect-[4/5] bg-zinc-100 dark:bg-zinc-900 overflow-hidden">
                   <img
                     src={
@@ -404,8 +591,6 @@ export default function HomePage() {
                       prod.inStock === false ? "opacity-75 grayscale-30" : ""
                     }`}
                   />
-
-                  {/* Badge */}
                   <div
                     className={`absolute top-3 ${
                       dir === "rtl" ? "right-3" : "left-3"
@@ -440,7 +625,7 @@ export default function HomePage() {
                     )}
                   </div>
 
-                  {/* Price in DA */}
+                  {/* Price */}
                   <div className="flex items-center gap-2 pt-1">
                     <span className="text-base sm:text-lg font-black text-zinc-950 dark:text-white font-mono">
                       {formatPrice(prod.price)}
@@ -452,7 +637,7 @@ export default function HomePage() {
                     )}
                   </div>
 
-                  {/* Action Button: Quick "أشري درك" */}
+                  {/* Action Button */}
                   <div className="pt-2">
                     {prod.inStock === false ? (
                       <Link
@@ -479,19 +664,21 @@ export default function HomePage() {
       </section>
 
       {/* ==================== ALL PRODUCTS & CATEGORIES SECTION ==================== */}
-      <section id="featured" className="max-w-7xl mx-auto px-3 sm:px-6 py-10 sm:py-12 space-y-6 sm:space-y-8 scroll-mt-28">
-        {/* Section Header with Navigation Arrows */}
+      <section
+        id="featured"
+        className="max-w-7xl mx-auto px-3 sm:px-6 py-10 sm:py-12 space-y-6 sm:space-y-8 scroll-mt-28"
+      >
         <div className="flex items-center justify-between border-b border-zinc-200 dark:border-white/10 pb-4">
           <div>
             <h2 className="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-white tracking-tight">
               {lang === "ar" ? "السلعة لي راهي دايرة حالة" : "Featured Products"}
             </h2>
             <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-              {lang === "ar" ? "أقوى القطع لي عليها الطلب حالياً — كميات محدودة" : "Our most demanded exclusive pieces — limited stock"}
+              {lang === "ar"
+                ? "أقوى القطع لي عليها الطلب حالياً — كميات محدودة"
+                : "Our most demanded exclusive pieces — limited stock"}
             </p>
           </div>
-
-          {/* Carousel Arrows */}
           <div className="flex items-center gap-2">
             <button
               onClick={() => scrollProducts("left")}
@@ -532,13 +719,18 @@ export default function HomePage() {
         {loading ? (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="animate-pulse bg-zinc-200/80 dark:bg-white/5 rounded-2xl h-96 border border-zinc-200 dark:border-white/10" />
+              <div
+                key={i}
+                className="animate-pulse bg-zinc-200/80 dark:bg-white/5 rounded-2xl h-96 border border-zinc-200 dark:border-white/10"
+              />
             ))}
           </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-20 bg-white dark:bg-white/5 rounded-3xl border border-zinc-200 dark:border-white/10 text-zinc-500 dark:text-zinc-400 space-y-3">
             <Package className="w-10 h-10 mx-auto text-zinc-400" />
-            <p className="text-sm font-bold">{lang === "ar" ? "ما كانش منتجات بهاد الاسم حالياً" : "No products found"}</p>
+            <p className="text-sm font-bold">
+              {lang === "ar" ? "ما كانش منتجات بهاد الاسم حالياً" : "No products found"}
+            </p>
             <button
               onClick={() => {
                 setSearch("");
@@ -550,16 +742,12 @@ export default function HomePage() {
             </button>
           </div>
         ) : (
-          <div
-            ref={productsScrollRef}
-            className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6"
-          >
+          <div ref={productsScrollRef} className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
             {filtered.map((prod) => (
               <div
                 key={prod.id}
                 className="group flex flex-col bg-white dark:bg-[#0e0f17] rounded-2xl border border-zinc-200 dark:border-white/10 overflow-hidden hover:border-[#F59E0B] hover:-translate-y-1 hover:shadow-xl hover:shadow-[#F59E0B]/10 transition-all duration-300 relative"
               >
-                {/* Product Image */}
                 <div className="relative aspect-[4/5] bg-zinc-100 dark:bg-zinc-900 overflow-hidden">
                   <img
                     src={
@@ -573,8 +761,6 @@ export default function HomePage() {
                       prod.inStock === false ? "opacity-75 grayscale-30" : ""
                     }`}
                   />
-
-                  {/* Badge */}
                   <div
                     className={`absolute top-3 ${
                       dir === "rtl" ? "right-3" : "left-3"
@@ -596,7 +782,6 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                {/* Card Info */}
                 <div className="p-3.5 sm:p-5 flex flex-col flex-1 justify-between space-y-2.5 sm:space-y-3">
                   <div className="space-y-1">
                     <h3 className="h-5 text-xs sm:text-sm font-bold text-zinc-900 dark:text-white line-clamp-1 truncate group-hover:text-[#F59E0B] transition-colors">
@@ -608,8 +793,6 @@ export default function HomePage() {
                       </p>
                     )}
                   </div>
-
-                  {/* Price */}
                   <div className="flex items-center gap-2 pt-1">
                     <span className="text-base sm:text-lg font-black text-zinc-950 dark:text-white font-mono">
                       {formatPrice(prod.price)}
@@ -620,19 +803,18 @@ export default function HomePage() {
                       </span>
                     )}
                   </div>
-
-                  {/* Sizes */}
                   {prod.sizes && prod.sizes.length > 0 && (
                     <div className="flex items-center gap-1 text-[10px] font-bold text-zinc-600 dark:text-zinc-400">
                       {prod.sizes.slice(0, 4).map((s) => (
-                        <span key={s} className="px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/10">
+                        <span
+                          key={s}
+                          className="px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/10"
+                        >
                           {s}
                         </span>
                       ))}
                     </div>
                   )}
-
-                  {/* Action Button */}
                   <div className="pt-2">
                     {prod.inStock === false ? (
                       <Link
@@ -659,7 +841,10 @@ export default function HomePage() {
       </section>
 
       {/* ==================== ABOUT / BRAND STORY SECTION (#about) ==================== */}
-      <section id="about" className="max-w-7xl mx-auto px-4 sm:px-6 py-16 border-t border-zinc-200 dark:border-white/10">
+      <section
+        id="about"
+        className="max-w-7xl mx-auto px-4 sm:px-6 py-16 border-t border-zinc-200 dark:border-white/10"
+      >
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
             <span className="text-xs font-mono font-bold text-[#F59E0B] uppercase tracking-widest block">
@@ -675,7 +860,6 @@ export default function HomePage() {
                 ? "بدينا bx.wear.dz بحاجة بسيطة: كنا نحوسو على حوايج ستريت وير شابة، قطنها ثقيل وما تتبهدلش بعد أول غسلة وما لقيناش حاجة مقنعة بسعر معقول. قررنا نخدمو سلعة على قوسطونا — أقمشة 340 GSM ثقيلة، تفصال مريح ومتقون، ومعاملة صادقة مع الزبون: تطلب، يوصلك الطرد لباب دارك، تفحصه بيدك وتشوف الجودة عاد تمد دراهمك. ثقتك هي الصح عندنا."
                 : "bx.wear.dz was created to offer real heavyweight streetwear in Algeria. Heavy 340 GSM cotton, honest customer experience, and inspection before payment."}
             </p>
-
             <div className="grid grid-cols-2 gap-4 pt-2">
               <div className="p-4 rounded-2xl bg-white dark:bg-white/5 border border-zinc-200 dark:border-white/10 shadow-xs">
                 <div className="text-2xl font-black text-zinc-900 dark:text-white font-mono">340 GSM</div>
@@ -695,15 +879,18 @@ export default function HomePage() {
           {/* Visual Showcase Card */}
           <div className="relative rounded-3xl overflow-hidden border border-zinc-200 dark:border-white/10 shadow-xl aspect-[4/3] bg-zinc-900">
             <img
-              src="/hero-urban.jpg"
+              src="/images/joggers-hero.webp"
               alt="Brand Vision"
               className="w-full h-full object-cover"
+              loading="lazy"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent flex items-end p-6">
               <div className="space-y-1">
                 <span className="text-white font-black text-lg">BX.WEAR.DZ</span>
                 <p className="text-xs text-zinc-300">
-                  {lang === "ar" ? "ستريت وير جزائري أصلي • توصيل 69 ولاية" : "Official Algerian Streetwear Atelier"}
+                  {lang === "ar"
+                    ? "ستريت وير جزائري أصلي • توصيل 69 ولاية"
+                    : "Official Algerian Streetwear Atelier"}
                 </p>
               </div>
             </div>
@@ -714,7 +901,6 @@ export default function HomePage() {
       {/* ==================== FOOTER ==================== */}
       <footer className="border-t border-zinc-200 dark:border-white/10 bg-zinc-100 dark:bg-black py-12 text-zinc-600 dark:text-zinc-400 text-xs transition-colors duration-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Col 1 */}
           <div className="space-y-3">
             <div className="font-mono font-black text-xl text-zinc-900 dark:text-white tracking-widest uppercase">
               BX.WEAR<span className="text-[#F59E0B]">.DZ</span>
@@ -730,8 +916,6 @@ export default function HomePage() {
               </span>
             </div>
           </div>
-
-          {/* Col 2 */}
           <div className="space-y-2">
             <h5 className="font-bold text-zinc-900 dark:text-white text-xs uppercase tracking-wider">
               {lang === "ar" ? "روابط سريعة" : "Quick Links"}
@@ -754,8 +938,6 @@ export default function HomePage() {
               </li>
             </ul>
           </div>
-
-          {/* Col 3 */}
           <div className="space-y-3">
             <h5 className="font-bold text-zinc-900 dark:text-white text-xs uppercase tracking-wider">
               {lang === "ar" ? "خدمة الزبائن VIP" : "VIP Customer Service"}
@@ -776,7 +958,6 @@ export default function HomePage() {
             </a>
           </div>
         </div>
-
         <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-10 pt-6 border-t border-zinc-200 dark:border-white/5 text-center text-xs text-zinc-500">
           <p>© 2026 bx.wear.dz — جميع الحقوق محفوظة.</p>
         </div>

@@ -15,6 +15,60 @@ export interface Product {
 
 export const PRODUCTS: Product[] = [
   {
+    id: "joggers-grey",
+    name: "جوقر واسع رمادي",
+    subtitle: "Wide-leg Heavyweight 340 GSM - رمادي ميلانج",
+    price: 3800,
+    originalPrice: 4800,
+    description: "جوقر ستريت وير واسع بقماش قطني ثقيل 340 GSM مع قصة باجي مريحة، خياطة متقونة، حزام مطاطي برباط تعديل وجيوب عملية. مناسب للإطلالات اليومية والستريت وير العصرية.",
+    badge: "جديد 2026 🔥",
+    sizes: ["S", "M", "L", "XL", "XXL"],
+    colors: [
+      { name: "رمادي ميلانج", hex: "#9ca3af" }
+    ],
+    images: [
+      "/images/joggers-flat-grey.webp",
+      "/images/joggers-grey-model.webp",
+      "/images/joggers-detail-waist.webp",
+      "/images/joggers-fabric-grey.webp",
+      "/images/joggers-detail-shoe.webp"
+    ],
+    features: [
+      "قطن طبيعي ثقيل 340 GSM",
+      "قصة واسعة مريحة (Wide-leg baggy fit)",
+      "حزام مطاطي قابل للتعديل مع رباط بريميوم",
+      "توصيل سريع لـ 69 ولاية مع حق المعاينة قبل الدفع"
+    ],
+    inStock: true
+  },
+  {
+    id: "joggers-black",
+    name: "جوقر واسع أسود",
+    subtitle: "Wide-leg Heavyweight 340 GSM - أسود فحمي",
+    price: 3800,
+    originalPrice: 4800,
+    description: "جوقر ستريت وير واسع باللون الأسود الفحمي بقماش قطن 340 GSM فاخر. تصميم عريض أوفرسايز مريح للغاية مع تفاصيل خياطة بريميوم وجيوب جانبية متينة.",
+    badge: "جديد 2026 ⚡",
+    sizes: ["S", "M", "L", "XL", "XXL"],
+    colors: [
+      { name: "أسود فحمي", hex: "#18181b" }
+    ],
+    images: [
+      "/images/joggers-flat-black.webp",
+      "/images/joggers-black-model.webp",
+      "/images/joggers-detail-waist.webp",
+      "/images/joggers-fabric-black.webp",
+      "/images/joggers-detail-shoe.webp"
+    ],
+    features: [
+      "قطن طبيعي ثقيل 340 GSM",
+      "قصة واسعة مريحة (Wide-leg baggy fit)",
+      "حزام مطاطي قابل للتعديل مع رباط بريميوم",
+      "توصيل سريع لـ 69 ولاية مع حق المعاينة قبل الدفع"
+    ],
+    inStock: true
+  },
+  {
     id: "oversized-heavy-hoodie",
     name: "Oversized Minimalist Hoodie",
     subtitle: "Heavyweight 450 GSM - قطن 100% بريميوم",
