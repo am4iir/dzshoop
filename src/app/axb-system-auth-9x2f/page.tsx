@@ -76,7 +76,7 @@ export default function AdminDashboardPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [loading, setLoading] = useState(false);
-  const [productFilter, setProductFilter] = useState<"all" | "active" | "outofstock" | "deleted">("all");
+  const [productFilter, setProductFilter] = useState<"all" | "active" | "outofstock">("all");
   const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
 
   // Financial tracking form state
@@ -229,36 +229,8 @@ export default function AdminDashboardPage() {
   };
 
 
-  const handleToggleDelete = async (productId: string, currentDeleted: boolean) => {
-    const action = currentDeleted ? "restore" : "delete";
-    const confirmMsg = currentDeleted
-      ? "هل تريد استرجاع هذا المنتج ليعود للعرض في المتجر للزبائن؟"
-      : "هل أنت متأكد من حذف هذا المنتج وإخفائه من المتجر؟ (يمكنك استرجاعه في أي وقت)";
-    
-    if (!confirm(confirmMsg)) return;
-
-    setActionLoadingId(productId);
-    try {
-      const res = await fetch("/api/products", {
-        method: "PATCH",
-        headers: getAdminHeaders(),
-        body: JSON.stringify({ id: productId, action })
-      });
-      const data = await res.json();
-      if (data.success) {
-        loadData();
-      } else {
-        alert("تعذر تحديث حالة المنتج");
-      }
-    } catch (e) {
-      alert("حدث خطأ أثناء تعديل المنتج");
-    } finally {
-      setActionLoadingId(null);
-    }
-  };
-
-  const handlePermanentDelete = async (productId: string, productName: string) => {
-    if (!confirm(`تحذير نهائي: هل تريد حذف "${productName}" نهائياً وبشكل كامل من قاعدة البيانات؟ لا يمكن التراجع عن هذا الإجراء.`)) {
+  const handleDeleteProduct = async (productId: string, productName: string) => {
+    if (!confirm(`هل أنت متأكد من حذف المنتج "${productName}" نهائياً من المتجر؟`)) {
       return;
     }
 
@@ -267,15 +239,16 @@ export default function AdminDashboardPage() {
       const res = await fetch(`/api/products?id=${productId}&permanent=true`, {
         method: "DELETE",
         headers: getAdminHeaders(),
+        credentials: "include",
       });
       const data = await res.json();
       if (data.success) {
-        loadData();
+        setProducts((prev) => prev.filter((p) => p.id !== productId));
       } else {
-        alert("تعذر حذف المنتج نهائياً");
+        alert(data.error || "تعذر حذف المنتج");
       }
-    } catch (e) {
-      alert("حدث خطأ أثناء الحذف النهائي");
+    } catch {
+      alert("حدث خطأ أثناء حذف المنتج");
     } finally {
       setActionLoadingId(null);
     }
@@ -288,6 +261,7 @@ export default function AdminDashboardPage() {
       const res = await fetch("/api/products", {
         method: "PATCH",
         headers: getAdminHeaders(),
+        credentials: "include",
         body: JSON.stringify({ id: productId, action: "toggle-stock", inStock: nextInStock })
       });
       const data = await res.json();
@@ -343,6 +317,7 @@ export default function AdminDashboardPage() {
       const res = await fetch("/api/products", {
         method: "PATCH",
         headers: getAdminHeaders(),
+        credentials: "include",
         body: JSON.stringify({
           id: editingPromoProduct.id,
           action: "promotion",
@@ -373,29 +348,6 @@ export default function AdminDashboardPage() {
       alert("حدث خطأ أثناء حفظ التخفيض");
     } finally {
       setSavingPromo(false);
-    }
-  };
-
-  const handleRestoreDefaults = async () => {
-    if (!confirm("هل تريد استرجاع وتفعيل المنتجات الأصلية الافتراضية للمتجر؟")) return;
-    setLoading(true);
-    try {
-      const res = await fetch("/api/products", {
-        method: "POST",
-        headers: getAdminHeaders(),
-        body: JSON.stringify({ action: "restore-defaults" })
-      });
-      const data = await res.json();
-      if (data.success) {
-        alert("تم استرجاع وتفعيل المنتجات الافتراضية بنجاح!");
-        loadData();
-      } else {
-        alert("تعذر استرجاع المنتجات الافتراضية");
-      }
-    } catch (e) {
-      alert("حدث خطأ في النظام");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -497,6 +449,7 @@ export default function AdminDashboardPage() {
       const res = await fetch("/api/products", {
         method: "PATCH",
         headers: getAdminHeaders(),
+        credentials: "include",
         body: JSON.stringify({
           id: editingProduct.id,
           action: "update",
@@ -531,6 +484,7 @@ export default function AdminDashboardPage() {
       await fetch("/api/orders", {
         method: "PATCH",
         headers: getAdminHeaders(),
+        credentials: "include",
         body: JSON.stringify({ orderId, status: newStatus })
       });
       loadData();
@@ -545,6 +499,7 @@ export default function AdminDashboardPage() {
       await fetch(`/api/orders?orderId=${orderId}`, {
         method: "DELETE",
         headers: getAdminHeaders(),
+        credentials: "include",
       });
       loadData();
     } catch (e) {
@@ -571,6 +526,7 @@ export default function AdminDashboardPage() {
       const res = await fetch("/api/orders?orderId=all", {
         method: "DELETE",
         headers: getAdminHeaders(),
+        credentials: "include",
       });
       const data = await res.json();
       if (data.success) {
@@ -600,6 +556,7 @@ export default function AdminDashboardPage() {
       const res = await fetch("/api/products", {
         method: "POST",
         headers: getAdminHeaders(),
+        credentials: "include",
         body: JSON.stringify({
           name,
           subtitle,
@@ -646,6 +603,7 @@ export default function AdminDashboardPage() {
       const res = await fetch("/api/expenses", {
         method: "POST",
         headers: getAdminHeaders(),
+        credentials: "include",
         body: JSON.stringify({
           title: expTitle.trim(),
           amount: Number(expAmount),
@@ -676,6 +634,7 @@ export default function AdminDashboardPage() {
       const res = await fetch(`/api/expenses?id=${id}`, {
         method: "DELETE",
         headers: getAdminHeaders(),
+        credentials: "include",
       });
       const data = await res.json();
       if (data.success) {
@@ -762,9 +721,8 @@ export default function AdminDashboardPage() {
     .filter((o) => o.status !== "cancelled")
     .reduce((acc, curr) => acc + curr.totalPrice, 0);
   const totalRevenue = customRevenue !== null ? customRevenue : calculatedTotalRevenue;
-  const activeProductsCount = products.filter((p) => !p.isDeleted && p.inStock !== false).length;
-  const outOfStockCount = products.filter((p) => !p.isDeleted && p.inStock === false).length;
-  const deletedProductsCount = products.filter((p) => p.isDeleted).length;
+  const activeProductsCount = products.filter((p) => p.inStock !== false).length;
+  const outOfStockCount = products.filter((p) => p.inStock === false).length;
 
   // Financial calculations
   const storeDeliveredRevenue = orders
@@ -799,9 +757,8 @@ export default function AdminDashboardPage() {
   });
 
   const displayedProducts = products.filter((p) => {
-    if (productFilter === "active") return !p.isDeleted && p.inStock !== false;
-    if (productFilter === "outofstock") return !p.isDeleted && p.inStock === false;
-    if (productFilter === "deleted") return Boolean(p.isDeleted);
+    if (productFilter === "active") return p.inStock !== false;
+    if (productFilter === "outofstock") return p.inStock === false;
     return true;
   });
 
@@ -869,9 +826,6 @@ export default function AdminDashboardPage() {
             <span className="text-[11px] font-bold text-zinc-400 block mb-1">المنتجات المعروضة</span>
             <div className="flex items-baseline gap-2">
               <span className="text-2xl font-black text-zinc-900">{activeProductsCount}</span>
-              {deletedProductsCount > 0 && (
-                <span className="text-[11px] text-red-500 font-bold">({deletedProductsCount} محذوف)</span>
-              )}
             </div>
           </div>
 
@@ -1112,7 +1066,7 @@ export default function AdminDashboardPage() {
                       : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"
                   }`}
                 >
-                  All Products ({products.length})
+                  الكل ({products.length})
                 </button>
                 <button
                   onClick={() => setProductFilter("active")}
@@ -1123,7 +1077,7 @@ export default function AdminDashboardPage() {
                   }`}
                 >
                   <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                  In Stock ({activeProductsCount})
+                  متوفر في المخزن ({activeProductsCount})
                 </button>
                 <button
                   onClick={() => setProductFilter("outofstock")}
@@ -1134,30 +1088,11 @@ export default function AdminDashboardPage() {
                   }`}
                 >
                   <span className="w-2 h-2 rounded-full bg-amber-500"></span>
-                  Sold Out ({outOfStockCount})
-                </button>
-                <button
-                  onClick={() => setProductFilter("deleted")}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
-                    productFilter === "deleted"
-                      ? "bg-red-600 text-white shadow-sm"
-                      : "bg-red-50 text-red-700 hover:bg-red-100 border border-red-200"
-                  }`}
-                >
-                  <span className="w-2 h-2 rounded-full bg-red-500"></span>
-                  Deleted ({deletedProductsCount})
+                  نفدت الكمية ({outOfStockCount})
                 </button>
               </div>
 
               <div className="flex items-center gap-2">
-                <button
-                  onClick={handleRestoreDefaults}
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-700 hover:text-black bg-zinc-100 hover:bg-zinc-200 border border-zinc-200 px-3.5 py-2 rounded-xl transition cursor-pointer"
-                  title="استرجاع وتفعيل المنتجات الأصلية الافتراضية"
-                >
-                  <RefreshCw className="w-3.5 h-3.5 text-zinc-600" />
-                  <span>استرجاع الافتراضية</span>
-                </button>
                 <button
                   onClick={() => setActiveTab("new-product")}
                   className="inline-flex items-center gap-1.5 text-xs font-bold text-white bg-zinc-900 hover:bg-zinc-800 px-3.5 py-2 rounded-xl transition cursor-pointer shadow-sm"
@@ -1176,7 +1111,6 @@ export default function AdminDashboardPage() {
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {displayedProducts.map((prod) => {
-                  const isDeleted = Boolean(prod.isDeleted);
                   const isOutOfStock = prod.inStock === false;
                   const isBusy = actionLoadingId === prod.id;
                   const hasPromo = Boolean(prod.badge || (prod.originalPrice && prod.originalPrice > prod.price));
@@ -1185,9 +1119,7 @@ export default function AdminDashboardPage() {
                     <div
                       key={prod.id}
                       className={`bg-white rounded-2xl border transition-all duration-200 overflow-hidden flex flex-col p-4 shadow-sm relative ${
-                        isDeleted 
-                          ? "border-red-200 bg-red-50/10 ring-1 ring-red-100" 
-                          : isOutOfStock
+                        isOutOfStock
                           ? "border-amber-200 bg-amber-50/20"
                           : "border-zinc-200"
                       }`}
@@ -1195,25 +1127,14 @@ export default function AdminDashboardPage() {
                       {/* Status header badges */}
                       <div className="flex items-center justify-between gap-1.5 mb-2.5 flex-wrap">
                         <div className="flex items-center gap-1.5 flex-wrap">
-                          {isDeleted ? (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-extrabold bg-red-100 text-red-700 px-2 py-0.5 rounded-lg border border-red-200 font-mono uppercase">
-                              <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse"></span>
-                              Deleted
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-extrabold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-lg border border-emerald-200 font-mono uppercase">
-                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
-                              Active
-                            </span>
-                          )}
-
                           {isOutOfStock ? (
                             <span className="inline-flex items-center gap-1 text-[10px] font-extrabold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-lg border border-amber-300 font-mono uppercase">
                               <span className="w-1.5 h-1.5 rounded-full bg-amber-600 animate-pulse"></span>
                               SOLD OUT
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-zinc-100 text-zinc-600 px-2 py-0.5 rounded-lg border border-zinc-200 font-mono uppercase">
+                            <span className="inline-flex items-center gap-1 text-[10px] font-extrabold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-lg border border-emerald-200 font-mono uppercase">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
                               IN STOCK
                             </span>
                           )}
@@ -1230,7 +1151,7 @@ export default function AdminDashboardPage() {
                           src={prod.images?.[0] || "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=900&auto=format&fit=crop"}
                           alt={prod.name}
                           className={`w-full h-full object-cover transition duration-200 ${
-                            isDeleted ? "grayscale opacity-70" : isOutOfStock ? "opacity-80" : ""
+                            isOutOfStock ? "opacity-80" : ""
                           }`}
                         />
                         {prod.badge && (
@@ -1240,11 +1161,11 @@ export default function AdminDashboardPage() {
                         )}
                         {isOutOfStock ? (
                           <span className="absolute bottom-2 left-2 bg-zinc-950/90 text-amber-400 font-black text-[10px] px-2.5 py-1 rounded-lg border border-amber-400/40 backdrop-blur-xs shadow-md tracking-wider uppercase flex items-center gap-1">
-                            ⚠️ SOLD OUT
+                            ⚠️ Sold Out
                           </span>
-                        ) : !isDeleted && (
+                        ) : (
                           <span className="absolute bottom-2 left-2 bg-zinc-950/90 text-emerald-400 font-black text-[10px] px-2.5 py-1 rounded-lg border border-emerald-400/40 backdrop-blur-xs shadow-md tracking-wider uppercase flex items-center gap-1">
-                            ✅ IN STOCK
+                            ✅ In Stock
                           </span>
                         )}
                       </div>
@@ -1262,20 +1183,16 @@ export default function AdminDashboardPage() {
                             </span>
                           )}
                         </div>
-                        {!isDeleted ? (
-                          <Link
-                            href={`/products/${prod.id}`}
-                            target="_blank"
-                            className="text-xs text-zinc-600 hover:text-black font-semibold underline"
-                          >
-                            Preview ↗
-                          </Link>
-                        ) : (
-                          <span className="text-[11px] text-red-500 font-bold">Hidden</span>
-                        )}
+                        <Link
+                          href={`/products/${prod.id}`}
+                          target="_blank"
+                          className="text-xs text-zinc-600 hover:text-black font-semibold underline"
+                        >
+                          معاينة في المتجر ↗
+                        </Link>
                       </div>
 
-                      {/* Action buttons: Edit, Stock, Promo, Delete, Restore */}
+                      {/* Action buttons: Edit, Stock, Promo, Delete */}
                       <div className="mt-auto pt-3 border-t border-zinc-100 space-y-2">
                         {/* Edit Product Button */}
                         <button
@@ -1330,40 +1247,16 @@ export default function AdminDashboardPage() {
                           </button>
                         </div>
 
-                        {/* Row 2: Delete / Restore & Permanent Delete */}
-                        <div className="flex items-center gap-2">
-                          {!isDeleted ? (
-                            <button
-                              onClick={() => handleToggleDelete(prod.id, false)}
-                              disabled={isBusy}
-                              className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold text-red-600 hover:text-white bg-red-50 hover:bg-red-600 border border-red-200 hover:border-red-600 transition active:scale-95 cursor-pointer disabled:opacity-50"
-                              title="Delete from store"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                              <span>Delete</span>
-                            </button>
-                          ) : (
-                            <button
-                              onClick={() => handleToggleDelete(prod.id, true)}
-                              disabled={isBusy}
-                              className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold text-emerald-700 hover:text-white bg-emerald-50 hover:bg-emerald-600 border border-emerald-300 hover:border-emerald-600 transition active:scale-95 cursor-pointer disabled:opacity-50"
-                              title="Restore to store"
-                            >
-                              <RotateCcw className="w-3.5 h-3.5" />
-                              <span>Restore</span>
-                            </button>
-                          )}
-
-                          <button
-                            onClick={() => handlePermanentDelete(prod.id, prod.name)}
-                            disabled={isBusy}
-                            className="inline-flex items-center justify-center gap-1 py-2 px-2.5 rounded-xl text-xs font-bold text-zinc-400 hover:text-red-600 hover:bg-red-50 border border-zinc-200 hover:border-red-200 transition cursor-pointer disabled:opacity-50"
-                            title="Permanent Delete"
-                          >
-                            <Trash2 className="w-3.5 h-3.5 text-zinc-400 hover:text-red-500" />
-                            <span className="text-[10px]">Permanent</span>
-                          </button>
-                        </div>
+                        {/* Single Permanent Delete Button */}
+                        <button
+                          onClick={() => handleDeleteProduct(prod.id, prod.name)}
+                          disabled={isBusy}
+                          className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold text-red-600 hover:text-white bg-red-50 hover:bg-red-600 border border-red-200 hover:border-red-600 transition active:scale-95 cursor-pointer disabled:opacity-50"
+                          title="حذف المنتج نهائياً وبشكل كامل من المتجر"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          <span>حذف المنتج نهائياً 🗑️</span>
+                        </button>
                       </div>
                     </div>
                   );
