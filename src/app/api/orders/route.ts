@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { sql, initDbTables } from "@/lib/db";
 import { isAdminAuthorized, isCsrfProtectedRequest, isSameOrigin, unauthorizedResponse } from "@/lib/auth";
-import { sendOrderEmailNotification } from "@/lib/email";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { WILAYAS } from "@/data/wilayas";
 import { logger } from "@/lib/logger";
@@ -192,25 +191,6 @@ export async function POST(req: Request) {
       VALUES (${id}, ${productTitle}, ${productId}, ${selectedSize}, ${selectedColor}, ${quantity}, ${fullName}, ${phone}, ${wilayaName}, ${commune}, ${deliveryType}, ${deliveryPrice}, ${totalPrice}, 'pending')
     `;
 
-    // Trigger instant Email notification to axbwear@gmail.com
-    try {
-      await sendOrderEmailNotification({
-        id,
-        fullName,
-        phone,
-        wilayaName,
-        commune,
-        productTitle,
-        selectedSize,
-        selectedColor,
-        quantity,
-        deliveryType,
-        deliveryPrice,
-        totalPrice,
-      });
-    } catch (err) {
-      logger.error("email_notification_failed");
-    }
 
     // Trigger instant Telegram notification to phone if configured
     sendTelegramNotification({ id, fullName, phone, wilayaName, commune, productTitle, deliveryType, deliveryPrice, totalPrice });

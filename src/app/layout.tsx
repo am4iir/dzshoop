@@ -14,14 +14,14 @@ const tajawal = Tajawal({
 });
 
 export const metadata: Metadata = {
-  description: "axb.wear official store - barae × amir streetwear brand in algeria. exclusive premium cotton collection with cash on delivery nationwide.",
+  description: "axb.wear official store - streetwear brand in algeria. exclusive premium cotton collection with cash on delivery nationwide.",
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
   title: {
     default: "axb.wear | official streetwear store",
     template: "%s | axb.wear",
   },
   openGraph: {
-    title: "axb.wear | barae × amir streetwear",
+    title: "axb.wear | streetwear",
     description: "new collection, premium heavyweight fabrics and fast shipping to 69 wilayas.",
     type: "website",
     siteName: "axb.wear",
@@ -34,8 +34,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ar" dir="rtl" className={tajawal.variable} suppressHydrationWarning>
-      <body className="font-sans antialiased bg-[#fafafa] dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 min-h-screen selection:bg-amber-400 selection:text-zinc-950 transition-colors duration-200">
+    <html lang="ar" dir="rtl" className={tajawal.variable}>
+      <body className="font-sans antialiased bg-[#fafafa] text-zinc-900 min-h-screen selection:bg-amber-400 selection:text-zinc-950">
         <LanguageProvider>
           <ThemeProvider>
             <CartProvider>
