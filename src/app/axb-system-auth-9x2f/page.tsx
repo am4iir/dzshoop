@@ -52,42 +52,9 @@ export default function AdminDashboardPage() {
   const { lang, setLang, t, dir } = useLanguage();
   const { theme, toggleTheme } = useTheme();
 
-  // Admin Custom Theme state
-  type AdminTheme = "white" | "black";
-  const [adminTheme, setAdminTheme] = useState<AdminTheme>("white");
-  const [themeDropdownOpen, setThemeDropdownOpen] = useState(false);
-
   useEffect(() => {
-    setLang("ar");
-    try {
-      const saved = localStorage.getItem("axb_admin_theme_custom") as AdminTheme | null;
-      if (saved && ["white", "black"].includes(saved)) {
-        setAdminTheme(saved);
-        if (saved === "black") {
-          document.documentElement.classList.add("dark");
-        } else {
-          document.documentElement.classList.remove("dark");
-        }
-      } else {
-        if (saved) localStorage.removeItem("axb_admin_theme_custom");
-        setAdminTheme("white");
-        document.documentElement.classList.remove("dark");
-      }
-    } catch (e) {}
+    document.documentElement.classList.remove("dark");
   }, []);
-
-  const changeAdminTheme = (newTh: AdminTheme) => {
-    setAdminTheme(newTh);
-    setThemeDropdownOpen(false);
-    try {
-      localStorage.setItem("axb_admin_theme_custom", newTh);
-    } catch (e) {}
-    if (newTh === "black") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  };
 
   // Authentication State
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -734,21 +701,17 @@ export default function AdminDashboardPage() {
   // Lock Screen
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-zinc-950 text-white flex items-center justify-center p-4" dir={dir}>
+      <div className="min-h-screen bg-zinc-950 text-white flex items-center justify-center p-4" dir="rtl">
         <div className="max-w-sm w-full bg-zinc-900 border border-zinc-800 rounded-3xl p-8 text-center shadow-2xl relative">
           <div className="w-14 h-14 rounded-2xl bg-zinc-800 border border-zinc-700/80 flex items-center justify-center mx-auto mb-5 text-amber-400 shadow-inner">
             <Lock className="w-6 h-6" />
           </div>
 
-          <h2 className="text-xl font-bold tracking-tight text-white mb-1">
-            {lang === "ar" ? "لوحة تحكم المتجر المحمية" : lang === "fr" ? "Tableau de bord protégé" : "Protected Store Dashboard"}
+          <h2 className="text-xl font-black tracking-tight text-white mb-1">
+            لوحة تحكم axb.wear
           </h2>
           <p className="text-xs text-zinc-400 mb-6">
-            {lang === "ar"
-              ? "أدخل رمز المرور السري (Passcode) للوصول إلى الطلبيات وإدارة المنتجات"
-              : lang === "fr"
-              ? "Entrez le mot de passe secret pour accéder aux commandes et produits"
-              : "Enter secret passcode to access orders and product management"}
+            أدخل كلمة السر للوصول إلى لوحة التحكم
           </p>
 
           <form onSubmit={handleLogin} className="space-y-4">
@@ -758,34 +721,34 @@ export default function AdminDashboardPage() {
                 name="passcode"
                 required
                 autoFocus
-                placeholder={lang === "ar" ? "رمز المرور (Passcode)" : lang === "fr" ? "Mot de passe" : "Passcode"}
+                placeholder="كلمة السر..."
                 value={passcode}
                 onChange={(e) => {
                   setPasscode(e.target.value);
                   setAuthError(false);
                 }}
                 className={`w-full bg-zinc-950 border ${
-                  authError ? "border-red-500" : "border-zinc-800 focus:border-white"
+                  authError ? "border-red-500" : "border-zinc-800 focus:border-amber-400"
                 } rounded-xl py-3 px-4 text-center text-sm font-mono tracking-widest text-white outline-none transition`}
               />
               {authError && (
                 <span className="text-[11px] text-red-400 block mt-1.5 font-medium">
-                  {lang === "ar" ? "رمز المرور غير صحيح!" : lang === "fr" ? "Mot de passe incorrect !" : "Incorrect passcode!"}
+                  كلمة السر غير صحيحة!
                 </span>
               )}
             </div>
 
             <button
               type="submit"
-              className="w-full bg-white hover:bg-zinc-200 text-black font-extrabold py-3 px-4 rounded-xl text-xs transition shadow-md cursor-pointer"
+              className="w-full bg-amber-400 hover:bg-amber-300 text-zinc-950 font-black py-3 px-4 rounded-xl text-xs transition shadow-md cursor-pointer"
             >
-              {lang === "ar" ? "تسجيل الدخول للأدمن" : lang === "fr" ? "Connexion Admin" : "Admin Login"}
+              دخول للأدمن 🔓
             </button>
           </form>
 
           <div className="mt-6 pt-4 border-t border-zinc-800/80">
-            <Link href="/" className="text-xs text-zinc-500 hover:text-zinc-300">
-              {lang === "ar" ? "← العودة لمتجر الزبائن" : lang === "fr" ? "← Retour à la boutique" : "← Back to Store"}
+            <Link href="/" className="text-xs text-zinc-400 hover:text-white transition">
+              ← العودة لمتجر الزبائن
             </Link>
           </div>
         </div>
@@ -842,70 +805,30 @@ export default function AdminDashboardPage() {
     return true;
   });
 
-  const getAdminThemeClass = () => {
-    switch (adminTheme) {
-      case "black":
-        return "bg-zinc-950 text-zinc-100";
-      case "white":
-      default:
-        return "bg-zinc-50 text-zinc-900";
-    }
-  };
-
-  const getAdminHeaderClass = () => {
-    switch (adminTheme) {
-      case "black":
-        return "bg-zinc-900/95 border-zinc-800 text-white";
-      case "white":
-      default:
-        return "bg-white border-zinc-200 text-zinc-900";
-    }
-  };
-
   return (
-    <div className={`min-h-screen ${getAdminThemeClass()} pb-20 transition-colors duration-200`} dir={dir}>
+    <div className="min-h-screen bg-zinc-50 text-zinc-900 pb-20" dir="rtl">
       {/* Top Header */}
-      <header className={`${getAdminHeaderClass()} border-b sticky top-0 z-40 shadow-xs transition-colors duration-200`}>
+      <header className="bg-white border-b border-zinc-200 sticky top-0 z-40 shadow-xs">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-2">
           <div className="flex items-center gap-3">
             <span className="w-8 h-8 rounded-lg bg-zinc-900 text-white font-black flex items-center justify-center text-xs shadow-sm">
-              AD
+              axb
             </span>
             <div>
               <h1 className="font-extrabold text-xs sm:text-base leading-tight">
-                {t("admin", "title")}
+                لوحة تحكم axb.wear
               </h1>
-              <p className="text-[10px] text-zinc-400 hidden sm:block">{t("admin", "subtitle")}</p>
+              <p className="text-[10px] text-zinc-400 hidden sm:block">إدارة الطلبيات والمخزن والحسابات</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            {/* 1-Click Theme Toggle */}
-            <button
-              type="button"
-              onClick={() => changeAdminTheme(adminTheme === "white" ? "black" : "white")}
-              className="px-2.5 py-1.5 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white/80 dark:bg-zinc-800/80 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition flex items-center gap-1.5 text-xs font-bold cursor-pointer shadow-xs"
-              title="تغيير المظهر"
-            >
-              {adminTheme === "white" ? (
-                <>
-                  <Moon className="w-4 h-4 text-zinc-600" />
-                  <span className="hidden md:inline text-[11px]">Black</span>
-                </>
-              ) : (
-                <>
-                  <Sun className="w-4 h-4 text-amber-500" />
-                  <span className="hidden md:inline text-[11px]">White</span>
-                </>
-              )}
-            </button>
-
+          <div className="flex items-center gap-2">
             <Link
               href="/"
-              className="inline-flex items-center gap-1 text-xs font-bold text-zinc-600 dark:text-zinc-300 hover:text-black dark:hover:text-white bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 px-3 py-1.5 rounded-xl transition"
+              target="_blank"
+              className="inline-flex items-center gap-1 text-xs font-bold text-zinc-700 hover:text-black bg-zinc-100 hover:bg-zinc-200 px-3 py-1.5 rounded-xl transition"
             >
-              <span>{t("admin", "visitStore")}</span>
-              <ArrowRight className={`w-3.5 h-3.5 ${dir === "rtl" ? "rotate-180" : ""}`} />
+              <span>معاينة المتجر ↗</span>
             </Link>
 
             <button
@@ -913,7 +836,7 @@ export default function AdminDashboardPage() {
               className="inline-flex items-center gap-1 text-xs font-bold text-red-600 hover:text-white bg-red-50 hover:bg-red-600 border border-red-200 hover:border-red-600 px-3 py-1.5 rounded-xl transition cursor-pointer"
             >
               <LogOut className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">{t("admin", "logout")}</span>
+              <span className="hidden sm:inline">تسجيل الخروج</span>
             </button>
           </div>
         </div>
@@ -982,53 +905,53 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex items-center gap-2 border-b border-zinc-200 dark:border-zinc-800 pb-3 mb-6 overflow-x-auto">
+        <div className="flex items-center gap-2 border-b border-zinc-200 pb-3 mb-6 overflow-x-auto">
           <button
             onClick={() => setActiveTab("orders")}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
               activeTab === "orders"
-                ? "bg-zinc-900 dark:bg-amber-400 text-white dark:text-zinc-950 shadow-sm"
-                : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/60 dark:hover:bg-zinc-800"
+                ? "bg-zinc-900 text-white shadow-sm"
+                : "text-zinc-600 hover:bg-zinc-200/60"
             }`}
           >
             <ShoppingBag className="w-4 h-4" />
-            <span>{t("admin", "orders")} ({orders.length})</span>
+            <span>الطلبيات ({orders.length})</span>
           </button>
 
           <button
             onClick={() => setActiveTab("products")}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
               activeTab === "products"
-                ? "bg-zinc-900 dark:bg-amber-400 text-white dark:text-zinc-950 shadow-sm"
-                : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/60 dark:hover:bg-zinc-800"
+                ? "bg-zinc-900 text-white shadow-sm"
+                : "text-zinc-600 hover:bg-zinc-200/60"
             }`}
           >
             <Layers className="w-4 h-4" />
-            <span>{t("admin", "products")} ({activeProductsCount})</span>
+            <span>المخزن والمنتجات ({activeProductsCount})</span>
           </button>
 
           <button
             onClick={() => setActiveTab("new-product")}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
               activeTab === "new-product"
-                ? "bg-zinc-900 dark:bg-amber-400 text-white dark:text-zinc-950 shadow-sm"
-                : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/60 dark:hover:bg-zinc-800"
+                ? "bg-zinc-900 text-white shadow-sm"
+                : "text-zinc-600 hover:bg-zinc-200/60"
             }`}
           >
             <Plus className="w-4 h-4" />
-            <span>{t("admin", "addProduct")}</span>
+            <span>+ إضافة منتج جديد</span>
           </button>
 
           <button
             onClick={() => setActiveTab("finance")}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
               activeTab === "finance"
-                ? "bg-zinc-900 dark:bg-amber-400 text-white dark:text-zinc-950 shadow-sm"
-                : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/60 dark:hover:bg-zinc-800"
+                ? "bg-zinc-900 text-white shadow-sm"
+                : "text-zinc-600 hover:bg-zinc-200/60"
             }`}
           >
             <Wallet className="w-4 h-4 text-amber-500" />
-            <span>{lang === "fr" ? "Finances (Caisse) 💰" : lang === "en" ? "Finance (Cash) 💰" : "الحسابات والأرباح (Caisse) 💰"}</span>
+            <span>الحسابات والأرباح (Caisse) 💰</span>
           </button>
         </div>
 
